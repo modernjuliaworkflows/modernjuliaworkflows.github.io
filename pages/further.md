@@ -10,6 +10,8 @@
 * [Learning](https://julialang.org/learning/)
 * [Blog](https://julialang.org/blog/)
 * [Community](https://julialang.org/community/)
+* [Contribute](https://julialang.org/contribute/)
+* [JuliaCon](https://juliacon.org/)
 
 ## Tutorials
 
@@ -19,12 +21,13 @@
 - [JuliaNotes.jl](https://m3g.github.io/JuliaNotes.jl/stable/) by the [Martínez Molecular Modeling Group](https://github.com/m3g)
 - [REPL mastery workshop](https://github.com/miguelraz/REPLMasteryWorkshop) by [Miguel Raz Guzmán Macedo](https://github.com/miguelraz)
 
-## Personal blogs
+## Blogs
 
 * [Chris Rackauckas](https://www.stochasticlifestyle.com/)
 * [Jakob Nybo Nissen](https://viralinstruction.com/)
 * [Miguel Raz Guzmán Macedo](https://miguelraz.github.io/blog/)
 * [Bogumił Kamiński](https://bkamins.github.io/)
+* [Katharine Hyatt](https://kshyatt.github.io/)
 * [Frames Catherine White](https://www.oxinabox.net/blog.html)
 * [Invenia](https://invenia.github.io/blog/)
 
@@ -38,4 +41,5 @@
 * [The Julia Project and Its Entities](https://julialang.org/blog/2019/02/julia-entities/) (2019)
 * [Julia’s Release Process](https://julialang.org/blog/2019/08/release-process/) (2019)
 * [Code, docs, and tests: what's in the General registry?](https://julialang.org/blog/2021/08/general-survey/) (2021)
+* [Why We Use Julia, 10 Years Later](https://julialang.org/blog/2022/02/10years/) (2022)
 * [Julia 1.9 Highlights](https://julialang.org/blog/2023/04/julia-1.9-highlights/) (2023)

@@ -48,7 +48,7 @@
 * [StableRNGs.jl](https://github.com/JuliaRandom/StableRNGs.jl)
 * [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl)
 
-## Publishing & publicizing
+## Publishing
 
 * [general registry](https://github.com/JuliaRegistries/General)
 * [LocalRegistry.jl](https://github.com/GunnarFarneback/LocalRegistry.jl)
