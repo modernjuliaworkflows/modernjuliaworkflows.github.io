@@ -18,9 +18,10 @@
 
 ## Loading and running
 
-* startup file
+* [REPL](https://docs.julialang.org/en/v1/stdlib/REPL/)
 * [Revise.jl](https://github.com/timholy/Revise.jl)
 * [running in VSCode](https://www.julia-vscode.org/docs/stable/userguide/runningcode/)
+* startup file
 
 ## Package management
 
@@ -34,16 +35,12 @@
 * [OhMyREPL.jl](https://github.com/KristofferC/OhMyREPL.jl)
 * [AbbreviatedStackTraces.jl](https://github.com/BioTurboNick/AbbreviatedStackTraces.jl)
 * [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl)
+* [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl)
 
 ## Debugging
 
 * [Debugger.jl](https://github.com/JuliaDebug/Debugger.jl)
 * [debugging in VSCode](https://www.julia-vscode.org/docs/stable/userguide/debugging/)
-
-## Experiments
-
-* [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl)
-* [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl)
 
 ## Calling other languages
 

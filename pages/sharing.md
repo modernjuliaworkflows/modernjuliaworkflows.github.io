@@ -43,11 +43,15 @@
 * [PackageExtensionTools.jl](https://github.com/cjdoris/PackageExtensionTools.jl)
 * [PackageCompatUI.jl](https://github.com/GunnarFarneback/PackageCompatUI.jl)
 
+## Reproducibility
+
+* [StableRNGs.jl](https://github.com/JuliaRandom/StableRNGs.jl)
+* [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl)
+
 ## Publishing & publicizing
 
 * [general registry](https://github.com/JuliaRegistries/General)
 * [LocalRegistry.jl](https://github.com/GunnarFarneback/LocalRegistry.jl)
-* [Discourse](https://discourse.julialang.org/)
 
 ## Citations
 
