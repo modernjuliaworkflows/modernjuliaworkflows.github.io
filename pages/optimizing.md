@@ -4,6 +4,8 @@
 
 \toc
 
+## General principles
+
 * [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/)
 
 ## Speed measurements
