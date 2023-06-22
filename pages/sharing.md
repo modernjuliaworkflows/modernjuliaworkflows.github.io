@@ -7,6 +7,7 @@
 ## Setup
 
 * Git(Hub)
+* GitHub actions: [TagBot](https://github.com/JuliaRegistries/TagBot), [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl)
 * [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl)
 
 ## Collaboration
