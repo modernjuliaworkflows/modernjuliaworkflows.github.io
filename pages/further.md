@@ -23,9 +23,10 @@
 
 ## Blogs
 
-* [Chris Rackauckas](https://www.stochasticlifestyle.com/)
 * [Jakob Nybo Nissen](https://viralinstruction.com/)
+* [Ole Kröger](https://opensourc.es/)
 * [Miguel Raz Guzmán Macedo](https://miguelraz.github.io/blog/)
+* [Chris Rackauckas](https://www.stochasticlifestyle.com/)
 * [Bogumił Kamiński](https://bkamins.github.io/)
 * [Katharine Hyatt](https://kshyatt.github.io/)
 * [Frames Catherine White](https://www.oxinabox.net/blog.html)
