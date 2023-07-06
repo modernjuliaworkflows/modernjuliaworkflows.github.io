@@ -2,9 +2,9 @@
 
 # Going further
 
-\toc
+<!-- \toc -->
 
-## Official resources
+## Official
 
 * [Documentation](https://docs.julialang.org/en/v1/)
 * [Learning](https://julialang.org/learning/)
@@ -33,6 +33,8 @@
 * [Invenia](https://invenia.github.io/blog/)
 
 ## Videos
+
+* [The Unreasonable Effectiveness of Multiple Dispatch](https://www.youtube.com/live/kc9HwsxE1OY?feature=share) bw Stefan Karpinski at JuliaCon 2019
 
 ## Lore
 

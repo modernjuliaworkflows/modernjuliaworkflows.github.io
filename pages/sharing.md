@@ -2,7 +2,7 @@
 
 # Sharing Julia code
 
-\toc
+<!-- \toc -->
 
 ## Setup
 

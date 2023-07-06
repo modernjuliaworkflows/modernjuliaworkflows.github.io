@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {{if hasmath}} {{insert head_katex.html }}     {{end}}
   {{if hascode}} {{insert head_highlight.html }}   {{end}}
-  <link rel="stylesheet" href="/css/franklin.css">
-  <link rel="stylesheet" href="/css/basic.css">
-  <link rel="icon" href="/assets/favicon.png">
+  {{insert style.html}}
   {{isdef title}} <title>{{fill title}}</title>  {{end}}
 </head>
-<body>
-  {{insert header.html}}
+<body>                      <!-- closed in foot.html -->
+{{insert pgwrap.html}}
 
-<!-- Content appended here -->
+
+<!-- Content appended here (in class franklin-content) -->
