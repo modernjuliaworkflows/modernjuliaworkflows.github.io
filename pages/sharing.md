@@ -10,10 +10,6 @@
 * GitHub actions: [TagBot](https://github.com/JuliaRegistries/TagBot), [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl)
 * [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl)
 
-## Collaboration
-
-* [SciML ColPrac](https://github.com/SciML/ColPrac)
-
 ## Formatting
 
 * style guides ([BlueStyle](https://github.com/invenia/BlueStyle), [SciMLStyle](https://github.com/SciML/SciMLStyle))
@@ -53,6 +49,11 @@
 
 * [general registry](https://github.com/JuliaRegistries/General)
 * [LocalRegistry.jl](https://github.com/GunnarFarneback/LocalRegistry.jl)
+
+## Collaboration
+
+* [SciML ColPrac](https://github.com/SciML/ColPrac)
+* GitHub PRs
 
 ## Citations
 
