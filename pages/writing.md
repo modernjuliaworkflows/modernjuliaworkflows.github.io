@@ -6,49 +6,41 @@
 
 ## Installation
 
+```julia:version
+#hideall
+print(VERSION)
+```
+
 The most natural (but not the best) way to install Julia is the [downloads page](https://julialang.org/downloads/).
 Don't forget to also read the platform-specific instructions for [Windows](https://julialang.org/downloads/platform/#windows), [macOS](https://julialang.org/downloads/platform/#macos) or [Linux](https://julialang.org/downloads/platform/#linux_and_freebsd).
 This official page is where you will find the "current stable release", which everyone should use by default.
-At the time of writing, it has the following version number:
-
-```julia:version
-@show VERSION
-```
-\output{version}
-
+At the time of writing, it is version \textoutput{version}.
 But of course new versions are released regularly, and you will need to keep up.
 On the other hand, you may want to test your code on older versions and ensure compatibility.
 
-The best way to manage multiple Julia versions on your computer is [juliaup](https://github.com/JuliaLang/juliaup).
+There is an easy solution to manage multiple Julia versions on your computer, and it is called [juliaup](https://github.com/JuliaLang/juliaup).
 You can get it from the [Windows store](https://github.com/JuliaLang/juliaup#windows), or install it from the [command line](https://github.com/JuliaLang/juliaup#mac-and-linux) on Unix systems.
 It provides [various utilities](https://github.com/JuliaLang/juliaup#using-juliaup) to organize, update and switch between Julia versions.
-As a bonus, you no longer have to specify the path to your Julia executable: juliaup takes care of it in the background.
+As a bonus, you no longer have to specify the path to your Julia executable: juliaup takes care of that for you.
 
-For instance, you can install the latest release candidate `rc` and the long-term support version `lts` as follows:
-```
-juliaup add rc
+The main thing to understand about juliaup is that it provides adaptive shortcuts called "channels", which allow you to access specific Julia versions without giving their exact number.
+The most important ones are:
+* `release`, which is bound to the [current stable release](https://julialang.org/downloads/#current_stable_release);
+* `lts`, which is bound to the [long-term support version](https://julialang.org/downloads/#long_term_support_release).
+* `rc`, which is bound to the upcoming release candidate;
+
+For instance, you can install the LTS version with
+```bash
 juliaup add lts
 ```
-Once that is done, you can check the status of your installation:
-```
-juliaup status
-```
-The result will look somewhat like this:
-```julia:juliaup_status
-#hideall
-run(`juliaup status`)
-```
-\output{juliaup_status}
-
-As you can see, each named channel (`release`, `rc`, `lts`) is associated with a specific Julia version.
-These versions can be updated with
-```
+When new versions are tagged, the binding of a given channel can change, and a new executable might need to be downloaded.
+If you want to catch up with the latest developments, all it takes is to run
+```bash
 juliaup update
 ```
-The line marked with a star corresponds to the default version, the one that will be launched when you start Julia.
-You can select it with
-```
-juliaup default lts
+If you want an overview of the channels installed on your computer, just use
+```bash
+juliaup status
 ```
 
 ## Development environments
