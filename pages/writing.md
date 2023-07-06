@@ -2,7 +2,7 @@
 
 # Writing Julia code
 
-\toc
+<!-- \toc -->
 
 ## Installation
 
@@ -50,7 +50,7 @@ juliaup status
 * [Jupyter](https://jupyter.org/) / [IJulia.jl](https://github.com/JuliaLang/IJulia.jl)
 * [Pluto.jl](https://plutojl.org/)
 
-## Loading and running
+## Running code
 
 * [REPL](https://docs.julialang.org/en/v1/stdlib/REPL/)
 * [Revise.jl](https://github.com/timholy/Revise.jl)
@@ -77,13 +77,13 @@ juliaup status
 * [Debugger.jl](https://github.com/JuliaDebug/Debugger.jl)
 * [debugging in VSCode](https://www.julia-vscode.org/docs/stable/userguide/debugging/)
 
-## Calling other languages
+## Other languages
 
 * [C and Fortran](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/)
 * [CondaPkg.jl](https://github.com/cjdoris/CondaPkg.jl) + [PythonCall.jl](https://github.com/cjdoris/PythonCall.jl)
 * [JuliaInterOp](https://github.com/JuliaInterop) ([RCall.jl](https://github.com/JuliaInterop/RCall.jl), [Cxx.jl](https://github.com/JuliaInterop/Cxx.jl))
 
-## If you're lost
+## Getting help
 
 * [StartHere.jl](https://github.com/JuliaCommunity/StartHere.jl)
 * [community spaces](https://julialang.org/community/)
