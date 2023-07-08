@@ -45,33 +45,60 @@ juliaup status
 
 ## Development environments
 
+Depending on your experience and how you use Julia, some ways of writing code may be more familiar or useful to you than others.
+Data scientists commonly prefer notebook environments such as those provided by [Jupyter](https://jupyter.org/) through the [IJulia.jl](https://github.com/JuliaLang/IJulia.jl) package, or Julia's own reactive notebooks from [Pluto.jl](https://plutojl.org/).
+On the other hand, package developers or those who write a lot of scripts will prefer the more traditional programming environment provided by a text editor or integrated development environment (IDE).
+
+For some, the Julia REPL (Read Evaluate Print Loop) itself is all that's necessary.
+The REPL's primary function is to run code in "Julian" mode, but it also has a number of other modes that expand what can be done from inside Julia.
+Each mode is enterred by typing a character into the REPL from Julian mode, and can be exited by deleting this character with backspace.
+
+### Help mode (`?`)
+By entering a `?`, you can query information and metadata about Julia objects and unicode symbols simply by typing their name into the command line.
+For functions, types, and variables, the query fetches things such as documentation, type fields and supertypes, and in which file the object is defined.
+<!-- How do you do syntax highlighting for the Julia REPL? -->
+```
+help?> Int
+search: Int Int8 Int64 Int32 Int16 Int128 Integer intersect intersect!
+
+  Int64 <: Signed
+
+
+  64-bit signed integer type.
+```
+
+For unicode symbols, the query will return how to type the symbol in the REPL, which is useful when you copy-paste a symbol in without knowing its name, and fetch information about the object the symbol is bound to, just as above.
+
+### Pkg mode (`]`)
+Pkg mode is for managing environments and packages that is based on the Rust package manager "cargo".
+By pressing `]` in Julian mode, you can `add`, `update` (or `up`) and `remove` (or `rm`) packages, `activate` different local or global environments, and get the `status` (or `st`) of your current environment.
+
+More detail on using Pkg.jl and Pkg mode, see the [#Package-Management] section or the [#Setup] section of the [Sharing Julia code](./sharing.md#setup) post.
+
+<!-- Check whether the second link is needed after writing both sections. -->
+
+### Shell mode(`;`)
+Shell mode: Functions as a terminal inside Julia, you can also execude shell commands from Julian mode.
+Here's an example
+```julia
+an_example()
+```
+
+<!-- More needs to be written about the `edit` functionality of the REPL, I should talk to someone who does REPL-driven development. Miguel? -->
+
 * [VSCode](https://code.visualstudio.com/) / [VSCodium](https://vscodium.com/) + [Julia VSCode extension](https://www.julia-vscode.org/)
 * [emacs](https://www.gnu.org/software/emacs/) / [vim](https://www.vim.org/) / other IDEs + [JuliaEditorSupport](https://github.com/JuliaEditorSupport)
 * [Jupyter](https://jupyter.org/) / [IJulia.jl](https://github.com/JuliaLang/IJulia.jl)
 * [Pluto.jl](https://plutojl.org/)
 
-
-<!-- We shoukd mention the REPL as a development environment here -->
-
 ## Running code
 
-First here's some content on the [REPL](https://docs.julialang.org/en/v1/stdlib/REPL/).
-It would be nice to link to the previous section by the fact that some people use it as a development environment making heavy use of `edit`.
-Primarily, though, this section should talk about (some of) the different modes, and give examples of how to use them.
-* Julian mode: Writing and running code.
-    Lots to say but none of it very interesting as most people will interact with the REPL primarily from an IDE or one of the other modes.
-* Help mode: Querying information about Julia objects --- to see their documentation, type information, and where they are defined --- and symbols --- to see how they are used or typed.
-    It would be nice to have an example of each of these things.
-* Pkg mode: Creating and managing packages and environments.
-    More detail in section below so no example needed, just link to that section.
-* Shell mode: Functions as a terminal inside Julia, you can also execude shell commands from Julian mode.
-    An example of this is warranted but the rest is nicely explained by the first clause.
+All executed Julia code ends up in a REPL[^1], but how it gets there can vary greatly.
 
-<!-- I believe Revise.jl makes more sense to talk about once the context of packages (particularly local packages) has been introduced. -->
+[^1]: Unless you're compiling binaries with [StaticTools.jl](https://github.com/brenhinkeller/StaticTools.jl).
 
 <!-- The VSCode is important to write in tandem with or after the Development environments part is written to avoid overlap. -->
-Most people develop Julia using a tool that allows for interactive development.
-(Short explanation on what "Interactive development" means unless already covered in IDE section)
+Most people develop Julia using a tool that allows for [interactive development](https://en.wikipedia.org/wiki/Interactive_programming).
 In VScode, you can [run code](https://www.julia-vscode.org/docs/stable/userguide/runningcode/) in the following useful ways:
 * For interactive development, the standard way to use Julia, you can use hotkeys to run selections, lines, sections, or whole files in the currently open REPL.
     * Select a part of code to run only that part,
@@ -139,7 +166,7 @@ end
 <!-- Where should discussion of `include`, `import` and `using` go? -->
 <!-- I think `include`, `import`, and `using` should go wherever modules are spoken about, which is the second -->
 
-## Package management
+## Environment and Package Management
 
 * [Pkg.jl](https://github.com/JuliaLang/Pkg.jl)
 * stacking environments
