@@ -163,8 +163,6 @@ if Base.isinteractive() &&
 end
 ```
 
-<!-- Where should discussion of `include`, `import` and `using` go? -->
-<!-- I think `include`, `import`, and `using` should go wherever modules are spoken about, which is the second -->
 
 ## Environment and Package Management
 
@@ -172,7 +170,6 @@ end
 * stacking environments
 * [environments in VSCode](https://www.julia-vscode.org/docs/stable/userguide/env/)
 * [Revise.jl](https://github.com/timholy/Revise.jl)
-<!-- We can talk about local packages here. I believe that it's a key part of the development experience (as my survey showed). -->
 
 ## Esthetics
 
