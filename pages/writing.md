@@ -45,6 +45,47 @@ juliaup status
 
 ## Development environments
 
+Depending on your experience and how you use Julia, some ways of writing code may be more familiar or useful to you than others.
+Data scientists commonly prefer notebook environments such as those provided by [Jupyter](https://jupyter.org/) through the [IJulia.jl](https://github.com/JuliaLang/IJulia.jl) package, or Julia's own reactive notebooks from [Pluto.jl](https://plutojl.org/).
+On the other hand, package developers or those who write a lot of scripts will prefer the more traditional programming environment provided by a text editor or integrated development environment (IDE).
+
+For some, the Julia REPL (Read Evaluate Print Loop) itself is all that's necessary.
+The REPL's primary function is to run code in "Julian" mode, but it also has a number of other modes that expand what can be done from inside Julia.
+Each mode is enterred by typing a character into the REPL from Julian mode, and can be exited by deleting this character with backspace.
+
+### Help mode (`?`)
+By entering a `?`, you can query information and metadata about Julia objects and unicode symbols simply by typing their name into the command line.
+For functions, types, and variables, the query fetches things such as documentation, type fields and supertypes, and in which file the object is defined.
+<!-- How do you do syntax highlighting for the Julia REPL? -->
+```
+help?> Int
+search: Int Int8 Int64 Int32 Int16 Int128 Integer intersect intersect!
+
+  Int64 <: Signed
+
+
+  64-bit signed integer type.
+```
+
+For unicode symbols, the query will return how to type the symbol in the REPL, which is useful when you copy-paste a symbol in without knowing its name, and fetch information about the object the symbol is bound to, just as above.
+
+### Pkg mode (`]`)
+Pkg mode is for managing environments and packages that is based on the Rust package manager "cargo".
+By pressing `]` in Julian mode, you can `add`, `update` (or `up`) and `remove` (or `rm`) packages, `activate` different local or global environments, and get the `status` (or `st`) of your current environment.
+
+More detail on using Pkg.jl and Pkg mode, see the [#Package-Management] section or the [#Setup] section of the [Sharing Julia code](./sharing.md#setup) post.
+
+<!-- Check whether the second link is needed after writing both sections. -->
+
+### Shell mode(`;`)
+Shell mode: Functions as a terminal inside Julia, you can also execude shell commands from Julian mode.
+Here's an example
+```julia
+an_example()
+```
+
+<!-- More needs to be written about the `edit` functionality of the REPL, I should talk to someone who does REPL-driven development. Miguel? -->
+
 * [VSCode](https://code.visualstudio.com/) / [VSCodium](https://vscodium.com/) + [Julia VSCode extension](https://www.julia-vscode.org/)
 * [emacs](https://www.gnu.org/software/emacs/) / [vim](https://www.vim.org/) / other IDEs + [JuliaEditorSupport](https://github.com/JuliaEditorSupport)
 * [Jupyter](https://jupyter.org/) / [IJulia.jl](https://github.com/JuliaLang/IJulia.jl)
@@ -52,16 +93,83 @@ juliaup status
 
 ## Running code
 
-* [REPL](https://docs.julialang.org/en/v1/stdlib/REPL/)
-* [Revise.jl](https://github.com/timholy/Revise.jl)
-* [running in VSCode](https://www.julia-vscode.org/docs/stable/userguide/runningcode/)
-* startup file
+All executed Julia code ends up in a REPL[^1], but how it gets there can vary greatly.
 
-## Package management
+[^1]: Unless you're compiling binaries with [StaticTools.jl](https://github.com/brenhinkeller/StaticTools.jl).
+
+<!-- The VSCode is important to write in tandem with or after the Development environments part is written to avoid overlap. -->
+Most people develop Julia using a tool that allows for [interactive development](https://en.wikipedia.org/wiki/Interactive_programming).
+In VScode, you can [run code](https://www.julia-vscode.org/docs/stable/userguide/runningcode/) in the following useful ways:
+* For interactive development, the standard way to use Julia, you can use hotkeys to run selections, lines, sections, or whole files in the currently open REPL.
+    * Select a part of code to run only that part,
+    * Put your cursor inside or after a language construct, such as a definition or function call, to run the whole construct,
+    * Use the "run file in REPL" hotkey to do just that.
+* You can run entire scripts from a new Julia session each time, but this isn't great as it takes a while to start a new REPL each time.
+    To work with a (more or less) fresh workspace each time, you should bundle code into [local packages](#package-management).
+
+Some code, however, you want to run on startup, every time Julia is loaded.
+While VSCode has settings that allow you to specify startup flags, more powerful is its ability to automatically run a [startup file](https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file).
+This allows you to, among other things, load packages that improves your development experience or contain functionality that you use very often.
+
+It's tempting to put a lot of code in your `startup.jl` file for convenience's sake, but this convenience comes at a cost of increasing your startup time as it is executed.
+To balance convenience and time, we can use AST transformations to conditionally load functionality from packages only when necessary.
+We tell the REPL to listen for a set of user-defined functions or macros every time a command is sent to be executed;
+when one is detected, before executing the command, it will first execute the corresponding `using` statement to allow the function or macro to be called.
+
+```julia
+ENV["JULIA_EDITOR"] = "code"
+
+using Revise
+using OhMyREPL
+
+colorscheme!("GruvboxDark")
+OhMyREPL.enable_pass!("RainbowBrackets", false)
+
+if Base.isinteractive() &&
+    (local REPL = get(Base.loaded_modules, Base.PkgId(Base.UUID("3fa0cd96-eef1-5676-8a61-b3b8758bbffb"), "REPL"), nothing); REPL !== nothing)
+
+    # Automatically load tooling on demand:
+    # - BenchmarkTools.jl when encountering @btime or @benchmark
+    # - Cthulhu.jl when encountering @descend(_code_(typed|warntype))
+    # - Debugger.jl when encountering @enter or @run
+    # - Profile.jl when encountering @profile
+    # - ProfileView.jl when encountering @profview
+    local tooling_dict = Dict{Symbol,Vector{Symbol}}(
+        :BenchmarkTools => Symbol.(["@btime", "@benchmark"]),
+        :Cthulhu        => Symbol.(["@descend", "@descend_code_typed", "@descend_code_warntype"]),
+        :Debugger       => Symbol.(["@enter", "@run"]),
+        :Profile        => Symbol.(["@profile"]),
+        :ProfileView    => Symbol.(["@profview"]),
+    )
+    pushfirst!(REPL.repl_ast_transforms, function(ast::Union{Expr,Nothing})
+        function contains_macro(ast, m)
+            return ast isa Expr && (
+                (Meta.isexpr(ast, :macrocall) && ast.args[1] === m) ||
+                any(x -> contains_macro(x, m), ast.args)
+            )
+        end
+        for (mod, macros) in tooling_dict
+            if any(contains_macro(ast, s) for s in macros) && !isdefined(Main, mod)
+                @info "Loading $mod ..."
+                try
+                    Core.eval(Main, :(using $mod))
+                catch err
+                    @info "Failed to automatically load $mod" exception=err
+                end
+            end
+        end
+        return ast
+    end)
+end
+```
+
+
+## Environment and Package Management
 
 * [Pkg.jl](https://github.com/JuliaLang/Pkg.jl)
 * stacking environments
 * [environments in VSCode](https://www.julia-vscode.org/docs/stable/userguide/env/)
+* [Revise.jl](https://github.com/timholy/Revise.jl)
 
 ## Esthetics
 
