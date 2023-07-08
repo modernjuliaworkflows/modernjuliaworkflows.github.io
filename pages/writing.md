@@ -16,7 +16,7 @@
 * [Jupyter](https://jupyter.org/) / [IJulia.jl](https://github.com/JuliaLang/IJulia.jl)
 * [Pluto.jl](https://plutojl.org/)
 
-<!-- It may be worth mentioning the REPL as a development environment here, or I could do it in the REPL section -->
+<!-- We shoukd mention the REPL as a development environment here -->
 
 ## Loading and running
 
@@ -47,20 +47,62 @@ In VScode, you can [run code](https://www.julia-vscode.org/docs/stable/userguide
 
 Some code, however, you want to run on startup, every time Julia is loaded.
 While VSCode has settings that allow you to specify startup flags, more powerful is its ability to automatically run a [startup file](https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file).
-This allows you to, among other things, load commonly used utility packages (some of which we will discuss later in this blog post):
+This allows you to, among other things, load packages that improves your development experience or contain functionality that you use very often.
+
+It's tempting to put a lot of code in your `startup.jl` file for convenience's sake, but this convenience comes at a cost of increasing your startup time as it is executed.
+To balance convenience and time, we can use AST transformations to conditionally load functionality from packages only when necessary.
+We tell the REPL to listen for a set of user-defined functions or macros every time a command is sent to be executed;
+when one is detected, before executing the command, it will first execute the corresponding `using` statement to allow the function or macro to be called.
+
 ```julia
+ENV["JULIA_EDITOR"] = "code"
+
 using Revise
 using OhMyREPL
-```
 
-Just remember that everything you put here is run every time, so it makes opening a little slower.
-If you're using things only sometimes, then you should put them in conditional loaders (with ast transformations):
-```julia
-trust_me_bro()
+colorscheme!("GruvboxDark")
+OhMyREPL.enable_pass!("RainbowBrackets", false)
+
+if Base.isinteractive() &&
+    (local REPL = get(Base.loaded_modules, Base.PkgId(Base.UUID("3fa0cd96-eef1-5676-8a61-b3b8758bbffb"), "REPL"), nothing); REPL !== nothing)
+
+    # Automatically load tooling on demand:
+    # - BenchmarkTools.jl when encountering @btime or @benchmark
+    # - Cthulhu.jl when encountering @descend(_code_(typed|warntype))
+    # - Debugger.jl when encountering @enter or @run
+    # - Profile.jl when encountering @profile
+    # - ProfileView.jl when encountering @profview
+    local tooling_dict = Dict{Symbol,Vector{Symbol}}(
+        :BenchmarkTools => Symbol.(["@btime", "@benchmark"]),
+        :Cthulhu        => Symbol.(["@descend", "@descend_code_typed", "@descend_code_warntype"]),
+        :Debugger       => Symbol.(["@enter", "@run"]),
+        :Profile        => Symbol.(["@profile"]),
+        :ProfileView    => Symbol.(["@profview"]),
+    )
+    pushfirst!(REPL.repl_ast_transforms, function(ast::Union{Expr,Nothing})
+        function contains_macro(ast, m)
+            return ast isa Expr && (
+                (Meta.isexpr(ast, :macrocall) && ast.args[1] === m) ||
+                any(x -> contains_macro(x, m), ast.args)
+            )
+        end
+        for (mod, macros) in tooling_dict
+            if any(contains_macro(ast, s) for s in macros) && !isdefined(Main, mod)
+                @info "Loading $mod ..."
+                try
+                    Core.eval(Main, :(using $mod))
+                catch err
+                    @info "Failed to automatically load $mod" exception=err
+                end
+            end
+        end
+        return ast
+    end)
+end
 ```
-<!-- The above paragraph is really useful, but might go over a few people's heads. Maybe we don't mention it and just provide people a copy-pasteable, highly commented startup.jl file -->
 
 <!-- Where should discussion of `include`, `import` and `using` go? -->
+<!-- I think `include`, `import`, and `using` should go wherever modules are spoken about, which is the second -->
 
 ## Package management
 
