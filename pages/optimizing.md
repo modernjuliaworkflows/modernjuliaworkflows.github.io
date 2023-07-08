@@ -2,13 +2,13 @@
 
 # Optimizing Julia code
 
-\toc
+<!-- \toc -->
 
-## General principles
+## Principles
 
 * [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/)
 
-## Speed measurements
+## Measurements
 
 * [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl)
 * [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl)
@@ -44,6 +44,6 @@
 * [LoopVectorization.jl](https://github.com/JuliaSIMD/LoopVectorization.jl)
 * [Tullio.jl](https://github.com/mcabbott/Tullio.jl)
 
-## Avoiding allocations
+## Allocations
 
 * [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)

@@ -2,9 +2,9 @@
 
 # Going further
 
-\toc
+<!-- \toc -->
 
-## Official resources
+## Official
 
 * [Documentation](https://docs.julialang.org/en/v1/)
 * [Learning](https://julialang.org/learning/)
@@ -23,15 +23,18 @@
 
 ## Blogs
 
-* [Chris Rackauckas](https://www.stochasticlifestyle.com/)
 * [Jakob Nybo Nissen](https://viralinstruction.com/)
+* [Ole Kröger](https://opensourc.es/)
 * [Miguel Raz Guzmán Macedo](https://miguelraz.github.io/blog/)
+* [Chris Rackauckas](https://www.stochasticlifestyle.com/)
 * [Bogumił Kamiński](https://bkamins.github.io/)
 * [Katharine Hyatt](https://kshyatt.github.io/)
 * [Frames Catherine White](https://www.oxinabox.net/blog.html)
 * [Invenia](https://invenia.github.io/blog/)
 
 ## Videos
+
+* [The Unreasonable Effectiveness of Multiple Dispatch](https://www.youtube.com/live/kc9HwsxE1OY?feature=share) bw Stefan Karpinski at JuliaCon 2019
 
 ## Lore
 
