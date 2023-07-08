@@ -4,6 +4,24 @@
 <p>If you want an overview of the channels installed on your computer, just use</p>
 <pre><code class="bash hljs">juliaup status</code></pre>
 <h2 id=development_environments ><a href="#development_environments" class=header-anchor >Development environments</a></h2>
+<p>Depending on your experience and how you use Julia, some ways of writing code may be more familiar or useful to you than others. Data scientists commonly prefer notebook environments such as those provided by <a href="https://jupyter.org/">Jupyter</a> through the <a href="https://github.com/JuliaLang/IJulia.jl">IJulia.jl</a> package, or Julia&#39;s own reactive notebooks from <a href="https://plutojl.org/">Pluto.jl</a>. On the other hand, package developers or those who write a lot of scripts will prefer the more traditional programming environment provided by a text editor or integrated development environment &#40;IDE&#41;.</p>
+<p>For some, the Julia REPL &#40;Read Evaluate Print Loop&#41; itself is all that&#39;s necessary. The REPL&#39;s primary function is to run code in &quot;Julian&quot; mode, but it also has a number of other modes that expand what can be done from inside Julia. Each mode is enterred by typing a character into the REPL from Julian mode, and can be exited by deleting this character with backspace.</p>
+<h3 id=help_mode ><a href="#help_mode" class=header-anchor >Help mode &#40;<code>?</code>&#41;</a></h3>
+<p>By entering a <code>?</code>, you can query information and metadata about Julia objects and unicode symbols simply by typing their name into the command line. For functions, types, and variables, the query fetches things such as documentation, type fields and supertypes, and in which file the object is defined.</p>
+<pre><code class="julia hljs">help?&gt; <span class=hljs-built_in >Int</span>
+search: <span class=hljs-built_in >Int</span> <span class=hljs-built_in >Int8</span> <span class=hljs-built_in >Int64</span> <span class=hljs-built_in >Int32</span> <span class=hljs-built_in >Int16</span> <span class=hljs-built_in >Int128</span> <span class=hljs-built_in >Integer</span> intersect intersect!
+
+  <span class=hljs-built_in >Int64</span> &lt;: <span class=hljs-built_in >Signed</span>
+
+
+  <span class=hljs-number >64</span>-bit signed integer type.</code></pre>
+<p>For unicode symbols, the query will return how to type the symbol in the REPL, which is useful when you copy-paste a symbol in without knowing its name, and fetch information about the object the symbol is bound to, just as above.</p>
+<h3 id=pkg_mode ><a href="#pkg_mode" class=header-anchor >Pkg mode &#40;<code>&#93;</code>&#41;</a></h3>
+<p>Pkg mode is for managing environments and packages that is based on the Rust package manager &quot;cargo&quot;. By pressing <code>&#93;</code> in Julian mode, you can <code>add</code>, <code>update</code> &#40;or <code>up</code>&#41; and <code>remove</code> &#40;or <code>rm</code>&#41; packages, <code>activate</code> different local or global environments, and get the <code>status</code> &#40;or <code>st</code>&#41; of your current environment.</p>
+<p>More detail on using Pkg.jl and Pkg mode, see the &#91;#Package-Management&#93; section or the &#91;#Setup&#93; section of the <a href="./sharing.md#setup">Sharing Julia code</a> post.</p>
+<h3 id=shell_mode ><a href="#shell_mode" class=header-anchor >Shell mode&#40;<code>;</code>&#41;</a></h3>
+<p>Shell mode: Functions as a terminal inside Julia, you can also execude shell commands from Julian mode. Here&#39;s an example</p>
+<pre><code class="julia hljs">an_example()</code></pre>
 <ul>
 <li><p><a href="https://code.visualstudio.com/">VSCode</a> / <a href="https://vscodium.com/">VSCodium</a> &#43; <a href="https://www.julia-vscode.org/">Julia VSCode extension</a></p>
 
@@ -15,23 +33,84 @@
 
 </ul>
 <h2 id=running_code ><a href="#running_code" class=header-anchor >Running code</a></h2>
+<p>All executed Julia code ends up in a REPL<sup id="fnref:1"><a href="#fndef:1" class=fnref >[1]</a></sup>, but how it gets there can vary greatly.</p>
+<table class=fndef  id="fndef:1">
+    <tr>
+        <td class=fndef-backref ><a href="#fnref:1">[1]</a>
+        <td class=fndef-content >Unless you&#39;re compiling binaries with <a href="https://github.com/brenhinkeller/StaticTools.jl">StaticTools.jl</a>.
+    
+</table>
+
+<p>Most people develop Julia using a tool that allows for <a href="https://en.wikipedia.org/wiki/Interactive_programming">interactive development</a>. In VScode, you can <a href="https://www.julia-vscode.org/docs/stable/userguide/runningcode/">run code</a> in the following useful ways:</p>
 <ul>
-<li><p><a href="https://docs.julialang.org/en/v1/stdlib/REPL/">REPL</a></p>
+<li><p>For interactive development, the standard way to use Julia, you can use hotkeys to run selections, lines, sections, or whole files in the currently open REPL.</p>
+<ul>
+<li><p>Select a part of code to run only that part,</p>
 
-<li><p><a href="https://github.com/timholy/Revise.jl">Revise.jl</a></p>
+<li><p>Put your cursor inside or after a language construct, such as a definition or function call, to run the whole construct,</p>
 
-<li><p><a href="https://www.julia-vscode.org/docs/stable/userguide/runningcode/">running in VSCode</a></p>
-
-<li><p>startup file</p>
+<li><p>Use the &quot;run file in REPL&quot; hotkey to do just that.</p>
 
 </ul>
-<h2 id=package_management ><a href="#package_management" class=header-anchor >Package management</a></h2>
+
+<li><p>You can run entire scripts from a new Julia session each time, but this isn&#39;t great as it takes a while to start a new REPL each time.   To work with a &#40;more or less&#41; fresh workspace each time, you should bundle code into <a href="#package-management">local packages</a>.</p>
+
+</ul>
+<p>Some code, however, you want to run on startup, every time Julia is loaded. While VSCode has settings that allow you to specify startup flags, more powerful is its ability to automatically run a <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file">startup file</a>. This allows you to, among other things, load packages that improves your development experience or contain functionality that you use very often.</p>
+<p>It&#39;s tempting to put a lot of code in your <code>startup.jl</code> file for convenience&#39;s sake, but this convenience comes at a cost of increasing your startup time as it is executed. To balance convenience and time, we can use AST transformations to conditionally load functionality from packages only when necessary. We tell the REPL to listen for a set of user-defined functions or macros every time a command is sent to be executed; when one is detected, before executing the command, it will first execute the corresponding <code>using</code> statement to allow the function or macro to be called.</p>
+<pre><code class="julia hljs"><span class=hljs-literal >ENV</span>[<span class=hljs-string >&quot;JULIA_EDITOR&quot;</span>] = <span class=hljs-string >&quot;code&quot;</span>
+
+<span class=hljs-keyword >using</span> Revise
+<span class=hljs-keyword >using</span> OhMyREPL
+
+colorscheme!(<span class=hljs-string >&quot;GruvboxDark&quot;</span>)
+OhMyREPL.enable_pass!(<span class=hljs-string >&quot;RainbowBrackets&quot;</span>, <span class=hljs-literal >false</span>)
+
+<span class=hljs-keyword >if</span> Base.isinteractive() &amp;&amp;
+    (<span class=hljs-keyword >local</span> REPL = get(Base.loaded_modules, Base.PkgId(Base.UUID(<span class=hljs-string >&quot;3fa0cd96-eef1-5676-8a61-b3b8758bbffb&quot;</span>), <span class=hljs-string >&quot;REPL&quot;</span>), <span class=hljs-literal >nothing</span>); REPL !== <span class=hljs-literal >nothing</span>)
+
+    <span class=hljs-comment ># Automatically load tooling on demand:</span>
+    <span class=hljs-comment ># - BenchmarkTools.jl when encountering @btime or @benchmark</span>
+    <span class=hljs-comment ># - Cthulhu.jl when encountering @descend(_code_(typed|warntype))</span>
+    <span class=hljs-comment ># - Debugger.jl when encountering @enter or @run</span>
+    <span class=hljs-comment ># - Profile.jl when encountering @profile</span>
+    <span class=hljs-comment ># - ProfileView.jl when encountering @profview</span>
+    <span class=hljs-keyword >local</span> tooling_dict = <span class=hljs-built_in >Dict</span>{<span class=hljs-built_in >Symbol</span>,<span class=hljs-built_in >Vector</span>{<span class=hljs-built_in >Symbol</span>}}(
+        :BenchmarkTools =&gt; <span class=hljs-built_in >Symbol</span>.([<span class=hljs-string >&quot;@btime&quot;</span>, <span class=hljs-string >&quot;@benchmark&quot;</span>]),
+        :Cthulhu        =&gt; <span class=hljs-built_in >Symbol</span>.([<span class=hljs-string >&quot;@descend&quot;</span>, <span class=hljs-string >&quot;@descend_code_typed&quot;</span>, <span class=hljs-string >&quot;@descend_code_warntype&quot;</span>]),
+        :Debugger       =&gt; <span class=hljs-built_in >Symbol</span>.([<span class=hljs-string >&quot;@enter&quot;</span>, <span class=hljs-string >&quot;@run&quot;</span>]),
+        :Profile        =&gt; <span class=hljs-built_in >Symbol</span>.([<span class=hljs-string >&quot;@profile&quot;</span>]),
+        :ProfileView    =&gt; <span class=hljs-built_in >Symbol</span>.([<span class=hljs-string >&quot;@profview&quot;</span>]),
+    )
+    pushfirst!(REPL.repl_ast_transforms, <span class=hljs-keyword >function</span>(ast::<span class=hljs-built_in >Union</span>{<span class=hljs-built_in >Expr</span>,<span class=hljs-built_in >Nothing</span>})
+        <span class=hljs-keyword >function</span> contains_macro(ast, m)
+            <span class=hljs-keyword >return</span> ast <span class=hljs-keyword >isa</span> <span class=hljs-built_in >Expr</span> &amp;&amp; (
+                (Meta.isexpr(ast, :macrocall) &amp;&amp; ast.args[<span class=hljs-number >1</span>] === m) ||
+                any(x -&gt; contains_macro(x, m), ast.args)
+            )
+        <span class=hljs-keyword >end</span>
+        <span class=hljs-keyword >for</span> (mod, macros) <span class=hljs-keyword >in</span> tooling_dict
+            <span class=hljs-keyword >if</span> any(contains_macro(ast, s) <span class=hljs-keyword >for</span> s <span class=hljs-keyword >in</span> macros) &amp;&amp; !isdefined(Main, mod)
+                <span class=hljs-meta >@info</span> <span class=hljs-string >&quot;Loading <span class=hljs-variable >$mod</span> ...&quot;</span>
+                <span class=hljs-keyword >try</span>
+                    Core.eval(Main, :(<span class=hljs-keyword >using</span> $mod))
+                <span class=hljs-keyword >catch</span> err
+                    <span class=hljs-meta >@info</span> <span class=hljs-string >&quot;Failed to automatically load <span class=hljs-variable >$mod</span>&quot;</span> exception=err
+                <span class=hljs-keyword >end</span>
+            <span class=hljs-keyword >end</span>
+        <span class=hljs-keyword >end</span>
+        <span class=hljs-keyword >return</span> ast
+    <span class=hljs-keyword >end</span>)
+<span class=hljs-keyword >end</span></code></pre>
+<h2 id=environment_and_package_management ><a href="#environment_and_package_management" class=header-anchor >Environment and Package Management</a></h2>
 <ul>
 <li><p><a href="https://github.com/JuliaLang/Pkg.jl">Pkg.jl</a></p>
 
 <li><p>stacking environments</p>
 
 <li><p><a href="https://www.julia-vscode.org/docs/stable/userguide/env/">environments in VSCode</a></p>
+
+<li><p><a href="https://github.com/timholy/Revise.jl">Revise.jl</a></p>
 
 </ul>
 <h2 id=esthetics ><a href="#esthetics" class=header-anchor >Esthetics</a></h2>
@@ -73,7 +152,7 @@
 
 </ul>
 <div class=page-foot >
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> Guillaume Dalle & Jacobus Smit. Last modified: July 06, 2023.
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> Guillaume Dalle & Jacobus Smit. Last modified: July 08, 2023.
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 </div>
