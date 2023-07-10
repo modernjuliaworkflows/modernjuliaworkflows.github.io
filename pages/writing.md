@@ -43,7 +43,52 @@ If you want an overview of the channels installed on your computer, just use
 juliaup status
 ```
 
-## Development environments
+## REPL
+
+Testing the new functionality from <https://github.com/tlienart/Franklin.jl/pull/1035>
+
+Julia mode
+
+```>
+a = rand(3, 2)
+sum(a)
+using LinearAlgebra  # this should print a void
+1 + 1;  # this should print a void
+# comment alone  # this should print a void
+using Flux  # this should error
+sum(exp(a))  # this should error
+```
+
+Shell mode
+
+```;
+echo "hello"
+echo "goodbye"
+echography
+```
+
+Pkg mode
+
+```]
+st
+add Random
+st
+```
+
+Help mode
+
+```?
+Random
+Int
+```
+
+```?
+map
+```
+
+* [REPL](https://docs.julialang.org/en/v1/stdlib/REPL/)
+
+## Editors
 
 * [VSCode](https://code.visualstudio.com/) / [VSCodium](https://vscodium.com/) + [Julia VSCode extension](https://www.julia-vscode.org/)
 * [emacs](https://www.gnu.org/software/emacs/) / [vim](https://www.vim.org/) / other IDEs + [JuliaEditorSupport](https://github.com/JuliaEditorSupport)
@@ -52,12 +97,11 @@ juliaup status
 
 ## Running code
 
-* [REPL](https://docs.julialang.org/en/v1/stdlib/REPL/)
 * [Revise.jl](https://github.com/timholy/Revise.jl)
 * [running in VSCode](https://www.julia-vscode.org/docs/stable/userguide/runningcode/)
 * startup file
 
-## Package management
+## Packages
 
 * [Pkg.jl](https://github.com/JuliaLang/Pkg.jl)
 * stacking environments

@@ -648,3 +648,19 @@ franklin-toc {
   margin: 0.6rem 0;
 }
 }
+
+
+/* ==================================================================
+    REPL BLOCKS
+================================================================== */
+
+.julia-help {
+  background-color: yellow;
+  padding: 10px;
+  font-style: italic;
+}
+
+.julia-help h1,h2,h3 {
+  font-size: 1em;
+  font-weight: 500;
+}
