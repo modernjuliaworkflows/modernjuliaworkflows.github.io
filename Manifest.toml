@@ -2,7 +2,7 @@
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "b624ff2117a370fbbc58955a02126cf4545f031e"
+project_hash = "9e6933b36d93d0b20e1989a9fb44a932ed967ef1"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -68,11 +68,9 @@ uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
 [[deps.Franklin]]
 deps = ["Dates", "DelimitedFiles", "DocStringExtensions", "ExprTools", "FranklinTemplates", "HTTP", "Literate", "LiveServer", "Logging", "Markdown", "NodeJS", "OrderedCollections", "Pkg", "REPL", "Random", "TOML"]
-git-tree-sha1 = "6e669f11ac69c1c23086fa09ee7728be701de19a"
-repo-rev = "tl/fr818b"
-repo-url = "https://github.com/tlienart/Franklin.jl"
+git-tree-sha1 = "5b57de55a3c35b66e141206f9245e39da9abf8a6"
 uuid = "713c75ef-9fc9-4b05-94a9-213340da978e"
-version = "0.10.85"
+version = "0.10.86"
 
 [[deps.FranklinTemplates]]
 deps = ["LiveServer"]
