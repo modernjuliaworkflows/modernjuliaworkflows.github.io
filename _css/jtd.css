@@ -639,9 +639,9 @@ body { counter-reset: eqnum; }
 
 .hljs-meta { color: rgb(25, 179, 51); }
 
-.hljs-metas { color: red; }
-
-.hljs-metap { color: rgb(51, 131, 231); }
+.hljs-meta.shell_ {color: red;}
+.hljs-meta.pkg_ {color: cornflowerblue;}
+.hljs-meta.help_ {color: goldenrod;}
 
 franklin-toc {
   /* Avoid clickable elements being too close together. */
@@ -653,7 +653,7 @@ franklin-toc {
 ================================================================== */
 
 .julia-help {
-  background-color: rgb(255, 255, 170);
+  background-color: rgb(255, 255, 232);
   padding: 10px;
   font-style: italic;
 }

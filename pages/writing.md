@@ -45,36 +45,46 @@ juliaup status
 
 ## REPL
 
-Testing the new functionality from <https://github.com/tlienart/Franklin.jl/pull/1035>
+This part is temporary, just testing the new functionality from <https://github.com/tlienart/Franklin.jl/pull/1035> before it is merged
 
 Julia mode
 
 ```>
+using Base
 a = rand(3, 2)
 sum(a)
-using LinearAlgebra  # this should print a void
-1 + 1;  # this should print a void
-# comment alone  # this should print a void
-using Flux  # this should error
-sum(exp(a))  # this should error
+sum(exp(a))
+1 + 1;
+# comment alone
+using StableRNGs
 ```
 
 Shell mode
 
 ```;
-echo "hello"
+echo "hello";
+echo "goodbye";
+echography;
 ```
 
 Pkg mode
 
 ```]
 st
+st StableRNGs
+activate --temp
+add StableRNGs
 ```
 
-Help mode
+```>
+using StableRNGs
+round(rand(StableRNG(1)), sigdigits=3)
+```
+
+Help mode (no multiline)
 
 ```?
-map
+string
 ```
 
 * [REPL](https://docs.julialang.org/en/v1/stdlib/REPL/)
