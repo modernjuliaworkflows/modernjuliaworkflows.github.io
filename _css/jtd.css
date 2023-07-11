@@ -647,15 +647,13 @@ franklin-toc {
   /* Avoid clickable elements being too close together. */
   margin: 0.6rem 0;
 }
-}
-
 
 /* ==================================================================
     REPL BLOCKS
 ================================================================== */
 
 .julia-help {
-  background-color: yellow;
+  background-color: rgb(255, 255, 170);
   padding: 10px;
   font-style: italic;
 }
