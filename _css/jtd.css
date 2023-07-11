@@ -653,12 +653,41 @@ franklin-toc {
 ================================================================== */
 
 .julia-help {
-  background-color: rgb(255, 255, 232);
+  background-color: rgb(227, 227, 227);
   padding: 10px;
   font-style: italic;
+  border-radius: 10px;
+  margin-bottom: 0.8em;
 }
 
 .julia-help h1,h2,h3 {
   font-size: 1em;
   font-weight: 500;
+}
+
+/* ==================================================================
+    Admonitions
+================================================================== */
+
+.tldr {
+  margin-top: 1.5em;
+  width: 95%;
+  margin-left:auto;
+  margin-right:auto;
+  background-color:  rgb(209, 216, 230);
+  border-radius: 5px;
+  margin-bottom: 1em;
+}
+.tldr .content {
+  padding: 10px;
+  padding-left: 12px;
+}
+.tldr .title{
+  font-size: 105%;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding-left: 7px;
+  padding-top: 2px;
+  color: white;
+  background: cornflowerblue;
 }

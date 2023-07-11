@@ -22,5 +22,4 @@ website_url   = "https://gdalle.github.io/ModernJuliaWorkflows/"
 <!--
 Add here global latex commands to use throughout your pages.
 -->
-\newcommand{\R}{\mathbb R}
-\newcommand{\scal}[1]{\langle #1 \rangle}
+\newcommand{\tldr}[1]{@@tldr @@title TLDR@@ @@content #1 @@ @@}
