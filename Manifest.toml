@@ -68,7 +68,7 @@ uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
 [[deps.Franklin]]
 deps = ["Dates", "DelimitedFiles", "DocStringExtensions", "ExprTools", "FranklinTemplates", "HTTP", "Literate", "LiveServer", "Logging", "Markdown", "NodeJS", "OrderedCollections", "Pkg", "REPL", "Random", "TOML"]
-git-tree-sha1 = "b1dd977d8edfa737eb3629097cbc65de8caa1a3d"
+git-tree-sha1 = "8c0ba5760a56d66f76500cab9c9207d15441591d"
 repo-rev = "tl/fr818b"
 repo-url = "https://github.com/tlienart/Franklin.jl"
 uuid = "713c75ef-9fc9-4b05-94a9-213340da978e"
@@ -82,9 +82,9 @@ version = "0.9.1"
 
 [[deps.HTTP]]
 deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "ExceptionUnwrapping", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
-git-tree-sha1 = "2150ff91a4b3c566ff020c0c56e3c70d51249a2a"
+git-tree-sha1 = "2ee0eb8746650f498ed9a109383aa399b2a0c515"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "1.9.9"
+version = "1.9.10"
 
 [[deps.IOCapture]]
 deps = ["Logging", "Random"]

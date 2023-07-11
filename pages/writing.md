@@ -63,24 +63,15 @@ Shell mode
 
 ```;
 echo "hello"
-echo "goodbye"
-echography
 ```
 
 Pkg mode
 
 ```]
 st
-add Random
-st
 ```
 
 Help mode
-
-```?
-Random
-Int
-```
 
 ```?
 map
