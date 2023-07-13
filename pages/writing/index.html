@@ -11,7 +11,6 @@
 
 julia> a &#43; b
 3
-
 </code></pre>
 
 <p>This is the standard, Julian mode of the REPL, but it also has three other modes which expand what can be done from within Julia. Each mode is entered by typing a specific character after the <code>julia&gt;</code> prompt, and can be exited by hitting backspace after the <code>julia&gt;</code> prompt.</p>
@@ -73,19 +72,18 @@ julia&gt; 1/2pi
 
 </ul>
 <pre><code class=language-julia-repl >&#40;ModernJuliaWorkflows&#41; pkg&gt; activate --temp
-Activating new project at `/tmp/jl_DrYNXL`
+Activating new project at `/tmp/jl_AtbgBy`
 
-&#40;jl_DrYNXL&#41; pkg&gt; add Example
+&#40;jl_AtbgBy&#41; pkg&gt; add Example
 Resolving package versions...
-    Updating `/tmp/jl_DrYNXL/Project.toml`
+    Updating `/tmp/jl_AtbgBy/Project.toml`
   [7876af07] + Example v0.5.3
-    Updating `/tmp/jl_DrYNXL/Manifest.toml`
+    Updating `/tmp/jl_AtbgBy/Manifest.toml`
   [7876af07] + Example v0.5.3
 
-&#40;jl_DrYNXL&#41; pkg&gt; status
-Status `/tmp/jl_DrYNXL/Project.toml`
+&#40;jl_AtbgBy&#41; pkg&gt; status
+Status `/tmp/jl_AtbgBy/Project.toml`
   [7876af07] Example v0.5.3
-
 </code></pre>
 
 <h3 id=shell_mode ><a href="#shell_mode" class=header-anchor >Shell mode &#40;<code>;</code>&#41;</a></h3>
@@ -98,12 +96,11 @@ further.md
 optimizing.md
 sharing.md
 writing.md
-
 </code></pre>
 
 <h2 id=editors ><a href="#editors" class=header-anchor >Editors</a></h2>
 <ul>
-<li><p><a href="https://code.visualstudio.com/">VSCode</a> / <a href="https://vscodium.com/">VSCodium</a> &#43; <a href="https://www.julia-vscode.org/">Julia VSCode extension</a></p>
+<li><p><a href="https://code.visualstudio.com/">VSCode</a> / <a href="https://vscodium.com/">VSCodium</a> &#43; <a href="&#40;https://www.julia-vscode.org/&#41;">Julia VSCode extension</a></p>
 
 <li><p><a href="https://www.gnu.org/software/emacs/">emacs</a> / <a href="https://www.vim.org/">vim</a> / other IDEs &#43; <a href="https://github.com/JuliaEditorSupport">JuliaEditorSupport</a></p>
 
@@ -112,15 +109,16 @@ writing.md
 <li><p><a href="https://plutojl.org/">Pluto.jl</a></p>
 
 </ul>
+<p></p>
 <h2 id=running_code ><a href="#running_code" class=header-anchor >Running code</a></h2>
-<ul>
-<li><p><a href="https://github.com/timholy/Revise.jl">Revise.jl</a></p>
-
-<li><p><a href="https://www.julia-vscode.org/docs/stable/userguide/runningcode/">running in VSCode</a></p>
-
-<li><p>startup file</p>
-
-</ul>
+<h3 id=manually ><a href="#manually" class=header-anchor >Manually</a></h3>
+<p>The two most common ways of running Julia code is by sending code to a <a href="#REPL">REPL</a>, or by running entire scripts from the command line. Due to Julia&#39;s relatively long startup latency, the former method is preferred by most developers. Using the <a href="&#40;https://www.julia-vscode.org/&#41;">Julia VSCode extension</a>, one can run the <code>Julia: Execute Code in REPL</code> command with a hotkey defaulting to <code>shift-enter</code> to send code to a REPL. If certain code is highlighted, then it will be run, but if not, then the command will run whatever makes sense depending on the cursor&#39;s location. For example, if the cursor is somewhere inside or just after a function definition, it will run the definition.</p>
+<p>To run entire Julia scripts at once, the <code>Julia: Execute File in REPL</code> command may be preferred to opening a new REPL due to the afforementioned startup latency. However, when keeping the same REPL open for a long time, it&#39;s common to end up with a &quot;polluted&quot; workspace where the definitions of certain variables, functions, and structs are different to those contained in the file. In this case, it&#39;s possible that these previously defined objects silently affect your code in an unexpected way, perhaps by a function unintentionally referencing a global variable that would otherwise throw an error. For this reason, it&#39;s important to strike a balance between keeping your workspace clean by resetting it and keeping it open for a long time to take advantage of previously compiled code.</p>
+<p>One way to help with workspace tidiness is to take advantage of the <a href="#Packages">module system</a> to separate the core, reusable parts of your code with the one-off parts that are only relevant for a certain script.</p>
+<h3 id=automatically ><a href="#automatically" class=header-anchor >Automatically</a></h3>
+<p>While Julia allows the specification of <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface">startup flags</a> to handle pre-startup configuration such as the number of threads available and which optimisations can be performed, most Julia developers also have a <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file">startup.jl file</a> which is automatically run every time a REPL is started.</p>
+<p>In this file, users commonly load packages that affect the REPL experience such as <a href="https://kristofferc.github.io/OhMyREPL.jl/stable">OhMyREPL.jl</a>, as well as utilities such as <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/">BenchmarkTools.jl</a> for benchmarking. As well as this, it allows you to define your own helper functions and have them immediately available.</p>
+<p></p>
 <h2 id=packages ><a href="#packages" class=header-anchor >Packages</a></h2>
 <ul>
 <li><p><a href="https://github.com/JuliaLang/Pkg.jl">Pkg.jl</a></p>
@@ -176,7 +174,7 @@ writing.md
 </table>
 
 <div class=page-foot >
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> Guillaume Dalle & Jacobus Smit. Last modified: July 11, 2023.
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> Guillaume Dalle & Jacobus Smit. Last modified: July 13, 2023.
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 </div>
