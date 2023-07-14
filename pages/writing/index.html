@@ -1,0 +1,187 @@
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/ModernJuliaWorkflows/libs/highlight/styles/github.min.css"> <link rel=stylesheet  href="/ModernJuliaWorkflows/css/jtd.css"> <style> /* #148 wrap long header */ .franklin-content a.header-anchor, .franklin-toc li a { word-wrap: break-word; white-space: normal; } </style> <title>Writing Julia code</title> <div class=page-wrap > <div class=side-bar > <div class=header > <a href="/ModernJuliaWorkflows/" class=title > Modern Julia Workflows </a> </div> <label for=show-menu  class=show-menu >MENU</label> <input type=checkbox  id=show-menu  role=button > <div class=menu  id=side-menu > <ul class=menu-list > <li class="menu-list-item "><a href="/ModernJuliaWorkflows/" class="menu-list-link ">Home</a> <li class="menu-list-item active"><a href="/ModernJuliaWorkflows/pages/writing/" class="menu-list-link active">Writing</a> <ol class="menu-list-child-list "> <li class="menu-list-item "><a href="#installation" class=menu-list-link >Installation</a> <li class="menu-list-item "><a href="#repl" class=menu-list-link >REPL</a> <li class="menu-list-item "><a href="#editors" class=menu-list-link >Editors</a> <li class="menu-list-item "><a href="#running_code" class=menu-list-link >Running code</a> <li class="menu-list-item "><a href="#packages" class=menu-list-link >Packages</a> <li class="menu-list-item "><a href="#esthetics" class=menu-list-link >Esthetics</a> <li class="menu-list-item "><a href="#debugging" class=menu-list-link >Debugging</a> <li class="menu-list-item "><a href="#other_languages" class=menu-list-link >Other languages</a> <li class="menu-list-item "><a href="#getting_help" class=menu-list-link >Getting help</a> </ol> <li class="menu-list-item "><a href="/ModernJuliaWorkflows/pages/sharing/" class="menu-list-link ">Sharing</a> <ol class="menu-list-child-list "> <li class="menu-list-item "><a href="#setup" class=menu-list-link >Setup</a> <li class="menu-list-item "><a href="#formatting" class=menu-list-link >Formatting</a> <li class="menu-list-item "><a href="#testing" class=menu-list-link >Testing</a> <li class="menu-list-item "><a href="#documentation" class=menu-list-link >Documentation</a> <li class="menu-list-item "><a href="#compatibility" class=menu-list-link >Compatibility</a> <li class="menu-list-item "><a href="#reproducibility" class=menu-list-link >Reproducibility</a> <li class="menu-list-item "><a href="#publishing" class=menu-list-link >Publishing</a> <li class="menu-list-item "><a href="#collaboration" class=menu-list-link >Collaboration</a> <li class="menu-list-item "><a href="#citations" class=menu-list-link >Citations</a> </ol> <li class="menu-list-item "><a href="/ModernJuliaWorkflows/pages/optimizing/" class="menu-list-link ">Optimizing</a> <ol class="menu-list-child-list "> <li class="menu-list-item "><a href="#principles" class=menu-list-link >Principles</a> <li class="menu-list-item "><a href="#measurements" class=menu-list-link >Measurements</a> <li class="menu-list-item "><a href="#profiling" class=menu-list-link >Profiling</a> <li class="menu-list-item "><a href="#type_stability" class=menu-list-link >Type stability</a> <li class="menu-list-item "><a href="#precompilation" class=menu-list-link >Precompilation</a> <li class="menu-list-item "><a href="#parallelism" class=menu-list-link >Parallelism</a> <li class="menu-list-item "><a href="#simd" class=menu-list-link >SIMD</a> <li class="menu-list-item "><a href="#allocations" class=menu-list-link >Allocations</a> </ol> <li class="menu-list-item "><a href="/ModernJuliaWorkflows/pages/further/" class="menu-list-link ">Going further</a> <ul class="menu-list-child-list "> <li class="menu-list-item "><a href="#official" class=menu-list-link >Official</a> <li class="menu-list-item "><a href="#tutorials" class=menu-list-link >Tutorials</a> <li class="menu-list-item "><a href="#blogs" class=menu-list-link >Blogs</a> <li class="menu-list-item "><a href="#videos" class=menu-list-link >Videos</a> <li class="menu-list-item "><a href="#lore" class=menu-list-link >Lore</a> </ul> </ul> </div> <div class=footer > This is <em>Just the docs</em>, adapted from the <a href="https://github.com/pmarsceill/just-the-docs" target=_blank >Jekyll theme</a>. </div> </div> <div class=main-content-wrap > <div class=main-content > <div class=main-header > <a id=github  href="/ModernJuliaWorkflows//github.com/tlienart/Franklin.jl">Franklin on GitHub</a> </div> <div class=franklin-content ><h1 id=writing_julia_code ><a href="#writing_julia_code" class=header-anchor >Writing Julia code</a></h1> <h2 id=installation ><a href="#installation" class=header-anchor >Installation</a></h2> <div class=tldr ><div class=title >TLDR</div> <div class=content >Use <a href="https://github.com/JuliaLang/juliaup">juliaup</a></div></div> <p>The official <a href="https://julialang.org/downloads/">downloads page</a> is where you can get Julia&#39;s current stable release<sup id="fnref:1"><a href="#fndef:1" class=fnref >[1]</a></sup>. At the time of writing, it is version 1.9.2. But of course, new versions are released regularly, and you will need to keep up. In addition, you may want to test your code on older versions to ensure compatibility.</p> <p>Therefore, we recommend you manage Julia with a tool called <a href="https://github.com/JuliaLang/juliaup">juliaup</a>. You can get it from the <a href="https://github.com/JuliaLang/juliaup#windows">Windows store</a>, or install it from the <a href="https://github.com/JuliaLang/juliaup#mac-and-linux">command line</a> on Unix systems. It provides <a href="https://github.com/JuliaLang/juliaup#using-juliaup">various utilities</a> to download, update, organize and switch between Julia versions. As a bonus, you no longer have to specify the path to your Julia executable: juliaup takes care of that for you.</p> <p>The defining feature of juliaup is that it provides adaptive shortcuts called &quot;channels&quot;, which allow you to access specific Julia versions without giving their exact number. You only need to know two of them:</p> <ul> <li><p><code>release</code>, which is bound to the <a href="https://julialang.org/downloads/#current_stable_release">current stable release</a>;</p> <li><p><code>lts</code>, which is bound to the <a href="https://julialang.org/downloads/#long_term_support_release">long-term support version</a>.</p> </ul> <p>For instance, you can install the long-term support version with</p> <pre><code class=language-bash >juliaup add lts</code></pre>
+<p>When new versions are tagged, the binding of a given channel can change, and a new executable might need to be downloaded. If you want to catch up with the latest developments, all it takes is to run</p>
+<pre><code class=language-bash >juliaup update</code></pre>
+<p>If you want an overview of the channels installed on your computer, just use</p>
+<pre><code class=language-bash >juliaup status</code></pre>
+<h2 id=repl ><a href="#repl" class=header-anchor >REPL</a></h2>
+<div class=tldr ><div class=title >TLDR</div>
+<div class=content >It has 4 modes: Julia, package &#40;<code>&#93;</code>&#41;, help &#40;<code>?</code>&#41; and shell &#40;<code>;</code>&#41;.</div></div>
+<p>The Read-Eval-Print Loop &#40;or REPL&#41; is the standard way to interact with Julia. Check out its <a href="https://docs.julialang.org/en/v1/stdlib/REPL/">documentation</a> for details. You can start one by typing <code>julia</code> into a terminal, or by clicking on the Julia application in your computer. It will allow you to play around with arbitrary Julia code:</p>
+<pre><code class=language-julia-repl >julia> a, b &#61; 1, 2;
+
+julia> a &#43; b
+3
+</code></pre>
+
+<p>This is the standard, Julian mode of the REPL, but it also has three other modes which expand what can be done from within Julia. Each mode is entered by typing a specific character after the <code>julia&gt;</code> prompt, and can be exited by hitting backspace after the <code>julia&gt;</code> prompt.</p>
+<h3 id=help_mode ><a href="#help_mode" class=header-anchor >Help mode &#40;<code>?</code>&#41;</a></h3>
+<p>By pressing <code>?</code> you can obtain information and metadata about Julia objects and unicode symbols. For functions, types, and variables, the query fetches things such as documentation, type fields and supertypes, and in which file the object is defined.</p>
+<pre><code class=language-julia-repl >help?> abs
+</code></pre>
+<div class=julia-help >
+<pre><code>abs&#40;x&#41;</code></pre>
+<p>The absolute value of <code>x</code>.</p>
+<p>When <code>abs</code> is applied to signed integers, overflow may occur, resulting in the return of a negative value. This overflow occurs only when <code>abs</code> is applied to the minimum representable value of a signed integer. That is, when <code>x &#61;&#61; typemin&#40;typeof&#40;x&#41;&#41;</code>, <code>abs&#40;x&#41; &#61;&#61; x &lt; 0</code>, not <code>-x</code> as might be expected.</p>
+<p>See also: <code>abs2</code>, <code>unsigned</code>, <code>sign</code>.</p>
+<h1>Examples</h1>
+<pre><code class=language-julia-repl >julia&gt; abs&#40;-3&#41;
+3
+
+julia&gt; abs&#40;1 &#43; im&#41;
+1.4142135623730951
+
+julia&gt; abs.&#40;Int8&#91;-128 -127 -126 0 126 127&#93;&#41;  # overflow at typemin&#40;Int8&#41;
+1×6 Matrix&#123;Int8&#125;:
+ -128  127  126  0  126  127
+
+julia&gt; maximum&#40;abs, &#91;1, -2, 3, -4&#93;&#41;
+4</code></pre>
+
+
+
+</div>
+
+<p>For unicode symbols, the query will return how to type the symbol in the REPL, which is useful when you copy-paste a symbol in without knowing its name, and fetch information about the object the symbol is bound to, just as above.</p>
+<pre><code class=language-julia-repl >help?> π
+</code></pre>
+<div class=julia-help >
+<pre><code>π
+pi</code></pre>
+<p>The constant pi.</p>
+<p>Unicode <code>π</code> can be typed by writing <code>\pi</code> then pressing tab in the Julia REPL, and in many editors.</p>
+<p>See also: <code>sinpi</code>, <code>sincospi</code>, <code>deg2rad</code>.</p>
+<h1>Examples</h1>
+<pre><code class=language-julia-repl >julia&gt; pi
+π &#61; 3.1415926535897...
+
+julia&gt; 1/2pi
+0.15915494309189535</code></pre>
+
+
+
+</div>
+
+<h3 id=package_mode ><a href="#package_mode" class=header-anchor >Package mode &#40;<code>&#93;</code>&#41;</a></h3>
+<p>By pressing <code>&#93;</code> you access the package manager. This allows you to:</p>
+<ul>
+<li><p><code>add</code>, <code>update</code> &#40;or <code>up</code>&#41; and <code>remove</code> &#40;or <code>rm</code>&#41; packages;</p>
+
+<li><p><code>activate</code> different local, global or temporary environments;</p>
+
+<li><p>get the <code>status</code> &#40;or <code>st</code>&#41; of your current environment.</p>
+
+</ul>
+<pre><code class=language-julia-repl >&#40;ModernJuliaWorkflows&#41; pkg&gt; activate --temp
+Activating new project at `/tmp/jl_v80h7c`
+
+&#40;jl_v80h7c&#41; pkg&gt; add Example
+Resolving package versions...
+    Updating `/tmp/jl_v80h7c/Project.toml`
+  [7876af07] + Example v0.5.3
+    Updating `/tmp/jl_v80h7c/Manifest.toml`
+  [7876af07] + Example v0.5.3
+
+&#40;jl_v80h7c&#41; pkg&gt; status
+Status `/tmp/jl_v80h7c/Project.toml`
+  [7876af07] Example v0.5.3
+</code></pre>
+
+<h3 id=shell_mode ><a href="#shell_mode" class=header-anchor >Shell mode &#40;<code>;</code>&#41;</a></h3>
+<p>By pressing <code>;</code> you enter a terminal, where you can execute any bash command you want.</p>
+<pre><code class=language-julia-repl >shell> echo &quot;hello&quot;;
+"hello";
+
+shell> ls ./pages
+further.md
+optimizing.md
+sharing.md
+writing.md
+</code></pre>
+
+<h2 id=editors ><a href="#editors" class=header-anchor >Editors</a></h2>
+<ul>
+<li><p><a href="https://code.visualstudio.com/">VSCode</a> / <a href="https://vscodium.com/">VSCodium</a> &#43; <a href="&#40;https://www.julia-vscode.org/&#41;">Julia VSCode extension</a></p>
+
+<li><p><a href="https://www.gnu.org/software/emacs/">emacs</a> / <a href="https://www.vim.org/">vim</a> / other IDEs &#43; <a href="https://github.com/JuliaEditorSupport">JuliaEditorSupport</a></p>
+
+<li><p><a href="https://jupyter.org/">Jupyter</a> / <a href="https://github.com/JuliaLang/IJulia.jl">IJulia.jl</a></p>
+
+<li><p><a href="https://plutojl.org/">Pluto.jl</a></p>
+
+</ul>
+<p></p>
+<h2 id=running_code ><a href="#running_code" class=header-anchor >Running code</a></h2>
+<h3 id=manually ><a href="#manually" class=header-anchor >Manually</a></h3>
+<p>The two most common ways of running Julia code is by sending code to a <a href="#REPL">REPL</a>, or by running entire scripts from the command line. Due to Julia&#39;s relatively long startup latency, the former method is preferred by most developers. Using the <a href="&#40;https://www.julia-vscode.org/&#41;">Julia VSCode extension</a>, one can run the <code>Julia: Execute Code in REPL</code> command with a hotkey defaulting to <code>shift-enter</code> to send code to a REPL. If certain code is highlighted, then it will be run, but if not, then the command will run whatever makes sense depending on the cursor&#39;s location. For example, if the cursor is somewhere inside or just after a function definition, it will run the definition.</p>
+<p>To run entire Julia scripts at once, the <code>Julia: Execute File in REPL</code> command may be preferred to opening a new REPL due to the afforementioned startup latency. However, when keeping the same REPL open for a long time, it&#39;s common to end up with a &quot;polluted&quot; workspace where the definitions of certain variables, functions, and structs are different to those contained in the file. In this case, it&#39;s possible that these previously defined objects silently affect your code in an unexpected way, perhaps by a function unintentionally referencing a global variable that would otherwise throw an error. For this reason, it&#39;s important to strike a balance between keeping your workspace clean by resetting it and keeping it open for a long time to take advantage of previously compiled code.</p>
+<p>One way to help with workspace tidiness is to take advantage of the <a href="#Packages">module system</a> to separate the core, reusable parts of your code with the one-off parts that are only relevant for a certain script.</p>
+<h3 id=automatically ><a href="#automatically" class=header-anchor >Automatically</a></h3>
+<p>While Julia allows the specification of <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface">startup flags</a> to handle pre-startup configuration such as the number of threads available and which optimisations can be performed, most Julia developers also have a <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file">startup.jl file</a> which is automatically run every time a REPL is started.</p>
+<p>In this file, users commonly load packages that affect the REPL experience such as <a href="https://kristofferc.github.io/OhMyREPL.jl/stable">OhMyREPL.jl</a>, as well as utilities such as <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/">BenchmarkTools.jl</a> for benchmarking. As well as this, it allows you to define your own helper functions and have them immediately available.</p>
+<p></p>
+<h2 id=packages ><a href="#packages" class=header-anchor >Packages</a></h2>
+<ul>
+<li><p><a href="https://github.com/JuliaLang/Pkg.jl">Pkg.jl</a></p>
+
+<li><p>stacking environments</p>
+
+<li><p><a href="https://www.julia-vscode.org/docs/stable/userguide/env/">environments in VSCode</a></p>
+
+</ul>
+<h2 id=esthetics ><a href="#esthetics" class=header-anchor >Esthetics</a></h2>
+<ul>
+<li><p><a href="https://github.com/FedeClaudi/Term.jl">Term.jl</a></p>
+
+<li><p><a href="https://github.com/KristofferC/OhMyREPL.jl">OhMyREPL.jl</a></p>
+
+<li><p><a href="https://github.com/BioTurboNick/AbbreviatedStackTraces.jl">AbbreviatedStackTraces.jl</a></p>
+
+<li><p><a href="https://github.com/MichaelHatherly/InteractiveErrors.jl">InteractiveErrors.jl</a></p>
+
+<li><p><a href="https://github.com/timholy/ProgressMeter.jl">ProgressMeter.jl</a></p>
+
+</ul>
+<h2 id=debugging ><a href="#debugging" class=header-anchor >Debugging</a></h2>
+<ul>
+<li><p><a href="https://github.com/JuliaDebug/Infiltrator.jl">Infiltrator.jl</a></p>
+
+<li><p><a href="https://github.com/JuliaDebug/Debugger.jl">Debugger.jl</a></p>
+
+<li><p><a href="https://www.julia-vscode.org/docs/stable/userguide/debugging/">debugging in VSCode</a></p>
+
+</ul>
+<h2 id=other_languages ><a href="#other_languages" class=header-anchor >Other languages</a></h2>
+<ul>
+<li><p><a href="https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/">C and Fortran</a></p>
+
+<li><p><a href="https://github.com/cjdoris/CondaPkg.jl">CondaPkg.jl</a> &#43; <a href="https://github.com/cjdoris/PythonCall.jl">PythonCall.jl</a></p>
+
+<li><p><a href="https://github.com/JuliaInterop">JuliaInterOp</a> &#40;<a href="https://github.com/JuliaInterop/RCall.jl">RCall.jl</a>, <a href="https://github.com/JuliaInterop/Cxx.jl">Cxx.jl</a>&#41;</p>
+
+</ul>
+<h2 id=getting_help ><a href="#getting_help" class=header-anchor >Getting help</a></h2>
+<ul>
+<li><p><a href="https://github.com/JuliaCommunity/StartHere.jl">StartHere.jl</a></p>
+
+<li><p><a href="https://julialang.org/community/">community spaces</a></p>
+
+</ul>
+<table class=fndef  id="fndef:1">
+    <tr>
+        <td class=fndef-backref ><a href="#fnref:1">[1]</a>
+        <td class=fndef-content >Don&#39;t forget to also read the platform-specific instructions for <a href="https://julialang.org/downloads/platform/#windows">Windows</a>, <a href="https://julialang.org/downloads/platform/#macos">macOS</a> or <a href="https://julialang.org/downloads/platform/#linux_and_freebsd">Linux</a>.
+    
+</table>
+
+<div class=page-foot >
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> Guillaume Dalle & Jacobus Smit. Last modified: July 14, 2023.
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+</div>
+</div>
+    </div> 
+    </div> 
+    </div> <!-- end of class page-wrap-->
+    
+    
+      <script src="/ModernJuliaWorkflows/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
