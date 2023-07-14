@@ -106,16 +106,40 @@ ls ./pages
 
 ## Editors
 
-* [VSCode](https://code.visualstudio.com/) / [VSCodium](https://vscodium.com/) + [Julia VSCode extension](https://www.julia-vscode.org/)
+* [VSCode] / [VSCodium](https://vscodium.com/) + [Julia VSCode extension]
 * [emacs](https://www.gnu.org/software/emacs/) / [vim](https://www.vim.org/) / other IDEs + [JuliaEditorSupport](https://github.com/JuliaEditorSupport)
 * [Jupyter](https://jupyter.org/) / [IJulia.jl](https://github.com/JuliaLang/IJulia.jl)
 * [Pluto.jl](https://plutojl.org/)
 
+[VSCode]: https://code.visualstudio.com/
+[Julia VSCode extension]: (https://www.julia-vscode.org/)
+
 ## Running code
 
-* [Revise.jl](https://github.com/timholy/Revise.jl)
-* [running in VSCode](https://www.julia-vscode.org/docs/stable/userguide/runningcode/)
-* startup file
+### Manually
+The two most common ways of running Julia code is by sending code to a [REPL](#REPL), or by running entire scripts from the command line.
+Due to Julia's relatively long startup latency, the former method is preferred by most developers.
+Using the [Julia VSCode extension], one can run the `Julia: Execute Code in REPL` command with a hotkey defaulting to `shift-enter` to send code to a REPL.
+If certain code is highlighted, then it will be run, but if not, then the command will run whatever makes sense depending on the cursor's location.
+For example, if the cursor is somewhere inside or just after a function definition, it will run the definition.
+
+To run entire Julia scripts at once, the `Julia: Execute File in REPL` command may be preferred to opening a new REPL due to the afforementioned startup latency.
+However, when keeping the same REPL open for a long time, it's common to end up with a "polluted" workspace where the definitions of certain variables, functions, and structs are different to those contained in the file.
+In this case, it's possible that these previously defined objects silently affect your code in an unexpected way, perhaps by a function unintentionally referencing a global variable that would otherwise throw an error.
+For this reason, it's important to strike a balance between keeping your workspace clean by resetting it and keeping it open for a long time to take advantage of previously compiled code.
+
+One way to help with workspace tidiness is to take advantage of the [module system](#Packages) to separate the core, reusable parts of your code with the one-off parts that are only relevant for a certain script.
+
+### Automatically
+While Julia allows the specification of [startup flags] to handle pre-startup configuration such as the number of threads available and which optimisations can be performed, most Julia developers also have a [startup.jl file] which is automatically run every time a REPL is started.
+
+In this file, users commonly load packages that affect the REPL experience such as [OhMyREPL.jl], as well as utilities such as [BenchmarkTools.jl] for benchmarking.
+As well as this, it allows you to define your own helper functions and have them immediately available.
+
+[startup flags]: https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface
+[startup.jl file]: https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file
+[OhMyREPL.jl]: https://kristofferc.github.io/OhMyREPL.jl/stable
+[BenchmarkTools.jl]: https://juliaci.github.io/BenchmarkTools.jl/stable/
 
 ## Packages
 
