@@ -2,7 +2,7 @@
 
 # Going further
 
-\toc
+<!-- \toc -->
 
 ## Official
 
@@ -15,11 +15,11 @@
 
 ## Tutorials
 
-* [Advanced Scientific Computing](https://github.com/timholy/AdvancedScientificComputing) by [Tim Holy](https://github.com/timholy)
-* [Good Scientific Code Workshop](https://github.com/JuliaDynamics/GoodScientificCodeWorkshop) by [JuliaDynamics](https://github.com/JuliaDynamics)
-* [Julia programming for ML](https://adrhill.github.io/julia-ml-course/) by [Adrian Hill](https://github.com/adrhill/adrhill) 
-* [JuliaNotes.jl](https://m3g.github.io/JuliaNotes.jl/stable/) by the [Martínez Molecular Modeling Group](https://github.com/m3g)
-* [REPL mastery workshop](https://github.com/miguelraz/REPLMasteryWorkshop) by [Miguel Raz Guzmán Macedo](https://github.com/miguelraz)
+- [Advanced Scientific Computing](https://github.com/timholy/AdvancedScientificComputing) by [Tim Holy](https://github.com/timholy)
+- [Good Scientific Code Workshop](https://github.com/JuliaDynamics/GoodScientificCodeWorkshop) by [JuliaDynamics](https://github.com/JuliaDynamics)
+- [Julia programming for ML](https://adrhill.github.io/julia-ml-course/) by [Adrian Hill](https://github.com/adrhill/adrhill) 
+- [JuliaNotes.jl](https://m3g.github.io/JuliaNotes.jl/stable/) by the [Martínez Molecular Modeling Group](https://github.com/m3g)
+- [REPL mastery workshop](https://github.com/miguelraz/REPLMasteryWorkshop) by [Miguel Raz Guzmán Macedo](https://github.com/miguelraz)
 
 ## Blogs
 

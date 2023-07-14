@@ -1,11 +1,9 @@
 @def title = "Modern Julia Workflows"
 
-# Modern Julia Workflows
+# What is this?
 
 A series of blog posts on best practices for Julia development.
 Consider this a draft: once the posts are ready, we will submit them to the [Julia language blog](https://julialang.org/blog/) to make them easily discoverable.
-
-\toc
 
 ## Goals
 
@@ -19,15 +17,13 @@ In the [divio documentation system](https://documentation.divio.com/), this woul
 
 There are three blog posts of increasing technical difficulty:
 
-1. [Writing code](/writing/): from zero to running scripts
-2. [Sharing code](/sharing/): from running scripts to creating packages
-3. [Optimizing code](/optimizing/): from creating packages to making them fast
+1. Writing Julia code: setting up your development environment
+2. Sharing Julia code: creating and distributing packages
+3. Optimizing Julia code: improving time and memory efficiency
 
 They are fairly long and not meant to be read in one sitting, so take your time.
 Keep in mind that while each of these resources _can_ be useful to you, not every one of them _will_ be.
 But at least you will know where to look in case you have a specific need.
-
-[Going further](/further/) gathers various links to deepen the knowledge you will gain here.
 
 ## Discussions
 
