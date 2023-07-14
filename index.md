@@ -27,7 +27,7 @@ They are fairly long and not meant to be read in one sitting, so take your time.
 Keep in mind that while each of these resources _can_ be useful to you, not every one of them _will_ be.
 But at least you will know where to look in case you have a specific need.
 
-The [Going further](/further/) pages gathers various resources to deepen the knowledge you will gain here.
+[Going further](/further/) gathers various links to deepen the knowledge you will gain here.
 
 ## Discussions
 
