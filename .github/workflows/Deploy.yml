@@ -3,12 +3,7 @@ on:
   push:
     branches:
       - main
-  pull_request:
-concurrency:
-  # Skip intermediate builds: always.
-  # Cancel intermediate builds: only if it is a pull request build.
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+      - master
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest

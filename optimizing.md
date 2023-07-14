@@ -1,8 +1,8 @@
-@def title = "Improving Julia code"
+@def title = "Optimizing code"
 
-# Optimizing Julia code
+# Optimizing code
 
-<!-- \toc -->
+\toc
 
 ## Principles
 
