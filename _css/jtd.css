@@ -37,7 +37,17 @@ body {
 }
 
 h1 {
-  font-size: 2em;
+  font-size: 2.4em;
+  margin: 0.67em 0;
+}
+
+h2 .header-anchor {
+  font-size: 1.8em;
+  margin: 0.67em 0;
+}
+
+h3 .header-anchor {
+  font-size: 1.4em;
   margin: 0.67em 0;
 }
 
@@ -526,8 +536,8 @@ td {
 }
 
 .franklin-content blockquote {
-  background: lemonchiffon;
-  border-left: 7px solid #a8a8a8;
+  background: lightgray;
+  border-left: 7px solid darkgray  ;
   margin: 1.5em 10px;
   padding: 0.5em 10px;
   font-style: italic;
@@ -653,9 +663,8 @@ franklin-toc {
 ================================================================== */
 
 .julia-help {
-  background-color: rgb(227, 227, 227);
+  background-color: lightgray;
   padding: 10px;
-  font-style: italic;
   border-radius: 10px;
   margin-bottom: 0.8em;
 }
@@ -663,31 +672,4 @@ franklin-toc {
 .julia-help h1,h2,h3 {
   font-size: 1em;
   font-weight: 500;
-}
-
-/* ==================================================================
-    Admonitions
-================================================================== */
-
-.tldr {
-  margin-top: 1.5em;
-  width: 95%;
-  margin-left:auto;
-  margin-right:auto;
-  background-color:  rgb(209, 216, 230);
-  border-radius: 5px;
-  margin-bottom: 1em;
-}
-.tldr .content {
-  padding: 10px;
-  padding-left: 12px;
-}
-.tldr .title{
-  font-size: 105%;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  padding-left: 7px;
-  padding-top: 2px;
-  color: white;
-  background: cornflowerblue;
 }
