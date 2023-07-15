@@ -1,6 +1,6 @@
-@def title = "Sharing Julia code"
+@def title = "Sharing your code"
 
-# Sharing Julia code
+# Sharing your code
 
 <!-- \toc -->
 

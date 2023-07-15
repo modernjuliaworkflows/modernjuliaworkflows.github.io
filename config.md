@@ -2,7 +2,7 @@
 Add here global page variables to use throughout your website.
 -->
 +++
-author = "Guillaume Dalle & Jacobus Smit"
+author = "Guillaume Dalle, Jacobus Smit and Adrian Hill"
 mintoclevel = 2
 prepath = "ModernJuliaWorkflows"
 
@@ -22,4 +22,3 @@ website_url   = "https://gdalle.github.io/ModernJuliaWorkflows/"
 <!--
 Add here global latex commands to use throughout your pages.
 -->
-\newcommand{\tldr}[1]{@@tldr @@title TLDR@@ @@content #1 @@ @@}
