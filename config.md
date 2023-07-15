@@ -2,9 +2,8 @@
 Add here global page variables to use throughout your website.
 -->
 +++
-author = "Guillaume Dalle & Jacobus Smit"
+author = "G. Dalle, J. Smit and A. Hill"
 mintoclevel = 2
-prepath = "ModernJuliaWorkflows"
 
 # Add here files or directories that should be ignored by Franklin, otherwise
 # these files might be copied and, if markdown, processed by Franklin which
@@ -22,4 +21,3 @@ website_url   = "https://gdalle.github.io/ModernJuliaWorkflows/"
 <!--
 Add here global latex commands to use throughout your pages.
 -->
-\newcommand{\tldr}[1]{@@tldr @@title TLDR@@ @@content #1 @@ @@}

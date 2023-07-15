@@ -1,0 +1,17 @@
+/* ==================================================================
+    REPL HELP BLOCKS
+================================================================== */
+
+.hljs-meta.help_ {color: goldenrod;}
+
+.julia-help {
+    background-color: hsl(0, 0%, 94%);
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 1%;
+  }
+  
+  .julia-help h1,h2,h3 {
+    font-size: 1em;
+    border-bottom: none;
+  }

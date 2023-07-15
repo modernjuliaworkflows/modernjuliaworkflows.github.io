@@ -1,12 +1,12 @@
-@def title = "Writing Julia code"
+@def title = "Writing your code"
 
-# Writing Julia code
+# Writing your code
 
-<!-- \toc -->
+\toc
 
 ## Installation
 
-\tldr{Use [juliaup](https://github.com/JuliaLang/juliaup)}
+> TLDR: Use [juliaup](https://github.com/JuliaLang/juliaup)
 
 ```julia:version
 #hideall
@@ -50,7 +50,7 @@ juliaup status
 
 ## REPL
 
-\tldr{It has 4 modes: Julia, package (`]`), help (`?`) and shell (`;`).}
+> TLDR: It has 4 modes: Julia, package (`]`), help (`?`) and shell (`;`).
 
 The Read-Eval-Print Loop (or REPL) is the standard way to interact with Julia.
 Check out its [documentation](https://docs.julialang.org/en/v1/stdlib/REPL/) for details.
@@ -75,10 +75,6 @@ abs
 ```
 
 For unicode symbols, the query will return how to type the symbol in the REPL, which is useful when you copy-paste a symbol in without knowing its name, and fetch information about the object the symbol is bound to, just as above.
-
-```?
-π
-```
 
 ### Package mode (`]`)
 
@@ -117,6 +113,7 @@ ls ./pages
 ## Running code
 
 ### Manually
+
 The two most common ways of running Julia code is by sending code to a [REPL](#REPL), or by running entire scripts from the command line.
 Due to Julia's relatively long startup latency, the former method is preferred by most developers.
 Using the [Julia VSCode extension], one can run the `Julia: Execute Code in REPL` command with a hotkey defaulting to `shift-enter` to send code to a REPL.
@@ -131,6 +128,7 @@ For this reason, it's important to strike a balance between keeping your workspa
 One way to help with workspace tidiness is to take advantage of the [module system](#Packages) to separate the core, reusable parts of your code with the one-off parts that are only relevant for a certain script.
 
 ### Automatically
+
 While Julia allows the specification of [startup flags] to handle pre-startup configuration such as the number of threads available and which optimisations can be performed, most Julia developers also have a [startup.jl file] which is automatically run every time a REPL is started.
 
 In this file, users commonly load packages that affect the REPL experience such as [OhMyREPL.jl], as well as utilities such as [BenchmarkTools.jl] for benchmarking.
