@@ -59,8 +59,8 @@ html {
   text-decoration: underline;
 }
 
-.franklin-content .page-foot {
-  font-size: 10%;
+.page-foot {
+  font-size: 80%;
   font-family: Arial, serif;
   color: #a6a2a0;
   text-align: center;

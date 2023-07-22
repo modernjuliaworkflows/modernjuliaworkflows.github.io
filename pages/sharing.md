@@ -2,7 +2,7 @@
 
 # Sharing your code
 
-<!-- \toc -->
+\toc
 
 ## Setup
 

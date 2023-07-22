@@ -2,7 +2,7 @@
 
 # Writing your code
 
-<!-- \toc -->
+\toc
 
 ## Installation
 
@@ -97,7 +97,7 @@ status
 By pressing `;` you enter a terminal, where you can execute any bash command you want.
 
 ```;
-echo "hello";
+echo "hello"
 ls ./pages
 ```
 
@@ -164,7 +164,7 @@ As well as this, it allows you to define your own helper functions and have them
 
 * [C and Fortran](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/)
 * [CondaPkg.jl](https://github.com/cjdoris/CondaPkg.jl) + [PythonCall.jl](https://github.com/cjdoris/PythonCall.jl)
-* [JuliaInterOp](https://github.com/JuliaInterop) ([RCall.jl](https://github.com/JuliaInterop/RCall.jl), [Cxx.jl](https://github.com/JuliaInterop/Cxx.jl))
+* [JuliaInterop](https://github.com/JuliaInterop) ([RCall.jl](https://github.com/JuliaInterop/RCall.jl), [Cxx.jl](https://github.com/JuliaInterop/Cxx.jl))
 
 ## Getting help
 
