@@ -2,7 +2,7 @@
 Add here global page variables to use throughout your website.
 -->
 +++
-author = "Guillaume Dalle, Jacobus Smit and Adrian Hill"
+author = "G. Dalle, J. Smit, A. Hill"
 mintoclevel = 2
 prepath = "ModernJuliaWorkflows"
 

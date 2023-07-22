@@ -2,7 +2,7 @@
 
 # Going further
 
-<!-- \toc -->
+\toc
 
 ## Official
 

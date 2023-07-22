@@ -2,7 +2,7 @@
 
 # Optimizing your code
 
-<!-- \toc -->
+\toc
 
 ## Principles
 
