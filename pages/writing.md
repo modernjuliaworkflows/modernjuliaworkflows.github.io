@@ -6,7 +6,7 @@
 
 ## Installation
 
-> TLDR: Use [juliaup](https://github.com/JuliaLang/juliaup)
+> TLDR: Use [juliaup]
 
 ```julia:version
 #hideall
@@ -19,7 +19,7 @@ At the time of writing, the latest Julia version is \textoutput{version}.
 But of course, new updates are released regularly, and you will need to keep up.
 In addition, you may want to test your code on older versions to ensure compatibility.
 
-Therefore, we recommend you manage Julia with a tool called [juliaup](https://github.com/JuliaLang/juliaup).
+Therefore, we recommend you manage Julia with a tool called [juliaup].
 You can get it from the [Windows store](https://github.com/JuliaLang/juliaup#windows), or install it from the [command line](https://github.com/JuliaLang/juliaup#mac-and-linux) on Unix systems.
 It provides [various utilities](https://github.com/JuliaLang/juliaup#using-juliaup) to download, update, organize and switch between Julia versions.
 As a bonus, you no longer have to specify the path to your Julia executable: juliaup takes care of that for you.
@@ -48,6 +48,8 @@ If you want an overview of the channels installed on your computer, just use
 ```bash
 juliaup status
 ```
+
+[juliaup]: https://github.com/JuliaLang/juliaup
 
 ## REPL
 
@@ -103,13 +105,65 @@ ls ./pages
 
 ## Editors
 
-* [VSCode] / [VSCodium](https://vscodium.com/) + [Julia VSCode extension]
-* [emacs](https://www.gnu.org/software/emacs/) / [vim](https://www.vim.org/) / other IDEs + [JuliaEditorSupport](https://github.com/JuliaEditorSupport)
-* [Jupyter](https://jupyter.org/) / [IJulia.jl](https://github.com/JuliaLang/IJulia.jl)
-* [Pluto.jl](https://plutojl.org/)
+### Integrated Development Environments
+
+> TLDR: [VSCode] has the best Julia support.
+
+Most computer programs are just plain text files with a specific extension (in our case `.jl`).
+So in theory, any text editor suffices to write and modify Julia code.
+In practice, an [Integrated Development Environment](https://en.wikipedia.org/wiki/Integrated_development_environment) (or IDE) makes the experience much more pleasant.
+The idea is to augment text edition with tools that are specific to software development (eg. for analyzing, running or debugging your code).
+
+The best IDE for Julia is probably [VSCode], developed by Microsoft.
+IDEs do not support most languages out of the box: they need dedicated plugins to do that.
+And although it is far from perfect, the [Julia VSCode extension] is the most feature-rich and actively developed of all IDE plugins for Julia.
+You can download it from the [VSCode Marketplace](https://marketplace.visualstudio.com/items?itemName=julialang.language-julia).
+
+If you want to avoid the Microsoft ecosystem, [VSCodium](https://vscodium.com/) is a nearly bit-for-bit replacement for VSCode, but with an open source license and without the telemetry layer.
+If you don't want to use VSCode at all, other options include [emacs](https://www.gnu.org/software/emacs/) and [vim](https://www.vim.org/).
+Check out [JuliaEditorSupport](https://github.com/JuliaEditorSupport) to see if your favorite IDE has a Julia plugin.
 
 [VSCode]: https://code.visualstudio.com/
-[Julia VSCode extension]: (https://www.julia-vscode.org/)
+[Julia VSCode extension]: https://www.julia-vscode.org/
+
+### Notebooks
+
+> TLDR: Jupyter or Pluto, depending on your reactivity needs
+
+Notebooks are a popular alternative to IDEs when it comes to reasonably short and self-contained code, typically in data science.
+They are also a good fit for [literate programming](https://en.wikipedia.org/wiki/Literate_programming), where lines of code are interspersed by comments and explanations.
+Note that such comments are often written in [Markdown](https://en.wikipedia.org/wiki/Markdown), see the [Markdown Guide](https://www.markdownguide.org/) if you are not familiar with it.
+
+The most well-known notebook ecosystem is [Jupyter], which supports **Ju**lia, **Pyt**hon and **R** as its three core languages.
+To use it with Julia, you will need to install the [IJulia.jl](https://github.com/JuliaLang/IJulia.jl) backend.
+Then, if you have also installed Jupyter, you can run this command to launch the server:
+
+```bash
+jupyter notebook
+```
+
+If you only have IJulia.jl on your system, you can run this snippet instead:
+
+```julia-repl
+julia> using IJulia
+
+julia> notebook()
+```
+
+A pure-Julia alternative to Jupyter is given by [Pluto.jl].
+Unlike Jupyter notebooks, Pluto notebooks are reactive: every time you update a single cell, all of the other cells that depend on it are also updated.
+In addition, they come bundled with an exhaustive list of dependencies.
+These two aspects make Pluto notebooks great for teaching, and for building fully reproducible examples.
+To try them out, install the package and then run
+
+```julia-repl
+julia> using Pluto
+
+julia> Pluto.run()
+```
+
+[Jupyter]: https://jupyter.org/
+[Pluto.jl]: https://plutojl.org/
 
 ## Running code
 
