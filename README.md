@@ -2,7 +2,7 @@
 
 Blog posts on best practices for Julia development.
 
-Website: <https://gdalle.github.io/ModernJuliaWorkflows/>
+Website: <https://modernjuliaworkflows.github.io/>
 
 Discourse post: <https://discourse.julialang.org/t/seeking-feedback-blog-post-about-modern-julia-workflows/100324>
 

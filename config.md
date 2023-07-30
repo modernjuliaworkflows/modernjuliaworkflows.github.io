@@ -5,7 +5,6 @@ Add here global page variables to use throughout your website.
 author = "G. Dalle, J. Smit, A. Hill"
 mintoclevel = 2
 maxtoclevel = 2
-prepath = "ModernJuliaWorkflows"
 
 # Add here files or directories that should be ignored by Franklin, otherwise
 # these files might be copied and, if markdown, processed by Franklin which
@@ -17,7 +16,7 @@ ignore = ["node_modules/"]
 generate_rss = true
 website_title = "Modern Julia Workflows"
 website_descr = "Blog posts on best practices for Julia development"
-website_url   = "https://gdalle.github.io/ModernJuliaWorkflows/"
+website_url   = "https://modernjuliaworkflows.github.io/"
 +++
 
 <!--

@@ -281,7 +281,7 @@ html {
 .sidebar-about h1 {
   color: #fff;
   margin-top: 0;
-  font-family: "Abril Fatface", serif;
+  /* font-family: "Abril Fatface", sans-serif; */ /* MODIFIED */
   font-size: 3.25rem;
 }
 
