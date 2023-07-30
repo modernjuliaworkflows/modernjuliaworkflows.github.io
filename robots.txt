@@ -1,4 +1,4 @@
-Sitemap: https://gdalle.github.io/ModernJuliaWorkflows/sitemap.xml
+Sitemap: https://modernjuliaworkflows.github.io/sitemap.xml
 
 User-agent: *
 Disallow:
