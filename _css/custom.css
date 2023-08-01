@@ -13,3 +13,13 @@
     font-size: 1em;
     font-weight: 500;
   }
+
+/* ==================================================================
+    BADGES
+================================================================== */
+
+.im-badge {text-align: center;}
+.im-badge img {
+    height: 1em;
+    object-fit: scale-down;
+}
