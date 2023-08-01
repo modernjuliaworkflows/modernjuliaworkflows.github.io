@@ -2,8 +2,6 @@
 
 Blog posts on best practices for Julia development.
 
-Website: <https://modernjuliaworkflows.github.io/>
-
-Discourse post: <https://discourse.julialang.org/t/seeking-feedback-blog-post-about-modern-julia-workflows/100324>
-
-GitHub issue: <https://github.com/JuliaLang/www.julialang.org/issues/1908>
+* To read: [blog preview](https://modernjuliaworkflows.github.io/)
+* To discuss: [discourse post](https://discourse.julialang.org/t/seeking-feedback-blog-post-about-modern-julia-workflows/100324)
+* To contribute: [guidelines](CONTRIBUTING.md)
