@@ -49,6 +49,7 @@ juliaup update
 ## REPL
 
 > TLDR: The REPL has 4 primary modes: Julia, package (`]`), help (`?`) and shell (`;`).
+> TLDR: The REPL has 4 primary modes: Julia, package (`]`), help (`?`) and shell (`;`).
 
 The Read-Eval-Print Loop (or REPL) is the most basic way to interact with Julia.
 Check out its [documentation](https://docs.julialang.org/en/v1/stdlib/REPL/) for details, and the [REPL mastery workshop](https://github.com/miguelraz/REPLMasteryWorkshop) for a deep dive.
@@ -237,6 +238,7 @@ This simply adds the correct `--project` flag, but it is a great convenience to 
 * stacking environments
 * [PkgDependency.jl](https://github.com/peng1999/PkgDependency.jl)
 * [environments in VSCode](https://www.julia-vscode.org/docs/stable/userguide/env/)
+* Local packages
 
 ## Configuration
 
