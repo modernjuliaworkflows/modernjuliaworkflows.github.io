@@ -53,7 +53,7 @@ juliaup status
 
 ## REPL
 
-> TLDR: It has 4 modes: Julia, package (`]`), help (`?`) and shell (`;`).
+> TLDR: The REPL has 4 primary modes: Julia, package (`]`), help (`?`) and shell (`;`).
 
 The Read-Eval-Print Loop (or REPL) is the standard way to interact with Julia.
 Check out its [documentation](https://docs.julialang.org/en/v1/stdlib/REPL/) for details.
@@ -172,7 +172,7 @@ julia> Pluto.run()
 The two most common ways of running Julia code is by sending code to a [REPL](#REPL), or by running entire scripts from the command line.
 Due to Julia's relatively long startup latency, the former method is preferred by most developers.
 Using the [Julia VSCode extension], one can run the `Julia: Execute Code in REPL` command with a hotkey defaulting to `shift-enter` to send code to a REPL.
-If certain code is highlighted, then it will be run, but if not, then the command will run whatever makes sense depending on the cursor's location.
+If certain code is highlighted, then it will be run, but if not, then the command will run whatever "makes sense" depending on the cursor's location.
 For example, if the cursor is somewhere inside or just after a function definition, it will run the definition.
 
 To run entire Julia scripts at once, the `Julia: Execute File in REPL` command may be preferred to opening a new REPL due to the afforementioned startup latency.
@@ -196,9 +196,46 @@ As well as this, it allows you to define your own helper functions and have them
 
 ## Packages
 
+> TLDR: Pkg.jl lets you `activate` independent, reproducible environments to `add` and `remove` project-specific (versions of) packages.
+
+Pkg.jl and the Pkg mode built in to the [REPL](#REPL) let you install packages and manage environments.
+A "package" is a structured way of reusing functionality between projects and the active "environment" is responsible for determining which versions of packages to load.
+When working on a project, you can create a new environment or switch to an existing one by running
+```]
+activate MyProject
+```
+Then packages you install, and their specific versions, will be noted in the high-level `Project.toml` file as well as its low-level `Manifest.toml` cousin.
+Sharing a project between computers with perfect reproducibility is as simple as sending a folder containing your code as well as a `Project.toml` and `Manifest.toml` so Julia can perfectly recreate the state of packages in the local environment.
+When a project is shared, the recipient can simply `instantiate` the environment and have a perfect copy.
+
+To add packages you can use the `add` command followed by any number of packages
+```]
+add Term OhMyREPL
+```
+If you haven't `activate`d a local project, these packages will be installed in the "global environment" whose name in Pkg mode is `@v1.X`, corresponding to the version of Julia currently active.
+Packages installed globally are available no matter which environment is active due to what's referred to as "environment stacking".
+
+We can see this stack by running
+```julia-repl
+Base.LOAD_PATH
+```
+When choosing which code to load when `using Package` is called, Julia will start at the local environment referred to as `@`, then go down the stack to the global environment `@v1.X`, then finally to the standard library `@stdlib`.
+As mentioned before, this means that any package installed in the global environment can be used in any project.
+This is typically used for development tools that you always want available to be loaded manually or using the [`startup.jl` file](#Automatically).
+Secondly, this means that you can install different versions of globally installed packages in a local project with no interference.
+Finally, this also applies to the standard library, which can be treated like a third-party package without having its version tied to that of Julia itself.
+
+### Local packages
+While the Julia package ecosystem covers a *lot* of functionality, you may have your own code that you find yourself reusing between projects.
+You could load this code directly with `include("path/to/file.jl")`, but to avoid writing the path each time a better solution would be to make your own local package.
+
+# TODO: Creating, editing, and loading a new local package in a different project.
+# TODO: Environments in VSCode
+
 * [Pkg.jl](https://github.com/JuliaLang/Pkg.jl)
 * stacking environments
 * [environments in VSCode](https://www.julia-vscode.org/docs/stable/userguide/env/)
+* Local packages
 
 ## Esthetics
 
