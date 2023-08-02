@@ -16,7 +16,7 @@ For each tool, we aim to provide:
 1. a brief introduction with the relevant links
 2. a small actionable demo presented as a code block
 
-Every time a new resource is introduced, it should be put in bold face and accompanied with a link to the relevant GitHub repository or website, like so: **[Revise.jl](https://github.com/timholy/Revise.jl)**.
+Every time a new resource is introduced, it should be put in bold face and accompanied with a link to the relevant GitHub repository or website, like so: [**Revise.jl**](https://github.com/timholy/Revise.jl).
 Links to the package documentation are not necessary, unless they are meant to highlight a specific part.
 
 Package names are written as normal text with the .jl extension, while functions or objects are written between backticks.
