@@ -189,7 +189,7 @@ When working on a project, you can create a new environment or switch to an exis
 ```]
 activate MyProject
 ```
-or, from the command line, running `julia` with the [startup flag] `--project MyProject`.
+or, from the command line, running `julia` with the [startup flag]((https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface)) `--project MyProject`.
 Then packages you install will be detailed in the `Project.toml` file, which gives a high-level overview of the project, as well as its low-level `Manifest.toml` cousin, which encodes a detailed snapshot of the whole environment.
 Sharing a project between computers with perfect reproducibility is as simple as sending a folder containing your code as well as a `Project.toml` and `Manifest.toml` so Julia can perfectly recreate the state of packages in the local environment.
 When a project is shared, the recipient can simply `instantiate` the environment and have a perfect copy.
