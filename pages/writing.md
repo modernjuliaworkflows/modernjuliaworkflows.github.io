@@ -8,7 +8,7 @@
 
 > TLDR: Use `juliaup`
 
-Do not install Julia from the official [downloads](https://julialang.org/downloads/) page, use [**`juliaup`**](https://github.com/JuliaLang/juliaup) instead.
+Do not install Julia from the official [downloads](https://julialang.org/downloads/) page, use **[`juliaup`](https://github.com/JuliaLang/juliaup)** instead.
 You can get it from the Windows store, or from the command line on Unix systems:
 
 ```bash
@@ -19,7 +19,7 @@ It provides [various utilities](https://github.com/JuliaLang/juliaup#using-julia
 As a bonus, you no longer have to manually specify the path to your executable.
 
 `juliaup` relies on adaptive shortcuts called "channels", which allow you to access specific Julia versions without giving their exact number.
-The [current stable release](https://julialang.org/downloads/#current_stable_release) is downloaded and selected as the default upon installation:
+Upon installation, the [current stable release](https://julialang.org/downloads/#current_stable_release) is downloaded and selected as the default:
 
 ```bash
 juliaup add release  # done automatically
@@ -33,17 +33,17 @@ juliaup add lts
 julia +lts  # launch lts
 ```
 
-When new versions are tagged, the binding of a given channel can change, and a new executable might need to be downloaded.
-If you want to catch up with the latest developments:
-
-```bash
-juliaup update
-```
-
-If you want an overview of the channels installed on your computer:
+You can get an overview of the channels installed on your computer:
 
 ```bash
 juliaup status
+```
+
+When new versions are tagged, the binding of a given channel can change, and a new executable might need to be downloaded.
+If you want to catch up with the latest developments, that's easy:
+
+```bash
+juliaup update
 ```
 
 ## REPL
@@ -51,7 +51,7 @@ juliaup status
 > TLDR: The REPL has 4 primary modes: Julia, package (`]`), help (`?`) and shell (`;`).
 
 The Read-Eval-Print Loop (or REPL) is the most basic way to interact with Julia.
-Check out its [documentation](https://docs.julialang.org/en/v1/stdlib/REPL/) for details.
+Check out its [documentation](https://docs.julialang.org/en/v1/stdlib/REPL/) for details, and the [REPL mastery workshop](https://github.com/miguelraz/REPLMasteryWorkshop) for a deep dive.
 You can start one by typing `julia` into a terminal, or by clicking on the Julia application in your computer.
 It will allow you to play around with arbitrary Julia code:
 
@@ -105,20 +105,19 @@ ls ./pages
 
 Most computer programs are just plain text files with a specific extension (in our case `.jl`).
 So in theory, any text editor suffices to write and modify Julia code.
-In practice, an Integrated Development Environment (or IDE) makes the experience much more pleasant thanks to specific to development-specific tools (eg. for analyzing, running or debugging your code).
-Language-specific tools are often available as plugins, and need to be downloaded separately from the main editor.
+In practice, an Integrated Development Environment (or IDE) makes the experience much more pleasant, thanks to code-related utilities and language-specific plugins.
 
-The best IDE for Julia is [**Visual Studio Code**](https://code.visualstudio.com/), developed by Microsoft.
-Indeed, the [**Julia VSCode extension**](https://www.julia-vscode.org/) is the most feature-rich and actively developed of all IDE plugins for Julia.
+The best IDE for Julia is **[Visual Studio Code](https://code.visualstudio.com/)**, developed by Microsoft.
+Indeed, the **[Julia VSCode extension](https://www.julia-vscode.org/)** is the most feature-rich and actively developed of all Julia IDE plugins.
 You can download it from the VSCode Marketplace.
-
-In what follows, we will often mention commands and keyboard shortcuts that are provided by this extension.
+In what follows, we will often mention commands and keyboard shortcuts provided by this extension.
 But the only shortcut you need to remember is `Ctrl + Shift + P` (or `Cmd + Shift + P` on Mac): this opens the VSCode command palette, in which you can search for any command.
 Type "julia" in the command palette to see what you can do with it.
 
 Assuming you want to avoid the Microsoft ecosystem, [VSCodium](https://vscodium.com/) is a nearly bit-for-bit replacement for VSCode, but with an open source license and without telemetry.
 If you don't want to use VSCode at all, other options include [emacs](https://www.gnu.org/software/emacs/) and [vim](https://www.vim.org/).
 Check out [JuliaEditorSupport](https://github.com/JuliaEditorSupport) to see if your favorite IDE has a Julia plugin.
+The available functionalities should be roughly similar to those of VSCode, at least for the basic aspects like running code.
 
 ## Running code
 
@@ -133,7 +132,7 @@ julia myfile.jl
 Julia has a rather high startup, load and compilation latency.
 If you only use scripts, you will pay this cost every time you run a slightly modified version of your code.
 That is why many Julia developers fire up a [REPL](#REPL) at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way.
-This is made much easier by IDE integration, and here are the relevant VSCode commands:
+This is made much easier by IDE integration, and here are the relevant [VSCode commands](https://www.julia-vscode.org/docs/stable/userguide/runningcode/):
 
 * `Julia: Start REPL` (shortcut `Alt + J` then `Alt + O`)
 * `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`). As in Jupyter, the code that gets executed is the block containing the cursor, or the selected part if there is any.
@@ -151,7 +150,7 @@ Notebooks are a popular alternative to IDEs when it comes to short and self-cont
 They are also a good fit for literate programming, where lines of code are interspersed by comments and explanations.
 
 The most well-known notebook ecosystem is [Jupyter](https://jupyter.org/), which supports **Ju**lia, **Pyt**hon and **R** as its three core languages.
-To use it with Julia, you will need to install the [**IJulia.jl**](https://github.com/JuliaLang/IJulia.jl) backend.
+To use it with Julia, you will need to install the **[IJulia.jl](https://github.com/JuliaLang/IJulia.jl)** backend.
 Then, if you have also installed Jupyter, you can run this command to launch the server:
 
 ```bash
@@ -166,7 +165,7 @@ julia> using IJulia
 julia> notebook()
 ```
 
-A pure-Julia alternative to Jupyter is given by [**Pluto.jl**](https://plutojl.org/).
+A pure-Julia alternative to Jupyter is given by **[Pluto.jl](https://plutojl.org/)**.
 Unlike Jupyter notebooks, Pluto notebooks are
 
 * Reactive: when you update a cell, the other cells depending on it are updated.
@@ -236,6 +235,7 @@ This simply adds the correct `--project` flag, but it is a great convenience to 
 * [Pkg.jl](https://github.com/JuliaLang/Pkg.jl)
 * [Revise.jl](https://github.com/timholy/Revise.jl)
 * stacking environments
+* [PkgDependency.jl](https://github.com/peng1999/PkgDependency.jl)
 * [environments in VSCode](https://www.julia-vscode.org/docs/stable/userguide/env/)
 
 ## Configuration
@@ -254,9 +254,8 @@ catch e
 end
 ```
 
-In addition, users commonly load packages that affect the REPL experience (OhMyREPL.jl, Term.jl), as well as benchmarking or profiling utilities (BenchmarkTools.jl, Cthulhu.jl).
-We will come back to all of these later on.
-
+In addition, users commonly load packages that affect the REPL experience, as well as benchmarking or profiling utilities.
+We will come back to all of these later on, but in the meantime **[StartupCustomizer.jl](https://github.com/abraemer/StartupCustomizer.jl)** can help you set them up.
 More generally, the startup file allows you to define your own favorite helper functions and have them immediately available in every Julia session.
 
 ## Esthetics
@@ -264,11 +263,15 @@ More generally, the startup file allows you to define your own favorite helper f
 * [Term.jl](https://github.com/FedeClaudi/Term.jl)
 * [OhMyREPL.jl](https://github.com/KristofferC/OhMyREPL.jl)
 * [AbbreviatedStackTraces.jl](https://github.com/BioTurboNick/AbbreviatedStackTraces.jl)
-* [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl)
 * [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl)
+* [ProgressLogging.jl](https://github.com/JuliaLogging/ProgressLogging.jl)
+* [Suppressor.jl](https://github.com/JuliaIO/Suppressor.jl)
 
 ## Debugging
 
+* [InteracticeCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl)
+* [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl)
+* [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl)
 * [Infiltrator.jl](https://github.com/JuliaDebug/Infiltrator.jl)
 * [Debugger.jl](https://github.com/JuliaDebug/Debugger.jl)
 * [debugging in VSCode](https://www.julia-vscode.org/docs/stable/userguide/debugging/)
@@ -282,4 +285,6 @@ More generally, the startup file allows you to define your own favorite helper f
 ## Getting help
 
 * [StartHere.jl](https://github.com/JuliaCommunity/StartHere.jl)
-* [community spaces](https://julialang.org/community/)
+* [cheatsheet](https://cheatsheet.juliadocs.org/)
+* [help](https://julialang.org/about/help/)
+* [community](https://julialang.org/community/)
