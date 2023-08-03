@@ -30,8 +30,9 @@
 
 * [PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl)
 * [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl)
-* [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
 * [StaticCompiler.jl](https://github.com/tshort/StaticCompiler.jl)
+* [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl)
+* [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
 
 ## Parallelism
 
@@ -39,11 +40,12 @@
 * [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl)
 * [FLoops.jl](https://github.com/JuliaFolds/FLoops.jl)
 
-## SIMD
+## SIMD / GPU
 
 * [LoopVectorization.jl](https://github.com/JuliaSIMD/LoopVectorization.jl)
 * [Tullio.jl](https://github.com/mcabbott/Tullio.jl)
+* [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
 
-## Allocations
+## Miscellaneous
 
 * [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)
