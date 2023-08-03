@@ -184,12 +184,12 @@ One way to help with workspace tidiness is to take advantage of the [module syst
 
 ### Automatically
 
-While Julia allows the specification of [startup flags] to handle pre-startup configuration such as the number of threads available and which optimisations can be performed, most Julia developers also have a [startup.jl file] which is automatically run every time a REPL is started.
+While Julia allows the specification of [startup flags][startup flag] to handle pre-startup configuration such as the number of threads available and which optimisations can be performed, most Julia developers also have a [startup.jl file] which is automatically run every time a REPL is started.
 
 In this file, users commonly load packages that affect the REPL experience such as [OhMyREPL.jl], as well as utilities such as [BenchmarkTools.jl] for benchmarking.
 As well as this, it allows you to define your own helper functions and have them immediately available.
 
-[startup flags]: https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface
+[startup flag]: https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface
 [startup.jl file]: https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file
 [OhMyREPL.jl]: https://kristofferc.github.io/OhMyREPL.jl/stable
 [BenchmarkTools.jl]: https://juliaci.github.io/BenchmarkTools.jl/stable/
@@ -199,20 +199,21 @@ As well as this, it allows you to define your own helper functions and have them
 > TLDR: Pkg.jl lets you `activate` independent, reproducible environments to `add` and `remove` project-specific (versions of) packages.
 
 Pkg.jl and the Pkg mode built in to the [REPL](#REPL) let you install packages and manage environments.
-A "package" is a structured way of reusing functionality between projects and the active "environment" is responsible for determining which versions of packages to load.
+A "package" is a structured way of reusing code between projects and the active "environment" is responsible for determining which versions of packages to load.
 When working on a project, you can create a new environment or switch to an existing one by running
 ```]
 activate MyProject
 ```
-Then packages you install, and their specific versions, will be noted in the high-level `Project.toml` file as well as its low-level `Manifest.toml` cousin.
+or, from the command line, running `julia` with the [startup flag] `--project MyProject`.
+Then packages you install will be detailed in the `Project.toml` file, which gives a high-level overview of the project, as well as its low-level `Manifest.toml` cousin, which encodes a detailed snapshot of the whole environment.
 Sharing a project between computers with perfect reproducibility is as simple as sending a folder containing your code as well as a `Project.toml` and `Manifest.toml` so Julia can perfectly recreate the state of packages in the local environment.
 When a project is shared, the recipient can simply `instantiate` the environment and have a perfect copy.
 
-To add packages you can use the `add` command followed by any number of packages
+To add packages you can use the `add` command followed by any number of packages:
 ```]
 add Term OhMyREPL
 ```
-If you haven't `activate`d a local project, these packages will be installed in the "global environment" whose name in Pkg mode is `@v1.X`, corresponding to the version of Julia currently active.
+If you haven't `activate`d a local project, these packages will be installed in the "global environment" whose name in Pkg mode's prompt is `@v1.X`[^1], corresponding to the version of Julia currently active.
 Packages installed globally are available no matter which environment is active due to what's referred to as "environment stacking".
 
 We can see this stack by running
@@ -225,12 +226,26 @@ This is typically used for development tools that you always want available to b
 Secondly, this means that you can install different versions of globally installed packages in a local project with no interference.
 Finally, this also applies to the standard library, which can be treated like a third-party package without having its version tied to that of Julia itself.
 
-### Local packages
-While the Julia package ecosystem covers a *lot* of functionality, you may have your own code that you find yourself reusing between projects.
-You could load this code directly with `include("path/to/file.jl")`, but to avoid writing the path each time a better solution would be to make your own local package.
+[^1]: The `@` before the name means that the environment is ["shared"], which means you can `activate` shared environments with the `--shared` flag and it is located in `~/.julia/environments`. Notably it does _not_ imply that it is part of the environment stack.
 
-# TODO: Creating, editing, and loading a new local package in a different project.
-# TODO: Environments in VSCode
+["shared"]: https://pkgdocs.julialang.org/v1/environments/#Shared-environments
+
+### Local packages
+Local packages are a smart way of reusing code between projects.
+You could load common code directly with `include("path/to/file.jl")`, but a local package allows you get all of the nice benefits afforded any other package:
+1. You don't have to specify the path, you can just write `using MyPackage`,
+2. You can version the package and update it without breaking code that relies on old versions of the package,
+3. You can add it as a dependency to a package,
+4. (Bonus!) You get used to developing reusable, modular code.
+
+<!-- TODO: Creating, editing, and loading a new local package in a different project. -->
+<!-- TODO: LocalRegistry? -->
+
+### Environments in VSCode
+In VSCode, if your directory contains a `Project.toml`, you will be prompted whether you want to make this the default environment to run code in for this project.
+This simply adds the correct `--project` flag, but it is a great convenience to take advantage of.
+
+<!-- How about other IDEs? -->
 
 * [Pkg.jl](https://github.com/JuliaLang/Pkg.jl)
 * stacking environments
