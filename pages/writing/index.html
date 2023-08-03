@@ -1,20 +1,20 @@
-<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/libs/highlight/styles/github.min.css"> <link rel=stylesheet  href="/css/franklin.css"> <link rel=stylesheet  href="/css/poole_hyde.css"> <link rel=stylesheet  href="/css/custom.css"> <link rel=stylesheet  href="/libs/highlight/styles/github-dark.min.css"> <style> html {font-size: 17px;} .franklin-content {position: relative; padding-left: 8%; padding-right: 5%; line-height: 1.35em;} @media (min-width: 940px) { .franklin-content {width: 100%; margin-left: auto; margin-right: auto;} } @media (max-width: 768px) { .franklin-content {padding-left: 6%; padding-right: 6%;} } </style> <link rel=icon  href="/assets/favicon.png"> <title>Writing your code</title> <div class=sidebar > <div class="container sidebar-sticky"> <div class=sidebar-about > <h1><a href="/">MoJuWo</a></h1> <p class=lead ><b>Mo</b>dern <b>Ju</b>lia <b>Wo</b>rkflows</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/">Home</a> <a class="sidebar-nav-item active" href="/pages/writing/">Writing</a> <a class="sidebar-nav-item " href="/pages/sharing/">Sharing</a> <a class="sidebar-nav-item " href="/pages/optimizing/">Optimizing</a> <a class="sidebar-nav-item " href="/pages/further/">Going further</a> </nav> <p>&copy; G. Dalle, J. Smit, A. Hill.</p> </div> </div> <div class="content container"> <div class=franklin-content ><h1 id=writing_your_code ><a href="#writing_your_code" class=header-anchor >Writing your code</a></h1> <div class=franklin-toc ><ol><li><a href="#installation">Installation</a><li><a href="#repl">REPL</a><li><a href="#editor">Editor</a><li><a href="#running_code">Running code</a><li><a href="#notebooks">Notebooks</a><li><a href="#packages">Packages</a><li><a href="#configuration">Configuration</a><li><a href="#esthetics">Esthetics</a><li><a href="#debugging">Debugging</a><li><a href="#other_languages">Other languages</a><li><a href="#getting_help">Getting help</a></ol></div> <h2 id=installation ><a href="#installation" class=header-anchor >Installation</a></h2> <blockquote> <p>TLDR: Use <code>juliaup</code></p> </blockquote> <p>Do not install Julia from the official <a href="https://julialang.org/downloads/">downloads</a> page, use <a href="https://github.com/JuliaLang/juliaup"><strong><code>juliaup</code></strong></a> instead. You can get it from the Windows store, or from the command line on Unix systems:</p> <pre><code class=language-bash >curl -fsSL https://install.julialang.org | sh</code></pre>
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/libs/highlight/styles/github.min.css"> <link rel=stylesheet  href="/css/franklin.css"> <link rel=stylesheet  href="/css/poole_hyde.css"> <link rel=stylesheet  href="/css/custom.css"> <link rel=stylesheet  href="/libs/highlight/styles/github-dark.min.css"> <style> html {font-size: 17px;} .franklin-content {position: relative; padding-left: 8%; padding-right: 5%; line-height: 1.35em;} @media (min-width: 940px) { .franklin-content {width: 100%; margin-left: auto; margin-right: auto;} } @media (max-width: 768px) { .franklin-content {padding-left: 6%; padding-right: 6%;} } </style> <link rel=icon  href="/assets/favicon.png"> <title>Writing your code</title> <div class=sidebar > <div class="container sidebar-sticky"> <div class=sidebar-about > <h1><a href="/">MoJuWo</a></h1> <p class=lead ><b>Mo</b>dern <b>Ju</b>lia <b>Wo</b>rkflows</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/">Home</a> <a class="sidebar-nav-item active" href="/pages/writing/">Writing</a> <a class="sidebar-nav-item " href="/pages/sharing/">Sharing</a> <a class="sidebar-nav-item " href="/pages/optimizing/">Optimizing</a> <a class="sidebar-nav-item " href="/pages/further/">Going further</a> </nav> <p>&copy; G. Dalle, J. Smit, A. Hill.</p> </div> </div> <div class="content container"> <div class=franklin-content ><h1 id=writing_your_code ><a href="#writing_your_code" class=header-anchor >Writing your code</a></h1> <div class=franklin-toc ><ol><li><a href="#installation">Installation</a><li><a href="#repl">REPL</a><li><a href="#editor">Editor</a><li><a href="#running_code">Running code</a><li><a href="#notebooks">Notebooks</a><li><a href="#packages">Packages</a><li><a href="#configuration">Configuration</a><li><a href="#esthetics">Esthetics</a><li><a href="#debugging">Debugging</a><li><a href="#other_languages">Other languages</a><li><a href="#getting_help">Getting help</a></ol></div> <h2 id=installation ><a href="#installation" class=header-anchor >Installation</a></h2> <blockquote> <p>TLDR: Use <code>juliaup</code></p> </blockquote> <p>Do not install Julia from the official <a href="https://julialang.org/downloads/">downloads</a> page, use <strong><a href="https://github.com/JuliaLang/juliaup"><code>juliaup</code></a></strong> instead. You can get it from the Windows store, or from the command line on Unix systems:</p> <pre><code class=language-bash >curl -fsSL https://install.julialang.org | sh</code></pre>
 <p>It provides <a href="https://github.com/JuliaLang/juliaup#using-juliaup">various utilities</a> to download, update, organize and switch between Julia versions. As a bonus, you no longer have to manually specify the path to your executable.</p>
-<p><code>juliaup</code> relies on adaptive shortcuts called &quot;channels&quot;, which allow you to access specific Julia versions without giving their exact number. The <a href="https://julialang.org/downloads/#current_stable_release">current stable release</a> is downloaded and selected as the default upon installation:</p>
+<p><code>juliaup</code> relies on adaptive shortcuts called &quot;channels&quot;, which allow you to access specific Julia versions without giving their exact number. Upon installation, the <a href="https://julialang.org/downloads/#current_stable_release">current stable release</a> is downloaded and selected as the default:</p>
 <pre><code class=language-bash >juliaup add release  # done automatically
 juliaup default release  # done automatically</code></pre>
 <p>However, you can use other versions like the <a href="https://julialang.org/downloads/#long_term_support_release">long-term support version</a>:</p>
 <pre><code class=language-bash >juliaup add lts
 julia &#43;lts  # launch lts</code></pre>
-<p>When new versions are tagged, the binding of a given channel can change, and a new executable might need to be downloaded. If you want to catch up with the latest developments:</p>
-<pre><code class=language-bash >juliaup update</code></pre>
-<p>If you want an overview of the channels installed on your computer:</p>
+<p>You can get an overview of the channels installed on your computer:</p>
 <pre><code class=language-bash >juliaup status</code></pre>
+<p>When new versions are tagged, the binding of a given channel can change, and a new executable might need to be downloaded. If you want to catch up with the latest developments, that&#39;s easy:</p>
+<pre><code class=language-bash >juliaup update</code></pre>
 <h2 id=repl ><a href="#repl" class=header-anchor >REPL</a></h2>
 <blockquote>
 <p>TLDR: It has 4 modes: Julia, package &#40;<code>&#93;</code>&#41;, help &#40;<code>?</code>&#41; and shell &#40;<code>;</code>&#41;.</p>
 </blockquote>
-<p>The Read-Eval-Print Loop &#40;or REPL&#41; is the most basic way to interact with Julia. Check out its <a href="https://docs.julialang.org/en/v1/stdlib/REPL/">documentation</a> for details. You can start one by typing <code>julia</code> into a terminal, or by clicking on the Julia application in your computer. It will allow you to play around with arbitrary Julia code:</p>
+<p>The Read-Eval-Print Loop &#40;or REPL&#41; is the most basic way to interact with Julia. Check out its <a href="https://docs.julialang.org/en/v1/stdlib/REPL/">documentation</a> for details, and the <a href="https://github.com/miguelraz/REPLMasteryWorkshop">REPL mastery workshop</a> for a deep dive. You can start one by typing <code>julia</code> into a terminal, or by clicking on the Julia application in your computer. It will allow you to play around with arbitrary Julia code:</p>
 <pre><code class=language-julia-repl >julia> a, b &#61; 1, 2;
 
 julia> a &#43; b
@@ -57,20 +57,20 @@ julia&gt; String&#40;take&#33;&#40;io&#41;&#41;
 
 </ul>
 <pre><code class=language-julia-repl >&#40;modernjuliaworkflows.github.io&#41; pkg&gt; activate --temp
-Activating new project at `/tmp/jl_3HxxcO`
+Activating new project at `/tmp/jl_be8nrO`
 
-&#40;jl_3HxxcO&#41; pkg&gt; status
-Status `/tmp/jl_3HxxcO/Project.toml` (empty project)
+&#40;jl_be8nrO&#41; pkg&gt; status
+Status `/tmp/jl_be8nrO/Project.toml` (empty project)
 
-&#40;jl_3HxxcO&#41; pkg&gt; add Example
+&#40;jl_be8nrO&#41; pkg&gt; add Example
 Resolving package versions...
-    Updating `/tmp/jl_3HxxcO/Project.toml`
+    Updating `/tmp/jl_be8nrO/Project.toml`
   [7876af07] + Example v0.5.3
-    Updating `/tmp/jl_3HxxcO/Manifest.toml`
+    Updating `/tmp/jl_be8nrO/Manifest.toml`
   [7876af07] + Example v0.5.3
 
-&#40;jl_3HxxcO&#41; pkg&gt; status
-Status `/tmp/jl_3HxxcO/Project.toml`
+&#40;jl_be8nrO&#41; pkg&gt; status
+Status `/tmp/jl_be8nrO/Project.toml`
   [7876af07] Example v0.5.3
 </code></pre>
 
@@ -90,17 +90,16 @@ writing.md
 <blockquote>
 <p>TLDR: VSCode has the best Julia support.</p>
 </blockquote>
-<p>Most computer programs are just plain text files with a specific extension &#40;in our case <code>.jl</code>&#41;. So in theory, any text editor suffices to write and modify Julia code. In practice, an Integrated Development Environment &#40;or IDE&#41; makes the experience much more pleasant thanks to specific to development-specific tools &#40;eg. for analyzing, running or debugging your code&#41;. Language-specific tools are often available as plugins, and need to be downloaded separately from the main editor.</p>
-<p>The best IDE for Julia is <a href="https://code.visualstudio.com/"><strong>Visual Studio Code</strong></a>, developed by Microsoft. Indeed, the <a href="https://www.julia-vscode.org/"><strong>Julia VSCode extension</strong></a> is the most feature-rich and actively developed of all IDE plugins for Julia. You can download it from the VSCode Marketplace.</p>
-<p>In what follows, we will often mention commands and keyboard shortcuts that are provided by this extension. But the only shortcut you need to remember is <code>Ctrl &#43; Shift &#43; P</code> &#40;or <code>Cmd &#43; Shift &#43; P</code> on Mac&#41;: this opens the VSCode command palette, in which you can search for any command. Type &quot;julia&quot; in the command palette to see what you can do with it.</p>
-<p>Assuming you want to avoid the Microsoft ecosystem, <a href="https://vscodium.com/">VSCodium</a> is a nearly bit-for-bit replacement for VSCode, but with an open source license and without telemetry. If you don&#39;t want to use VSCode at all, other options include <a href="https://www.gnu.org/software/emacs/">emacs</a> and <a href="https://www.vim.org/">vim</a>. Check out <a href="https://github.com/JuliaEditorSupport">JuliaEditorSupport</a> to see if your favorite IDE has a Julia plugin.</p>
+<p>Most computer programs are just plain text files with a specific extension &#40;in our case <code>.jl</code>&#41;. So in theory, any text editor suffices to write and modify Julia code. In practice, an Integrated Development Environment &#40;or IDE&#41; makes the experience much more pleasant, thanks to code-related utilities and language-specific plugins.</p>
+<p>The best IDE for Julia is <strong><a href="https://code.visualstudio.com/">Visual Studio Code</a></strong>, developed by Microsoft. Indeed, the <strong><a href="https://www.julia-vscode.org/">Julia VSCode extension</a></strong> is the most feature-rich and actively developed of all Julia IDE plugins. You can download it from the VSCode Marketplace. In what follows, we will often mention commands and keyboard shortcuts provided by this extension. But the only shortcut you need to remember is <code>Ctrl &#43; Shift &#43; P</code> &#40;or <code>Cmd &#43; Shift &#43; P</code> on Mac&#41;: this opens the VSCode command palette, in which you can search for any command. Type &quot;julia&quot; in the command palette to see what you can do with it.</p>
+<p>Assuming you want to avoid the Microsoft ecosystem, <a href="https://vscodium.com/">VSCodium</a> is a nearly bit-for-bit replacement for VSCode, but with an open source license and without telemetry. If you don&#39;t want to use VSCode at all, other options include <a href="https://www.gnu.org/software/emacs/">emacs</a> and <a href="https://www.vim.org/">vim</a>. Check out <a href="https://github.com/JuliaEditorSupport">JuliaEditorSupport</a> to see if your favorite IDE has a Julia plugin. The available functionalities should be roughly similar to those of VSCode, at least for the basic aspects like running code.</p>
 <h2 id=running_code ><a href="#running_code" class=header-anchor >Running code</a></h2>
 <blockquote>
 <p>TLDR: Open a REPL and run all your code there interactively</p>
 </blockquote>
 <p>You can execute a Julia script from your terminal, but in most cases that is not what you want to do.</p>
 <pre><code class=language-bash >julia myfile.jl</code></pre>
-<p>Julia has a rather high startup, load and compilation latency. If you only use scripts, you will pay this cost every time you run a slightly modified version of your code. That is why many Julia developers fire up a <a href="#REPL">REPL</a> at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way. This is made much easier by IDE integration, and here are the relevant VSCode commands:</p>
+<p>Julia has a rather high startup, load and compilation latency. If you only use scripts, you will pay this cost every time you run a slightly modified version of your code. That is why many Julia developers fire up a <a href="#REPL">REPL</a> at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way. This is made much easier by IDE integration, and here are the relevant <a href="https://www.julia-vscode.org/docs/stable/userguide/runningcode/">VSCode commands</a>:</p>
 <ul>
 <li><p><code>Julia: Start REPL</code> &#40;shortcut <code>Alt &#43; J</code> then <code>Alt &#43; O</code>&#41;</p>
 
@@ -115,13 +114,13 @@ writing.md
 <p>TLDR: Jupyter or Pluto, depending on your reactivity needs</p>
 </blockquote>
 <p>Notebooks are a popular alternative to IDEs when it comes to short and self-contained code, typically in data science. They are also a good fit for literate programming, where lines of code are interspersed by comments and explanations.</p>
-<p>The most well-known notebook ecosystem is <a href="https://jupyter.org/">Jupyter</a>, which supports <strong>Ju</strong>lia, <strong>Pyt</strong>hon and <strong>R</strong> as its three core languages. To use it with Julia, you will need to install the <a href="https://github.com/JuliaLang/IJulia.jl"><strong>IJulia.jl</strong></a> backend. Then, if you have also installed Jupyter, you can run this command to launch the server:</p>
+<p>The most well-known notebook ecosystem is <a href="https://jupyter.org/">Jupyter</a>, which supports <strong>Ju</strong>lia, <strong>Pyt</strong>hon and <strong>R</strong> as its three core languages. To use it with Julia, you will need to install the <strong><a href="https://github.com/JuliaLang/IJulia.jl">IJulia.jl</a></strong> backend. Then, if you have also installed Jupyter, you can run this command to launch the server:</p>
 <pre><code class=language-bash >jupyter notebook</code></pre>
 <p>If you only have IJulia.jl on your system, you can run this snippet instead:</p>
 <pre><code class=language-julia-repl >julia&gt; using IJulia
 
 julia&gt; notebook&#40;&#41;</code></pre>
-<p>A pure-Julia alternative to Jupyter is given by <a href="https://plutojl.org/"><strong>Pluto.jl</strong></a>. Unlike Jupyter notebooks, Pluto notebooks are</p>
+<p>A pure-Julia alternative to Jupyter is given by <strong><a href="https://plutojl.org/">Pluto.jl</a></strong>. Unlike Jupyter notebooks, Pluto notebooks are</p>
 <ul>
 <li><p>Reactive: when you update a cell, the other cells depending on it are updated.</p>
 
@@ -140,6 +139,8 @@ julia&gt; Pluto.run&#40;&#41;</code></pre>
 
 <li><p>stacking environments</p>
 
+<li><p><a href="https://github.com/peng1999/PkgDependency.jl">PkgDependency.jl</a></p>
+
 <li><p><a href="https://www.julia-vscode.org/docs/stable/userguide/env/">environments in VSCode</a></p>
 
 </ul>
@@ -151,8 +152,7 @@ julia&gt; Pluto.run&#40;&#41;</code></pre>
 catch e
     @warn &quot;Error initializing Revise&quot;
 end</code></pre>
-<p>In addition, users commonly load packages that affect the REPL experience &#40;OhMyREPL.jl, Term.jl&#41;, as well as benchmarking or profiling utilities &#40;BenchmarkTools.jl, Cthulhu.jl&#41;. We will come back to all of these later on.</p>
-<p>More generally, the startup file allows you to define your own favorite helper functions and have them immediately available in every Julia session.</p>
+<p>In addition, users commonly load packages that affect the REPL experience, as well as benchmarking or profiling utilities. We will come back to all of these later on, but in the meantime <strong><a href="https://github.com/abraemer/StartupCustomizer.jl">StartupCustomizer.jl</a></strong> can help you set them up. More generally, the startup file allows you to define your own favorite helper functions and have them immediately available in every Julia session.</p>
 <h2 id=esthetics ><a href="#esthetics" class=header-anchor >Esthetics</a></h2>
 <ul>
 <li><p><a href="https://github.com/FedeClaudi/Term.jl">Term.jl</a></p>
@@ -161,13 +161,21 @@ end</code></pre>
 
 <li><p><a href="https://github.com/BioTurboNick/AbbreviatedStackTraces.jl">AbbreviatedStackTraces.jl</a></p>
 
-<li><p><a href="https://github.com/MichaelHatherly/InteractiveErrors.jl">InteractiveErrors.jl</a></p>
-
 <li><p><a href="https://github.com/timholy/ProgressMeter.jl">ProgressMeter.jl</a></p>
+
+<li><p><a href="https://github.com/JuliaLogging/ProgressLogging.jl">ProgressLogging.jl</a></p>
+
+<li><p><a href="https://github.com/JuliaIO/Suppressor.jl">Suppressor.jl</a></p>
 
 </ul>
 <h2 id=debugging ><a href="#debugging" class=header-anchor >Debugging</a></h2>
 <ul>
+<li><p><a href="https://github.com/tkf/InteractiveCodeSearch.jl">InteracticeCodeSearch.jl</a></p>
+
+<li><p><a href="https://github.com/MichaelHatherly/InteractiveErrors.jl">InteractiveErrors.jl</a></p>
+
+<li><p><a href="https://github.com/timholy/CodeTracking.jl">CodeTracking.jl</a></p>
+
 <li><p><a href="https://github.com/JuliaDebug/Infiltrator.jl">Infiltrator.jl</a></p>
 
 <li><p><a href="https://github.com/JuliaDebug/Debugger.jl">Debugger.jl</a></p>
@@ -188,11 +196,15 @@ end</code></pre>
 <ul>
 <li><p><a href="https://github.com/JuliaCommunity/StartHere.jl">StartHere.jl</a></p>
 
-<li><p><a href="https://julialang.org/community/">community spaces</a></p>
+<li><p><a href="https://cheatsheet.juliadocs.org/">cheatsheet</a></p>
+
+<li><p><a href="https://julialang.org/about/help/">help</a></p>
+
+<li><p><a href="https://julialang.org/community/">community</a></p>
 
 </ul>
 <div class=page-foot >
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: August 02, 2023. 
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: August 03, 2023. 
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 </div>
