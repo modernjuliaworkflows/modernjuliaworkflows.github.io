@@ -260,6 +260,26 @@ In addition, users commonly load packages that affect the REPL experience, as we
 We will come back to all of these later on, but in the meantime **[StartupCustomizer.jl](https://github.com/abraemer/StartupCustomizer.jl)** can help you set them up.
 More generally, the startup file allows you to define your own favorite helper functions and have them immediately available in every Julia session.
 
+## Configuration
+
+Julia accepts [startup flags](https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface) to handle settings such as the number of threads available.
+In addition, most Julia developers also have a [startup file](https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file) which is run automatically every time the language is started.
+It is located at `.julia/config/startup.jl`.
+
+The basic component that everyone puts in the startup file is Revise.jl:
+
+```julia
+try
+    using Revise
+catch e
+    @warn "Error initializing Revise"
+end
+```
+
+In addition, users commonly load packages that affect the REPL experience, as well as benchmarking or profiling utilities.
+We will come back to all of these later on, but in the meantime **[StartupCustomizer.jl](https://github.com/abraemer/StartupCustomizer.jl)** can help you set them up.
+More generally, the startup file allows you to define your own favorite helper functions and have them immediately available in every Julia session.
+
 ## Esthetics
 
 * [Term.jl](https://github.com/FedeClaudi/Term.jl)
