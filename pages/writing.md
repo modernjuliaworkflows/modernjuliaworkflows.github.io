@@ -191,10 +191,10 @@ When working on a project, you can create a new environment or switch to an exis
 activate MyProject
 ```
 
-or, from the command line, running `julia` with the [startup flag]((https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface)) `--project MyProject`.
-Then packages you install will be detailed in the `Project.toml` file, which gives a high-level overview of the project, as well as its low-level `Manifest.toml` cousin, which encodes a detailed snapshot of the whole environment.
-Sharing a project between computers with perfect reproducibility is as simple as sending a folder containing your code as well as a `Project.toml` and `Manifest.toml` so Julia can perfectly recreate the state of packages in the local environment.
-When a project is shared, the recipient can simply `instantiate` the environment and have a perfect copy.
+or, from the command line, running `julia` with the [startup flag](#Configuration) `--project MyProject`.
+After this, packages you install will be listed in the `Project.toml` file, which gives an overview of the project, as well as its low-level `Manifest.toml` cousin, which contains a detailed snapshot of packages and their dependencies.
+Sharing a project between computers is as simple as sending a folder containing your code as well as the `Project.toml` and `Manifest.toml`.
+With these files, the user can run `instantiate` in package mode and Julia can perfectly recreate the state of packages in the local environment.
 
 To add packages you can use the `add` command followed by any number of packages:
 
@@ -203,19 +203,16 @@ add Term OhMyREPL
 ```
 
 If you haven't `activate`d a local project, these packages will be installed in the "global environment" whose name in Pkg mode's prompt is `@v1.X`[^1], corresponding to the version of Julia currently active.
-Packages installed globally are available no matter which environment is active due to what's referred to as "environment stacking".
+Packages installed globally are available no matter which local environment is active due to what's referred to as "environment stacking".
 
-We can see this stack by running
+When calling `using Package`, Julia determines what to load by going down the stack defined by `Base.LOAD_PATH`:
 
 ```julia-repl
-Base.LOAD_PATH
+display(Base.LOAD_PATH)
 ```
 
-When choosing which code to load when `using Package` is called, Julia will start at the local environment referred to as `@`, then go down the stack to the global environment `@v1.X`, then finally to the standard library `@stdlib`.
-As mentioned before, this means that any package installed in the global environment can be used in any project.
-This is typically used for development tools that you always want available to be loaded manually or using the [`startup.jl` file](#Automatically).
-Secondly, this means that you can install different versions of globally installed packages in a local project with no interference.
-Finally, this also applies to the standard library, which can be treated like a third-party package without having its version tied to that of Julia itself.
+The search begins at the local environment `@`, then the global environment `@v1.X`, and finally the standard library `@stdlib` that comes pre-installed with Julia.
+The two most important implications of this are firstly that development tools can be installed globally and [loaded on startup](#Configuration) to be available to use, and secondly that packages in the standard library can be updated or fixed independently of the version of Julia you are using.
 
 [^1]: The `@` before the name means that the environment is ["shared"], which means you can `activate` shared environments with the `--shared` flag and it is located in `~/.julia/environments`. Notably it does _not_ imply that it is part of the environment stack.
 
@@ -224,11 +221,11 @@ Finally, this also applies to the standard library, which can be treated like a 
 ### Local packages
 
 Local packages are a smart way of reusing code between projects.
-You could load common code directly with `include("path/to/file.jl")`, but a local package allows you get all of the nice benefits afforded any other package:
+You could load common code directly with `include("path/to/file.jl")`, but a local package allows you to benefit from package niceties:
 
 1. You don't have to specify the path, you can just write `using MyPackage`,
-2. You can version the package and update it without breaking code that relies on old versions of the package,
-3. You can add it as a dependency to a package,
+2. You can [version](sharing/#Compatibility) the package and update it without breaking code that relies on old versions of the package,
+3. You can add it as a dependency to a project that you're working on,
 4. (Bonus!) You get used to developing reusable, modular code.
 
 <!-- TODO: Creating, editing, and loading a new local package in a different project. -->
@@ -236,8 +233,8 @@ You could load common code directly with `include("path/to/file.jl")`, but a loc
 
 ### Environments in VSCode
 
-In VSCode, if your directory contains a `Project.toml`, you will be prompted whether you want to make this the default environment to run code in for this project.
-This simply adds the correct `--project` flag, but it is a great convenience to take advantage of.
+In VSCode, if your directory contains a `Project.toml`, you will be prompted whether you want to make this the default environment.
+With this option set, anytime you [open a REPL](#running-code) the environment will already be the local one.
 
 <!-- How about other IDEs? -->
 
