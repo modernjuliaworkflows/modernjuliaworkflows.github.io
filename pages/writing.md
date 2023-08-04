@@ -208,7 +208,7 @@ Packages installed globally are available no matter which local environment is a
 When calling `using Package`, Julia determines what to load by going down the stack defined by `Base.LOAD_PATH`:
 
 ```julia-repl
-display(Base.LOAD_PATH)
+julia> Base.LOAD_PATH
 ```
 
 The search begins at the local environment `@`, then the global environment `@v1.X`, and finally the standard library `@stdlib` that comes pre-installed with Julia.
