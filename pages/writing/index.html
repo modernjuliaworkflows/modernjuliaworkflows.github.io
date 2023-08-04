@@ -57,20 +57,20 @@ julia&gt; String&#40;take&#33;&#40;io&#41;&#41;
 
 </ul>
 <pre><code class=language-julia-repl >&#40;modernjuliaworkflows.github.io&#41; pkg&gt; activate --temp
-Activating new project at `/tmp/jl_Oga93H`
+Activating new project at `/tmp/jl_qqpfA7`
 
-&#40;jl_Oga93H&#41; pkg&gt; status
-Status `/tmp/jl_Oga93H/Project.toml` (empty project)
+&#40;jl_qqpfA7&#41; pkg&gt; status
+Status `/tmp/jl_qqpfA7/Project.toml` (empty project)
 
-&#40;jl_Oga93H&#41; pkg&gt; add Example
+&#40;jl_qqpfA7&#41; pkg&gt; add Example
 Resolving package versions...
-    Updating `/tmp/jl_Oga93H/Project.toml`
+    Updating `/tmp/jl_qqpfA7/Project.toml`
   [7876af07] + Example v0.5.3
-    Updating `/tmp/jl_Oga93H/Manifest.toml`
+    Updating `/tmp/jl_qqpfA7/Manifest.toml`
   [7876af07] + Example v0.5.3
 
-&#40;jl_Oga93H&#41; pkg&gt; status
-Status `/tmp/jl_Oga93H/Project.toml`
+&#40;jl_qqpfA7&#41; pkg&gt; status
+Status `/tmp/jl_qqpfA7/Project.toml`
   [7876af07] Example v0.5.3
 </code></pre>
 
@@ -136,7 +136,7 @@ julia&gt; Pluto.run&#40;&#41;</code></pre>
 <p>TLDR: Pkg.jl lets you <code>activate</code> independent, reproducible environments to <code>add</code> and <code>remove</code> project-specific &#40;versions of&#41; packages.</p>
 </blockquote>
 <p>Pkg.jl and the Pkg mode built in to the <a href="#REPL">REPL</a> let you install packages and manage environments. A &quot;package&quot; is a structured way of reusing code between projects and the active &quot;environment&quot; is responsible for determining which versions of packages to load. When working on a project, you can create a new environment or switch to an existing one by running</p>
-<pre><code class=language-julia-repl >&#40;jl_Oga93H&#41; pkg&gt; activate MyProject
+<pre><code class=language-julia-repl >&#40;jl_qqpfA7&#41; pkg&gt; activate MyProject
 Activating project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject`
 </code></pre>
 
@@ -150,7 +150,7 @@ Resolving package versions...
 
 <p>If you haven&#39;t <code>activate</code>d a local project, these packages will be installed in the &quot;global environment&quot; whose name in Pkg mode&#39;s prompt is <code>@v1.X</code><sup id="fnref:1"><a href="#fndef:1" class=fnref >[1]</a></sup>, corresponding to the version of Julia currently active. Packages installed globally are available no matter which local environment is active due to what&#39;s referred to as &quot;environment stacking&quot;.</p>
 <p>When calling <code>using Package</code>, Julia determines what to load by going down the stack defined by <code>Base.LOAD_PATH</code>:</p>
-<pre><code class=language-julia-repl >display&#40;Base.LOAD_PATH&#41;</code></pre>
+<pre><code class=language-julia-repl >julia&gt; Base.LOAD_PATH</code></pre>
 <p>The search begins at the local environment <code>@</code>, then the global environment <code>@v1.X</code>, and finally the standard library <code>@stdlib</code> that comes pre-installed with Julia. The two most important implications of this are firstly that development tools can be installed globally and <a href="#Configuration">loaded on startup</a> to be available to use, and secondly that packages in the standard library can be updated or fixed independently of the version of Julia you are using.</p>
 <p><table class=fndef  id="fndef:1">
     <tr>
