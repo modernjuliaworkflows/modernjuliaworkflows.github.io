@@ -140,7 +140,7 @@ This is made much easier by IDE integration, and here are the relevant [VSCode c
 
 When keeping the same REPL open for a long time, it's common to end up with a "polluted" workspace where the definitions of certain variables or functions have been overwritten in unexpected ways.
 This, along with other events like `struct` redefinitions, might force you to restart your REPL now and again.
-One way to help with workspace tidiness is to take advantage of the [module system](#Packages) to separate the reusable parts of your code from the one-off parts that are only relevant for a certain script.
+One way to help with workspace tidiness is to take advantage of the [module system](#local_packages) to separate the reusable parts of your code from the one-off parts that are only relevant for a certain script.
 
 ## Notebooks
 
@@ -179,7 +179,7 @@ julia> using Pluto
 julia> Pluto.run()
 ```
 
-## Packages
+## Environments
 
 > TLDR: Julia projects are made with `] activate`, and their details are stored in the `Project.toml` and `Manifest.toml`.
 
@@ -263,7 +263,13 @@ The two most important implications of this are firstly that development tools c
 
 ["shared"]: https://pkgdocs.julialang.org/v1/environments/#Shared-environments
 
-### Local packages
+### Environments in VSCode
+
+In VSCode, if your directory contains a `Project.toml`, you will be prompted whether you want to make this the default environment.
+With this option set, anytime you [open a REPL](#running-code) the environment will already be the local one.
+<!-- How about other IDEs? -->
+
+## Local packages
 
 Local packages are a smart way of reusing code between projects.
 You could load common code directly with `include("path/to/file.jl")`, but a local package allows you to benefit from package niceties:
@@ -275,20 +281,6 @@ You could load common code directly with `include("path/to/file.jl")`, but a loc
 
 <!-- TODO: Creating, editing, and loading a new local package in a different project. -->
 <!-- TODO: LocalRegistry? -->
-
-### Environments in VSCode
-
-In VSCode, if your directory contains a `Project.toml`, you will be prompted whether you want to make this the default environment.
-With this option set, anytime you [open a REPL](#running-code) the environment will already be the local one.
-
-<!-- How about other IDEs? -->
-
-* [Pkg.jl](https://github.com/JuliaLang/Pkg.jl)
-* [Revise.jl](https://github.com/timholy/Revise.jl)
-* stacking environments
-* [PkgDependency.jl](https://github.com/peng1999/PkgDependency.jl)
-* [environments in VSCode](https://www.julia-vscode.org/docs/stable/userguide/env/)
-* Local packages
 
 ## Configuration
 
