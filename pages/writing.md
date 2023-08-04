@@ -276,7 +276,7 @@ More generally, the startup file allows you to define your own favorite helper f
 
 ## Debugging
 
-* [InteracticeCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl)
+* [InteractiveCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl)
 * [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl)
 * [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl)
 * [Infiltrator.jl](https://github.com/JuliaDebug/Infiltrator.jl)
