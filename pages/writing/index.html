@@ -57,20 +57,20 @@ julia&gt; String&#40;take&#33;&#40;io&#41;&#41;
 
 </ul>
 <pre><code class=language-julia-repl >&#40;modernjuliaworkflows.github.io&#41; pkg&gt; activate --temp
-Activating new project at `/tmp/jl_qqpfA7`
+Activating new project at `/tmp/jl_foP5KT`
 
-&#40;jl_qqpfA7&#41; pkg&gt; status
-Status `/tmp/jl_qqpfA7/Project.toml` (empty project)
+&#40;jl_foP5KT&#41; pkg&gt; status
+Status `/tmp/jl_foP5KT/Project.toml` (empty project)
 
-&#40;jl_qqpfA7&#41; pkg&gt; add Example
+&#40;jl_foP5KT&#41; pkg&gt; add Example
 Resolving package versions...
-    Updating `/tmp/jl_qqpfA7/Project.toml`
+    Updating `/tmp/jl_foP5KT/Project.toml`
   [7876af07] + Example v0.5.3
-    Updating `/tmp/jl_qqpfA7/Manifest.toml`
+    Updating `/tmp/jl_foP5KT/Manifest.toml`
   [7876af07] + Example v0.5.3
 
-&#40;jl_qqpfA7&#41; pkg&gt; status
-Status `/tmp/jl_qqpfA7/Project.toml`
+&#40;jl_foP5KT&#41; pkg&gt; status
+Status `/tmp/jl_foP5KT/Project.toml`
   [7876af07] Example v0.5.3
 </code></pre>
 
@@ -136,7 +136,7 @@ julia&gt; Pluto.run&#40;&#41;</code></pre>
 <p>TLDR: Pkg.jl lets you <code>activate</code> independent, reproducible environments to <code>add</code> and <code>remove</code> project-specific &#40;versions of&#41; packages.</p>
 </blockquote>
 <p>Pkg.jl and the Pkg mode built in to the <a href="#REPL">REPL</a> let you install packages and manage environments. A &quot;package&quot; is a structured way of reusing code between projects and the active &quot;environment&quot; is responsible for determining which versions of packages to load. When working on a project, you can create a new environment or switch to an existing one by running</p>
-<pre><code class=language-julia-repl >&#40;jl_qqpfA7&#41; pkg&gt; activate MyProject
+<pre><code class=language-julia-repl >&#40;jl_foP5KT&#41; pkg&gt; activate MyProject
 Activating project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject`
 </code></pre>
 
@@ -213,7 +213,7 @@ end</code></pre>
 </ul>
 <h2 id=debugging ><a href="#debugging" class=header-anchor >Debugging</a></h2>
 <ul>
-<li><p><a href="https://github.com/tkf/InteractiveCodeSearch.jl">InteracticeCodeSearch.jl</a></p>
+<li><p><a href="https://github.com/tkf/InteractiveCodeSearch.jl">InteractiveCodeSearch.jl</a></p>
 
 <li><p><a href="https://github.com/MichaelHatherly/InteractiveErrors.jl">InteractiveErrors.jl</a></p>
 
