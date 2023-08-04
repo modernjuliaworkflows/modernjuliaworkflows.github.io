@@ -1,4 +1,4 @@
-<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/libs/highlight/styles/github.min.css"> <link rel=stylesheet  href="/css/franklin.css"> <link rel=stylesheet  href="/css/poole_hyde.css"> <link rel=stylesheet  href="/css/custom.css"> <link rel=stylesheet  href="/libs/highlight/styles/github-dark.min.css"> <style> html {font-size: 17px;} .franklin-content {position: relative; padding-left: 8%; padding-right: 5%; line-height: 1.35em;} @media (min-width: 940px) { .franklin-content {width: 100%; margin-left: auto; margin-right: auto;} } @media (max-width: 768px) { .franklin-content {padding-left: 6%; padding-right: 6%;} } </style> <link rel=icon  href="/assets/favicon.png"> <title>Writing your code</title> <div class=sidebar > <div class="container sidebar-sticky"> <div class=sidebar-about > <h1><a href="/">MoJuWo</a></h1> <p class=lead ><b>Mo</b>dern <b>Ju</b>lia <b>Wo</b>rkflows</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/">Home</a> <a class="sidebar-nav-item active" href="/pages/writing/">Writing</a> <a class="sidebar-nav-item " href="/pages/sharing/">Sharing</a> <a class="sidebar-nav-item " href="/pages/optimizing/">Optimizing</a> <a class="sidebar-nav-item " href="/pages/further/">Going further</a> </nav> <p>&copy; G. Dalle, J. Smit, A. Hill.</p> </div> </div> <div class="content container"> <div class=franklin-content ><h1 id=writing_your_code ><a href="#writing_your_code" class=header-anchor >Writing your code</a></h1> <div class=franklin-toc ><ol><li><a href="#installation">Installation</a><li><a href="#repl">REPL</a><li><a href="#editor">Editor</a><li><a href="#running_code">Running code</a><li><a href="#notebooks">Notebooks</a><li><a href="#packages">Packages</a><li><a href="#configuration">Configuration</a><li><a href="#configuration__2">Configuration</a><li><a href="#esthetics">Esthetics</a><li><a href="#debugging">Debugging</a><li><a href="#other_languages">Other languages</a><li><a href="#getting_help">Getting help</a></ol></div> <h2 id=installation ><a href="#installation" class=header-anchor >Installation</a></h2> <blockquote> <p>TLDR: Use <code>juliaup</code></p> </blockquote> <p>Do not install Julia from the official <a href="https://julialang.org/downloads/">downloads</a> page, use <strong><a href="https://github.com/JuliaLang/juliaup"><code>juliaup</code></a></strong> instead. You can get it from the Windows store, or from the command line on Unix systems:</p> <pre><code class=language-bash >curl -fsSL https://install.julialang.org | sh</code></pre>
+<!doctype html> <html lang=en > <meta charset=UTF-8 > <meta name=viewport  content="width=device-width, initial-scale=1"> <link rel=stylesheet  href="/libs/highlight/styles/github.min.css"> <link rel=stylesheet  href="/css/franklin.css"> <link rel=stylesheet  href="/css/poole_hyde.css"> <link rel=stylesheet  href="/css/custom.css"> <link rel=stylesheet  href="/libs/highlight/styles/github-dark.min.css"> <style> html {font-size: 17px;} .franklin-content {position: relative; padding-left: 8%; padding-right: 5%; line-height: 1.35em;} @media (min-width: 940px) { .franklin-content {width: 100%; margin-left: auto; margin-right: auto;} } @media (max-width: 768px) { .franklin-content {padding-left: 6%; padding-right: 6%;} } </style> <link rel=icon  href="/assets/favicon.png"> <title>Writing your code</title> <div class=sidebar > <div class="container sidebar-sticky"> <div class=sidebar-about > <h1><a href="/">MoJuWo</a></h1> <p class=lead ><b>Mo</b>dern <b>Ju</b>lia <b>Wo</b>rkflows</p> </div> <nav class=sidebar-nav > <a class="sidebar-nav-item " href="/">Home</a> <a class="sidebar-nav-item active" href="/pages/writing/">Writing</a> <a class="sidebar-nav-item " href="/pages/sharing/">Sharing</a> <a class="sidebar-nav-item " href="/pages/optimizing/">Optimizing</a> <a class="sidebar-nav-item " href="/pages/further/">Going further</a> </nav> <p>&copy; G. Dalle, J. Smit, A. Hill.</p> </div> </div> <div class="content container"> <div class=franklin-content ><h1 id=writing_your_code ><a href="#writing_your_code" class=header-anchor >Writing your code</a></h1> <div class=franklin-toc ><ol><li><a href="#installation">Installation</a><li><a href="#repl">REPL</a><li><a href="#editor">Editor</a><li><a href="#running_code">Running code</a><li><a href="#notebooks">Notebooks</a><li><a href="#packages">Packages</a><li><a href="#configuration">Configuration</a><li><a href="#esthetics">Esthetics</a><li><a href="#debugging">Debugging</a><li><a href="#other_languages">Other languages</a><li><a href="#getting_help">Getting help</a></ol></div> <h2 id=installation ><a href="#installation" class=header-anchor >Installation</a></h2> <blockquote> <p>TLDR: Use <code>juliaup</code></p> </blockquote> <p>Do not install Julia from the official <a href="https://julialang.org/downloads/">downloads</a> page, use <strong><a href="https://github.com/JuliaLang/juliaup"><code>juliaup</code></a></strong> instead. You can get it from the Windows store, or from the command line on Unix systems:</p> <pre><code class=language-bash >curl -fsSL https://install.julialang.org | sh</code></pre>
 <p>It provides <a href="https://github.com/JuliaLang/juliaup#using-juliaup">various utilities</a> to download, update, organize and switch between Julia versions. As a bonus, you no longer have to manually specify the path to your executable.</p>
 <p><code>juliaup</code> relies on adaptive shortcuts called &quot;channels&quot;, which allow you to access specific Julia versions without giving their exact number. Upon installation, the <a href="https://julialang.org/downloads/#current_stable_release">current stable release</a> is downloaded and selected as the default:</p>
 <pre><code class=language-bash >juliaup add release  # done automatically
@@ -57,20 +57,20 @@ julia&gt; String&#40;take&#33;&#40;io&#41;&#41;
 
 </ul>
 <pre><code class=language-julia-repl >&#40;modernjuliaworkflows.github.io&#41; pkg&gt; activate --temp
-Activating new project at `/tmp/jl_cbBBq2`
+Activating new project at `/tmp/jl_lYolQx`
 
-&#40;jl_cbBBq2&#41; pkg&gt; status
-Status `/tmp/jl_cbBBq2/Project.toml` (empty project)
+&#40;jl_lYolQx&#41; pkg&gt; status
+Status `/tmp/jl_lYolQx/Project.toml` (empty project)
 
-&#40;jl_cbBBq2&#41; pkg&gt; add Example
+&#40;jl_lYolQx&#41; pkg&gt; add Example
 Resolving package versions...
-    Updating `/tmp/jl_cbBBq2/Project.toml`
+    Updating `/tmp/jl_lYolQx/Project.toml`
   [7876af07] + Example v0.5.3
-    Updating `/tmp/jl_cbBBq2/Manifest.toml`
+    Updating `/tmp/jl_lYolQx/Manifest.toml`
   [7876af07] + Example v0.5.3
 
-&#40;jl_cbBBq2&#41; pkg&gt; status
-Status `/tmp/jl_cbBBq2/Project.toml`
+&#40;jl_lYolQx&#41; pkg&gt; status
+Status `/tmp/jl_lYolQx/Project.toml`
   [7876af07] Example v0.5.3
 </code></pre>
 
@@ -136,7 +136,7 @@ julia&gt; Pluto.run&#40;&#41;</code></pre>
 <p>TLDR: Pkg.jl lets you <code>activate</code> independent, reproducible environments to <code>add</code> and <code>remove</code> project-specific &#40;versions of&#41; packages.</p>
 </blockquote>
 <p>Pkg.jl and the Pkg mode built in to the <a href="#REPL">REPL</a> let you install packages and manage environments. A &quot;package&quot; is a structured way of reusing code between projects and the active &quot;environment&quot; is responsible for determining which versions of packages to load. When working on a project, you can create a new environment or switch to an existing one by running</p>
-<pre><code class=language-julia-repl >&#40;jl_cbBBq2&#41; pkg&gt; activate MyProject
+<pre><code class=language-julia-repl >&#40;jl_lYolQx&#41; pkg&gt; activate MyProject
 Activating project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject`
 </code></pre>
 
@@ -196,15 +196,6 @@ catch e
     @warn &quot;Error initializing Revise&quot;
 end</code></pre>
 <p>In addition, users commonly load packages that affect the REPL experience, as well as benchmarking or profiling utilities. We will come back to all of these later on, but in the meantime <strong><a href="https://github.com/abraemer/StartupCustomizer.jl">StartupCustomizer.jl</a></strong> can help you set them up. More generally, the startup file allows you to define your own favorite helper functions and have them immediately available in every Julia session.</p>
-<h2 id=configuration__2 ><a href="#configuration__2" class=header-anchor >Configuration</a></h2>
-<p>Julia accepts <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface">startup flags</a> to handle settings such as the number of threads available. In addition, most Julia developers also have a <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file">startup file</a> which is run automatically every time the language is started. It is located at <code>.julia/config/startup.jl</code>.</p>
-<p>The basic component that everyone puts in the startup file is Revise.jl:</p>
-<pre><code class=language-julia >try
-    using Revise
-catch e
-    @warn &quot;Error initializing Revise&quot;
-end</code></pre>
-<p>In addition, users commonly load packages that affect the REPL experience, as well as benchmarking or profiling utilities. We will come back to all of these later on, but in the meantime <strong><a href="https://github.com/abraemer/StartupCustomizer.jl">StartupCustomizer.jl</a></strong> can help you set them up. More generally, the startup file allows you to define your own favorite helper functions and have them immediately available in every Julia session.</p>
 <h2 id=esthetics ><a href="#esthetics" class=header-anchor >Esthetics</a></h2>
 <ul>
 <li><p><a href="https://github.com/FedeClaudi/Term.jl">Term.jl</a></p>
@@ -256,7 +247,7 @@ end</code></pre>
 
 </ul>
 <div class=page-foot >
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: August 03, 2023. 
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: August 04, 2023. 
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 </div>
