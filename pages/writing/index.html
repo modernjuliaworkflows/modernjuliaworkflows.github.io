@@ -57,20 +57,20 @@ julia&gt; String&#40;take&#33;&#40;io&#41;&#41;
 
 </ul>
 <pre><code class=language-julia-repl >&#40;modernjuliaworkflows.github.io&#41; pkg&gt; activate --temp
-Activating new project at `/tmp/jl_lYolQx`
+Activating new project at `/tmp/jl_Oga93H`
 
-&#40;jl_lYolQx&#41; pkg&gt; status
-Status `/tmp/jl_lYolQx/Project.toml` (empty project)
+&#40;jl_Oga93H&#41; pkg&gt; status
+Status `/tmp/jl_Oga93H/Project.toml` (empty project)
 
-&#40;jl_lYolQx&#41; pkg&gt; add Example
+&#40;jl_Oga93H&#41; pkg&gt; add Example
 Resolving package versions...
-    Updating `/tmp/jl_lYolQx/Project.toml`
+    Updating `/tmp/jl_Oga93H/Project.toml`
   [7876af07] + Example v0.5.3
-    Updating `/tmp/jl_lYolQx/Manifest.toml`
+    Updating `/tmp/jl_Oga93H/Manifest.toml`
   [7876af07] + Example v0.5.3
 
-&#40;jl_lYolQx&#41; pkg&gt; status
-Status `/tmp/jl_lYolQx/Project.toml`
+&#40;jl_Oga93H&#41; pkg&gt; status
+Status `/tmp/jl_Oga93H/Project.toml`
   [7876af07] Example v0.5.3
 </code></pre>
 
@@ -136,11 +136,11 @@ julia&gt; Pluto.run&#40;&#41;</code></pre>
 <p>TLDR: Pkg.jl lets you <code>activate</code> independent, reproducible environments to <code>add</code> and <code>remove</code> project-specific &#40;versions of&#41; packages.</p>
 </blockquote>
 <p>Pkg.jl and the Pkg mode built in to the <a href="#REPL">REPL</a> let you install packages and manage environments. A &quot;package&quot; is a structured way of reusing code between projects and the active &quot;environment&quot; is responsible for determining which versions of packages to load. When working on a project, you can create a new environment or switch to an existing one by running</p>
-<pre><code class=language-julia-repl >&#40;jl_lYolQx&#41; pkg&gt; activate MyProject
+<pre><code class=language-julia-repl >&#40;jl_Oga93H&#41; pkg&gt; activate MyProject
 Activating project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject`
 </code></pre>
 
-<p>or, from the command line, running <code>julia</code> with the <a href="&#40;https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface&#41;">startup flag</a> <code>--project MyProject</code>. Then packages you install will be detailed in the <code>Project.toml</code> file, which gives a high-level overview of the project, as well as its low-level <code>Manifest.toml</code> cousin, which encodes a detailed snapshot of the whole environment. Sharing a project between computers with perfect reproducibility is as simple as sending a folder containing your code as well as a <code>Project.toml</code> and <code>Manifest.toml</code> so Julia can perfectly recreate the state of packages in the local environment. When a project is shared, the recipient can simply <code>instantiate</code> the environment and have a perfect copy.</p>
+<p>or, from the command line, running <code>julia</code> with the <a href="#Configuration">startup flag</a> <code>--project MyProject</code>. After this, packages you install will be listed in the <code>Project.toml</code> file, which gives an overview of the project, as well as its low-level <code>Manifest.toml</code> cousin, which contains a detailed snapshot of packages and their dependencies. Sharing a project between computers is as simple as sending a folder containing your code as well as the <code>Project.toml</code> and <code>Manifest.toml</code>. With these files, the user can run <code>instantiate</code> in package mode and Julia can perfectly recreate the state of packages in the local environment.</p>
 <p>To add packages you can use the <code>add</code> command followed by any number of packages:</p>
 <pre><code class=language-julia-repl >&#40;MyProject&#41; pkg&gt; add Term OhMyREPL
 Resolving package versions...
@@ -148,10 +148,10 @@ Resolving package versions...
   No Changes to `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
 </code></pre>
 
-<p>If you haven&#39;t <code>activate</code>d a local project, these packages will be installed in the &quot;global environment&quot; whose name in Pkg mode&#39;s prompt is <code>@v1.X</code><sup id="fnref:1"><a href="#fndef:1" class=fnref >[1]</a></sup>, corresponding to the version of Julia currently active. Packages installed globally are available no matter which environment is active due to what&#39;s referred to as &quot;environment stacking&quot;.</p>
-<p>We can see this stack by running</p>
-<pre><code class=language-julia-repl >Base.LOAD_PATH</code></pre>
-<p>When choosing which code to load when <code>using Package</code> is called, Julia will start at the local environment referred to as <code>@</code>, then go down the stack to the global environment <code>@v1.X</code>, then finally to the standard library <code>@stdlib</code>. As mentioned before, this means that any package installed in the global environment can be used in any project. This is typically used for development tools that you always want available to be loaded manually or using the <a href="#Automatically"><code>startup.jl</code> file</a>. Secondly, this means that you can install different versions of globally installed packages in a local project with no interference. Finally, this also applies to the standard library, which can be treated like a third-party package without having its version tied to that of Julia itself.</p>
+<p>If you haven&#39;t <code>activate</code>d a local project, these packages will be installed in the &quot;global environment&quot; whose name in Pkg mode&#39;s prompt is <code>@v1.X</code><sup id="fnref:1"><a href="#fndef:1" class=fnref >[1]</a></sup>, corresponding to the version of Julia currently active. Packages installed globally are available no matter which local environment is active due to what&#39;s referred to as &quot;environment stacking&quot;.</p>
+<p>When calling <code>using Package</code>, Julia determines what to load by going down the stack defined by <code>Base.LOAD_PATH</code>:</p>
+<pre><code class=language-julia-repl >display&#40;Base.LOAD_PATH&#41;</code></pre>
+<p>The search begins at the local environment <code>@</code>, then the global environment <code>@v1.X</code>, and finally the standard library <code>@stdlib</code> that comes pre-installed with Julia. The two most important implications of this are firstly that development tools can be installed globally and <a href="#Configuration">loaded on startup</a> to be available to use, and secondly that packages in the standard library can be updated or fixed independently of the version of Julia you are using.</p>
 <p><table class=fndef  id="fndef:1">
     <tr>
         <td class=fndef-backref ><a href="#fnref:1">[1]</a>
@@ -160,19 +160,19 @@ Resolving package versions...
 </table>
  </p>
 <h3 id=local_packages ><a href="#local_packages" class=header-anchor >Local packages</a></h3>
-<p>Local packages are a smart way of reusing code between projects. You could load common code directly with <code>include&#40;&quot;path/to/file.jl&quot;&#41;</code>, but a local package allows you get all of the nice benefits afforded any other package:</p>
+<p>Local packages are a smart way of reusing code between projects. You could load common code directly with <code>include&#40;&quot;path/to/file.jl&quot;&#41;</code>, but a local package allows you to benefit from package niceties:</p>
 <ol>
 <li><p>You don&#39;t have to specify the path, you can just write <code>using MyPackage</code>,</p>
 
-<li><p>You can version the package and update it without breaking code that relies on old versions of the package,</p>
+<li><p>You can <a href="sharing/#Compatibility">version</a> the package and update it without breaking code that relies on old versions of the package,</p>
 
-<li><p>You can add it as a dependency to a package,</p>
+<li><p>You can add it as a dependency to a project that you&#39;re working on,</p>
 
 <li><p>&#40;Bonus&#33;&#41; You get used to developing reusable, modular code.</p>
 
 </ol>
 <h3 id=environments_in_vscode ><a href="#environments_in_vscode" class=header-anchor >Environments in VSCode</a></h3>
-<p>In VSCode, if your directory contains a <code>Project.toml</code>, you will be prompted whether you want to make this the default environment to run code in for this project. This simply adds the correct <code>--project</code> flag, but it is a great convenience to take advantage of.</p>
+<p>In VSCode, if your directory contains a <code>Project.toml</code>, you will be prompted whether you want to make this the default environment. With this option set, anytime you <a href="#running-code">open a REPL</a> the environment will already be the local one.</p>
 <ul>
 <li><p><a href="https://github.com/JuliaLang/Pkg.jl">Pkg.jl</a></p>
 
