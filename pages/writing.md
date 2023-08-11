@@ -498,8 +498,6 @@ About to run: (sum)([1, 2, 3, 6])
  6
 ```
 
-
-
 ## Other languages
 
 * [C and Fortran](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/)
