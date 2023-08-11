@@ -312,13 +312,193 @@ More generally, the startup file allows you to define your own favorite helper f
 * [Suppressor.jl](https://github.com/JuliaIO/Suppressor.jl)
 
 ## Debugging
+> TLDR: 
+> Use the VSCode debugger or Infiltrator.jl.
+> Use logging instead of printing.
 
-* [InteractiveCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl)
-* [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl)
-* [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl)
-* [Infiltrator.jl](https://github.com/JuliaDebug/Infiltrator.jl)
-* [Debugger.jl](https://github.com/JuliaDebug/Debugger.jl)
-* [debugging in VSCode](https://www.julia-vscode.org/docs/stable/userguide/debugging/)
+* [Logging][julia-docs-logging]
+* [Debugging in VSCode][vscode-debugger]
+* [Debugger.jl][debugger-repo]
+* [Infiltrator.jl][infiltrator-repo]
+
+<!-- Undocumented packages
+* [InteractiveCodeSearch.jl][interactivesearch-repo]
+* [InteractiveErrors.jl][interactiveerrors-repo]
+* [CodeTracking.jl][codetracking-repo]
+-->
+
+### Logging
+
+Assume you want to debug the following function:
+```julia
+function sum_of_divisors(n)
+    divisors = filter(x -> n % x == 0, 1:n)
+    return sum(divisors)
+end
+```
+```>
+sum_of_divisors(6) # should return 1 + 2 + 3
+```
+
+Using `@show` or `println`, you can print local variables inside of a function:
+
+```julia:debugshow
+function sum_of_divisors(n)
+    divisors = filter(x -> n % x == 0, 1:n)
+    @show divisors
+    return sum(divisors)
+end
+```
+```>
+sum_of_divisors(6)
+```
+
+> The problem with `sum_of_divisors` is the range `1:n`, 
+> which includes `n` in the list of computed divisors.
+> We can fix the function by changing the range to `1:n-1`.
+
+While printing might suffice to debug simple problems, we can do better.
+Julia offers the logging macros `@debug`, `@info`, `@warn` and `@error` that have several advantages over printing. They:
+- show the line number they were called from
+- label arguments, similar to `@show`
+- can be disabled and filtered according to their source module and severity level 
+- work well in multithreaded code
+- can be written to a file
+
+By default, `@debug` messages are suppressed. 
+You can enable them through the `JULIA_DEBUG` environment variable 
+by specifying the source module name, e.g. `Main`. 
+
+```julia:debuglogging
+function sum_of_divisors(n)
+    divisors = filter(x -> n % x == 0, 1:n)
+    @debug "sum_of_divisors" n divisors
+    return sum(divisors)
+end
+```
+
+<!-- Live REPL mode doesn't print debug output -->
+```julia-repl
+julia> ENV["JULIA_DEBUG"] = Main # enable @debug logs
+Main
+
+julia> sum_of_divisors(6)
+┌ Debug: sum_of_divisors
+│   n = 6
+│   divisors =
+│    4-element Vector{Int64}:
+│     1
+│     2
+│     3
+│     6
+└ @ Main REPL[1]:3
+12
+```
+
+For scripts, you can prefix your command-line call to `julia` with environment variables, 
+e.g. `JULIA_DEBUG=Main julia myscript.jl`. 
+Refer the [Julia documentation on logging][julia-docs-logging] for more information.
+
+### VSCode Debugger
+
+Using the [Julia VSCode extension][julia-vscode-repo], 
+click left of a line number in a VSCode editor pane to add a *breakpoint*, 
+which is visualized by a red circle. 
+In the debugging pane of the Julia VSCode extension, 
+click *Run and Debug* to start the debugger.
+The program will automatically halt when it hits a breakpoint.
+
+Using the toolbar at the top of the editor, you can 
+*continue*, *step over*, *step into* and *step out* of your code.
+The debugger will open a pane showing information about the code 
+such as local variables inside of the current function, 
+their current values and the call stack.
+
+For more information including explanatory screenshots, 
+refer to the [Julia VSCode documentation][vscode-debugger].
+
+### Infiltrator.jl
+
+[Infiltrator.jl's][infiltrator-repo] `@infiltrate` macro allows you to directly set breakpoints in your code.
+Calling a function which hits a breakpoint will activate the Infiltrator REPL-mode
+and change the prompt to `infil>`.
+
+Typing `?` in this mode will summarize available commands.
+For example, typing `@locals` in Infiltrator-mode will print local variables:
+
+```julia
+using Infiltrator 
+
+function sum_of_divisors(n)
+    divisors = filter(x -> n % x == 0, 1:n)
+    @infiltrate
+    return sum(divisors)
+end
+```
+```julia-repl
+julia> sum_of_divisors(6)
+Infiltrating (on thread 1) sum_of_divisors(n::Int64)
+  at REPL[4]:3
+
+infil> @locals
+- n::Int64 = 6
+- divisors::Vector{Int64} = [1, 2, 3, 6]
+```
+
+What makes Infiltrator powerful is the `@exfiltrate` macro,
+which allows you to move local variables into a global storage called the `safehouse`.
+
+```julia-repl
+infil> @exfiltrate divisors
+Exfiltrating 1 local variable into the safehouse.
+
+infil> @continue
+
+12
+
+julia> safehouse.divisors
+4-element Vector{Int64}:
+ 1
+ 2
+ 3
+ 6
+```
+
+### Debugger.jl
+
+Using [Debugger.jl][debugger-repo]'s `@enter` macro, we can enter a function call and step through it.
+The prompt changes to `1|debug>`, allowing you to use [Debugger.jl's commands][debugger-commands] 
+to step into and out of function calls, show local variables and set breakpoints.
+
+Typing `` ` `` will change the prompt to `1|julia>`, indicating evaluation mode. Any expression typed in this mode will be evaluated in the local context.
+This is useful to show local variables, as demonstrated in the following example:
+
+```julia-repl
+julia> @enter sum_of_divisors(6)
+In sum_of_divisors(n) at REPL[3]:1
+ 1  function sum_of_divisors(n)
+>2      divisors = filter(x -> n % x == 0, 1:n)
+ 3      return sum(divisors)
+ 4  end
+
+About to run: (typeof)(6)
+1|debug> n # n: step to next line
+In sum_of_divisors(n) at REPL[3]:1
+ 1  function sum_of_divisors(n)
+ 2      divisors = filter(x -> n % x == 0, 1:n)
+>3      return sum(divisors)
+ 4  end
+
+About to run: (sum)([1, 2, 3, 6])
+1|julia> divisors # type `, then variable name
+4-element Vector{Int64}:
+ 1
+ 2
+ 3
+ 6
+```
+
+
 
 ## Other languages
 
@@ -333,7 +513,12 @@ More generally, the startup file allows you to define your own favorite helper f
 * [help](https://julialang.org/about/help/)
 * [community](https://julialang.org/community/)
 
-```julia
-#hideall
-run(`rm -fr MyPackage`)
-```
+[julia-vscode-repo]: https://github.com/julia-vscode/julia-vscode
+[vscode-debugger]: https://www.julia-vscode.org/docs/stable/userguide/debugging/
+[julia-docs-logging]: https://docs.julialang.org/en/v1/stdlib/Logging/
+[infiltrator-repo]: https://github.com/JuliaDebug/Infiltrator.jl
+[debugger-repo]: https://github.com/JuliaDebug/Debugger.jl
+[debugger-commands]: https://github.com/JuliaDebug/Debugger.jl#debugger-commands
+[codetracking-repo]: https://github.com/timholy/CodeTracking.jl
+[interactiveerrors-repo]: https://github.com/MichaelHatherly/InteractiveErrors.jl
+[interactivesearch-repo]: https://github.com/tkf/InteractiveCodeSearch.jl
