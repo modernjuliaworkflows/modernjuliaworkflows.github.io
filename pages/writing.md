@@ -332,8 +332,3 @@ More generally, the startup file allows you to define your own favorite helper f
 * [cheatsheet](https://cheatsheet.juliadocs.org/)
 * [help](https://julialang.org/about/help/)
 * [community](https://julialang.org/community/)
-
-```julia
-#hideall
-run(`rm -fr MyPackage`)
-```
