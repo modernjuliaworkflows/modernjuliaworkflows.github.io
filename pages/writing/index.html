@@ -57,20 +57,20 @@ julia&gt; String&#40;take&#33;&#40;io&#41;&#41;
 
 </ul>
 <pre><code class=language-julia-repl >&#40;modernjuliaworkflows.github.io&#41; pkg&gt; activate --temp
-Activating new project at `/tmp/jl_T52Emm`
+Activating new project at `/tmp/jl_JqYijg`
 
-&#40;jl_T52Emm&#41; pkg&gt; status
-Status `/tmp/jl_T52Emm/Project.toml` (empty project)
+&#40;jl_JqYijg&#41; pkg&gt; status
+Status `/tmp/jl_JqYijg/Project.toml` (empty project)
 
-&#40;jl_T52Emm&#41; pkg&gt; add Example
+&#40;jl_JqYijg&#41; pkg&gt; add Example
 Resolving package versions...
-    Updating `/tmp/jl_T52Emm/Project.toml`
+    Updating `/tmp/jl_JqYijg/Project.toml`
   [7876af07] + Example v0.5.3
-    Updating `/tmp/jl_T52Emm/Manifest.toml`
+    Updating `/tmp/jl_JqYijg/Manifest.toml`
   [7876af07] + Example v0.5.3
 
-&#40;jl_T52Emm&#41; pkg&gt; status
-Status `/tmp/jl_T52Emm/Project.toml`
+&#40;jl_JqYijg&#41; pkg&gt; status
+Status `/tmp/jl_JqYijg/Project.toml`
   [7876af07] Example v0.5.3
 </code></pre>
 
@@ -137,7 +137,7 @@ julia&gt; Pluto.run&#40;&#41;</code></pre>
 </blockquote>
 <p>Pkg.jl and the <a href="#package-mode">Pkg mode</a> built in to the <a href="#repl">REPL</a> let you install packages and manage environments. A &quot;package&quot; is a structured way of reusing code between projects and the active &quot;environment&quot; is responsible for determining which versions of packages to load.</p>
 <p>Pkg.jl can be used from the REPL, as seen before:</p>
-<pre><code class=language-julia-repl >&#40;jl_T52Emm&#41; pkg&gt; activate MyPackage
+<pre><code class=language-julia-repl >&#40;jl_JqYijg&#41; pkg&gt; activate MyPackage
 Activating project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyPackage`
 </code></pre>
 
@@ -225,20 +225,137 @@ end</code></pre>
 
 </ul>
 <h2 id=debugging ><a href="#debugging" class=header-anchor >Debugging</a></h2>
+<blockquote>
+<p>TLDR:  Use the VSCode debugger or Infiltrator.jl. Use logging instead of printing.</p>
+</blockquote>
 <ul>
-<li><p><a href="https://github.com/tkf/InteractiveCodeSearch.jl">InteractiveCodeSearch.jl</a></p>
+<li><p><a href="https://docs.julialang.org/en/v1/stdlib/Logging/">Logging</a></p>
 
-<li><p><a href="https://github.com/MichaelHatherly/InteractiveErrors.jl">InteractiveErrors.jl</a></p>
-
-<li><p><a href="https://github.com/timholy/CodeTracking.jl">CodeTracking.jl</a></p>
-
-<li><p><a href="https://github.com/JuliaDebug/Infiltrator.jl">Infiltrator.jl</a></p>
+<li><p><a href="https://www.julia-vscode.org/docs/stable/userguide/debugging/">Debugging in VSCode</a></p>
 
 <li><p><a href="https://github.com/JuliaDebug/Debugger.jl">Debugger.jl</a></p>
 
-<li><p><a href="https://www.julia-vscode.org/docs/stable/userguide/debugging/">debugging in VSCode</a></p>
+<li><p><a href="https://github.com/JuliaDebug/Infiltrator.jl">Infiltrator.jl</a></p>
 
 </ul>
+<h3 id=logging ><a href="#logging" class=header-anchor >Logging</a></h3>
+<p>Assume you want to debug the following function:</p>
+<pre><code class=language-julia >function sum_of_divisors&#40;n&#41;
+    divisors &#61; filter&#40;x -&gt; n &#37; x &#61;&#61; 0, 1:n&#41;
+    return sum&#40;divisors&#41;
+end</code></pre>
+<pre><code class=language-julia-repl >julia> sum_of_divisors&#40;6&#41; # should return 1 &#43; 2 &#43; 3
+12
+</code></pre>
+
+<p>Using <code>@show</code> or <code>println</code>, you can print local variables inside of a function:</p>
+<pre><code class=language-julia >function sum_of_divisors&#40;n&#41;
+    divisors &#61; filter&#40;x -&gt; n &#37; x &#61;&#61; 0, 1:n&#41;
+    @show divisors
+    return sum&#40;divisors&#41;
+end</code></pre>
+<pre><code class=language-julia-repl >julia> sum_of_divisors&#40;6&#41;
+divisors = [1, 2, 3, 6]
+12
+</code></pre>
+
+<blockquote>
+<p>The problem with <code>sum_of_divisors</code> is the range <code>1:n</code>,  which includes <code>n</code> in the list of computed divisors. We can fix the function by changing the range to <code>1:n-1</code>.</p>
+</blockquote>
+<p>While printing might suffice to debug simple problems, we can do better. Julia offers the logging macros <code>@debug</code>, <code>@info</code>, <code>@warn</code> and <code>@error</code> that have several advantages over printing. They:</p>
+<ul>
+<li><p>show the line number they were called from</p>
+
+<li><p>label arguments, similar to <code>@show</code></p>
+
+<li><p>can be disabled and filtered according to their source module and severity level </p>
+
+<li><p>work well in multithreaded code</p>
+
+<li><p>can be written to a file</p>
+
+</ul>
+<p>By default, <code>@debug</code> messages are suppressed.  You can enable them through the <code>JULIA_DEBUG</code> environment variable  by specifying the source module name, e.g. <code>Main</code>. </p>
+<pre><code class=language-julia >function sum_of_divisors&#40;n&#41;
+    divisors &#61; filter&#40;x -&gt; n &#37; x &#61;&#61; 0, 1:n&#41;
+    @debug &quot;sum_of_divisors&quot; n divisors
+    return sum&#40;divisors&#41;
+end</code></pre>
+<pre><code class=language-julia-repl >julia&gt; ENV&#91;&quot;JULIA_DEBUG&quot;&#93; &#61; Main # enable @debug logs
+Main
+
+julia&gt; sum_of_divisors&#40;6&#41;
+┌ Debug: sum_of_divisors
+│   n &#61; 6
+│   divisors &#61;
+│    4-element Vector&#123;Int64&#125;:
+│     1
+│     2
+│     3
+│     6
+└ @ Main REPL&#91;1&#93;:3
+12</code></pre>
+<p>For scripts, you can prefix your command-line call to <code>julia</code> with environment variables,  e.g. <code>JULIA_DEBUG&#61;Main julia myscript.jl</code>.  Refer the <a href="https://docs.julialang.org/en/v1/stdlib/Logging/">Julia documentation on logging</a> for more information.</p>
+<h3 id=vscode_debugger ><a href="#vscode_debugger" class=header-anchor >VSCode Debugger</a></h3>
+<p>Using the <a href="https://github.com/julia-vscode/julia-vscode">Julia VSCode extension</a>,  click left of a line number in a VSCode editor pane to add a <em>breakpoint</em>,  which is visualized by a red circle.  In the debugging pane of the Julia VSCode extension,  click <em>Run and Debug</em> to start the debugger. The program will automatically halt when it hits a breakpoint.</p>
+<p>Using the toolbar at the top of the editor, you can  <em>continue</em>, <em>step over</em>, <em>step into</em> and <em>step out</em> of your code. The debugger will open a pane showing information about the code  such as local variables inside of the current function,  their current values and the call stack.</p>
+<p>For more information including explanatory screenshots,  refer to the <a href="https://www.julia-vscode.org/docs/stable/userguide/debugging/">Julia VSCode documentation</a>.</p>
+<h3 id=infiltratorjl ><a href="#infiltratorjl" class=header-anchor >Infiltrator.jl</a></h3>
+<p><a href="https://github.com/JuliaDebug/Infiltrator.jl">Infiltrator.jl&#39;s</a> <code>@infiltrate</code> macro allows you to directly set breakpoints in your code. Calling a function which hits a breakpoint will activate the Infiltrator REPL-mode and change the prompt to <code>infil&gt;</code>.</p>
+<p>Typing <code>?</code> in this mode will summarize available commands. For example, typing <code>@locals</code> in Infiltrator-mode will print local variables:</p>
+<pre><code class=language-julia >using Infiltrator 
+
+function sum_of_divisors&#40;n&#41;
+    divisors &#61; filter&#40;x -&gt; n &#37; x &#61;&#61; 0, 1:n&#41;
+    @infiltrate
+    return sum&#40;divisors&#41;
+end</code></pre>
+<pre><code class=language-julia-repl >julia&gt; sum_of_divisors&#40;6&#41;
+Infiltrating &#40;on thread 1&#41; sum_of_divisors&#40;n::Int64&#41;
+  at REPL&#91;4&#93;:3
+
+infil&gt; @locals
+- n::Int64 &#61; 6
+- divisors::Vector&#123;Int64&#125; &#61; &#91;1, 2, 3, 6&#93;</code></pre>
+<p>What makes Infiltrator powerful is the <code>@exfiltrate</code> macro, which allows you to move local variables into a global storage called the <code>safehouse</code>.</p>
+<pre><code class=language-julia-repl >infil&gt; @exfiltrate divisors
+Exfiltrating 1 local variable into the safehouse.
+
+infil&gt; @continue
+
+12
+
+julia&gt; safehouse.divisors
+4-element Vector&#123;Int64&#125;:
+ 1
+ 2
+ 3
+ 6</code></pre>
+<h3 id=debuggerjl ><a href="#debuggerjl" class=header-anchor >Debugger.jl</a></h3>
+<p>Using <a href="https://github.com/JuliaDebug/Debugger.jl">Debugger.jl</a>&#39;s <code>@enter</code> macro, we can enter a function call and step through it. The prompt changes to <code>1|debug&gt;</code>, allowing you to use <a href="https://github.com/JuliaDebug/Debugger.jl#debugger-commands">Debugger.jl&#39;s commands</a>  to step into and out of function calls, show local variables and set breakpoints.</p>
+<p>Typing <code>&#96;</code> will change the prompt to <code>1|julia&gt;</code>, indicating evaluation mode. Any expression typed in this mode will be evaluated in the local context. This is useful to show local variables, as demonstrated in the following example:</p>
+<pre><code class=language-julia-repl >julia&gt; @enter sum_of_divisors&#40;6&#41;
+In sum_of_divisors&#40;n&#41; at REPL&#91;3&#93;:1
+ 1  function sum_of_divisors&#40;n&#41;
+&gt;2      divisors &#61; filter&#40;x -&gt; n &#37; x &#61;&#61; 0, 1:n&#41;
+ 3      return sum&#40;divisors&#41;
+ 4  end
+
+About to run: &#40;typeof&#41;&#40;6&#41;
+1|debug&gt; n # n: step to next line
+In sum_of_divisors&#40;n&#41; at REPL&#91;3&#93;:1
+ 1  function sum_of_divisors&#40;n&#41;
+ 2      divisors &#61; filter&#40;x -&gt; n &#37; x &#61;&#61; 0, 1:n&#41;
+&gt;3      return sum&#40;divisors&#41;
+ 4  end
+
+About to run: &#40;sum&#41;&#40;&#91;1, 2, 3, 6&#93;&#41;
+1|julia&gt; divisors # type &#96;, then variable name
+4-element Vector&#123;Int64&#125;:
+ 1
+ 2
+ 3
+ 6</code></pre>
 <h2 id=other_languages ><a href="#other_languages" class=header-anchor >Other languages</a></h2>
 <ul>
 <li><p><a href="https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/">C and Fortran</a></p>
@@ -259,8 +376,9 @@ end</code></pre>
 <li><p><a href="https://julialang.org/community/">community</a></p>
 
 </ul>
+<p></p>
 <div class=page-foot >
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: August 11, 2023. 
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: August 14, 2023. 
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 </div>
