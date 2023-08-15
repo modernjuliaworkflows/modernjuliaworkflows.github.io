@@ -329,7 +329,8 @@ More generally, the startup file allows you to define your own favorite helper f
 
 ### Logging
 
-Assume you want to debug the following function:
+Assume you want to debug the following function, which is supposed to compute the 
+sum of [proper divisors](https://mathworld.wolfram.com/ProperDivisor.html) of $n$:
 ```julia
 function sum_of_divisors(n)
     divisors = filter(x -> n % x == 0, 1:n)
