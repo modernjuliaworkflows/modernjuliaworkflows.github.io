@@ -307,14 +307,14 @@ a.sidebar-nav-item:focus {
 /* Sticky sidebar
  *
  * Add the `sidebar-sticky` class to the sidebar's container to affix it the
- * contents to the bottom of the sidebar in tablets and up.
+ * contents to the top of the sidebar in tablets and up.
  */
 
 @media (min-width: 768px) {
   .sidebar-sticky {
     position: absolute;
+    top: 1rem;
     right: 1rem;
-    bottom: 1rem;
     left: 1rem;
   }
 }
@@ -337,4 +337,19 @@ a.sidebar-nav-item:focus {
     margin-left: 15rem;
     margin-right: 2rem;
   }
+}
+
+/* Hide the logo on screens with width less than 768px */
+@media (max-width: 767px) {
+  .logo-container {
+    display: none;
+  }
+}
+
+/* Center the logo within the logo container */
+.logo-img {
+  display: block;
+  margin-bottom: 15px;
+  margin-left: 20px;
+  width: 150px;
 }
