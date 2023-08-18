@@ -303,18 +303,42 @@ code {
 /* font-size: 90%; } */
 
 .hljs {
+  position: relative;
   font-size: var(--small);
   line-height: 1.35em;
   border-radius: 10px;
 }
 
+.hljs::before {
+  content: attr(class);
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.2rem 0.5rem 0.1rem;
+  background-color: #27303c; /* brighter than #0d1117 */
+  border-bottom-right-radius:10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.language-bash::before {content: "Bash";}
+.language-julia::before {content: "Julia";}
+.language-julia-repl::before {content: "Julia REPL";}
+.julia-repl::before {content: "Julia REPL";}
+.julia-repl-pkg::before {content: "Julia REPL: Pkg mode";}
+.julia-repl-help::before {content: "Julia REPL: Help mode";}
+.julia-repl-shell::before {content: "Julia REPL: Shell mode";}
+
 .hljs-meta { font-weight: bold;}
 
-.hljs-meta.shell_ {color: crimson;}
-.hljs-meta.prompt_ {color: rgb(25, 179, 51);}
-.hljs-meta.infiltrator_ {color: rgb(240, 150, 30);}
-.hljs-meta.debugger_ {color: rgb(240, 150, 30);}
-.hljs-meta.debuggereval_ {color: rgb(240, 150, 30);}
+/* Use colors from github-dark theme specified in style.html */
+.hljs-meta.prompt_ {color: #7ee787;}
+.hljs-meta.help_ {color: #f2cc60;}
+.hljs-meta.shell_ {color: #ff7b72;}
+.hljs-meta.infiltrator_ {color: #ffa657;}
+.hljs-meta.debugger_ {color: #ffa657;}
+.hljs-meta.debuggereval_ {color: #ffa657;}
 
 .code-output {
   background: var(--output-background);
