@@ -18,9 +18,11 @@
 * [Advanced Scientific Computing](https://github.com/timholy/AdvancedScientificComputing) by [Tim Holy](https://github.com/timholy)
 * [Good Scientific Code Workshop](https://github.com/JuliaDynamics/GoodScientificCodeWorkshop) by [JuliaDynamics](https://github.com/JuliaDynamics)
 * [Introduction to Julia Tutorial Workshop](https://github.com/storopoli/Julia-Workshop) by [Jose Storopoli](https://github.com/storopoli)
+* [Introduction to Julia Course](https://github.com/csc-training/julia-introduction) by [CSC Training](https://github.com/csc-training)
 * [Julia for Economists](https://github.com/cpfiffer/julia-bootcamp-2022) by [Cameron Pfiffer](https://github.com/cpfiffer)
 * [Julia programming for ML](https://adrhill.github.io/julia-ml-course/) by [Adrian Hill](https://github.com/adrhill/adrhill) 
 * [JuliaNotes.jl](https://m3g.github.io/JuliaNotes.jl/stable/) by the [Martínez Molecular Modeling Group](https://github.com/m3g)
+* [Learn X in Y Minutes Where X=Julia](https://learnxinyminutes.com/docs/julia/) by [Leah Hanson et al.](https://github.com/adambard/learnxinyminutes-docs/blame/master/julia.html.markdown)
 
 ## Blogs
 
