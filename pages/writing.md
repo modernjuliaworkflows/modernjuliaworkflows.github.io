@@ -151,10 +151,10 @@ They are also a good fit for literate programming, where lines of code are inter
 
 The most well-known notebook ecosystem is [Jupyter](https://jupyter.org/), which supports **Ju**lia, **Pyt**hon and **R** as its three core languages.
 To use it with Julia, you will need to install the **[IJulia.jl](https://github.com/JuliaLang/IJulia.jl)** backend.
-Then, if you have also installed Jupyter, you can run this command to launch the server:
+Then, if you have also [installed Jupyter](https://jupyter.org/install) with `pip install jupyterlab` (jupyterlab>=4.0 is recommended, previous versions could have performance issues), you can run this command to launch the server:
 
 ```bash
-jupyter notebook
+jupyter lab
 ```
 
 If you only have IJulia.jl on your system, you can run this snippet instead:
