@@ -59,24 +59,24 @@ julia +lts  <span class=hljs-comment ># launch lts</span></code></pre>
 <pre><code class="julia-repl hljs"><span class=hljs-metap>(modernjuliaworkflows.github.io) pkg&gt;</span> activate --temp
 ┌ Warning: The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
 └ @ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.3/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382
-  Activating new project at `/tmp/jl_43m6Zg`
+  Activating new project at `/tmp/jl_36X6lq`
 
-<span class=hljs-metap>(jl_43m6Zg) pkg&gt;</span> status
-Status `/tmp/jl_43m6Zg/Project.toml` (empty project)
+<span class=hljs-metap>(jl_36X6lq) pkg&gt;</span> status
+Status `/tmp/jl_36X6lq/Project.toml` (empty project)
 
-<span class=hljs-metap>(jl_43m6Zg) pkg&gt;</span> add Example
+<span class=hljs-metap>(jl_36X6lq) pkg&gt;</span> add Example
 Resolving package versions...
    Installed Example ─ v0.5.3
-    Updating `/tmp/jl_43m6Zg/Project.toml`
+    Updating `/tmp/jl_36X6lq/Project.toml`
   [7876af07] + Example v0.5.3
-    Updating `/tmp/jl_43m6Zg/Manifest.toml`
+    Updating `/tmp/jl_36X6lq/Manifest.toml`
   [7876af07] + Example v0.5.3
 Precompiling project...
 e[32m  ✓ e[39mExample
   1 dependency successfully precompiled in 1 seconds
 
-<span class=hljs-metap>(jl_43m6Zg) pkg&gt;</span> status
-Status `/tmp/jl_43m6Zg/Project.toml`
+<span class=hljs-metap>(jl_36X6lq) pkg&gt;</span> status
+Status `/tmp/jl_36X6lq/Project.toml`
   [7876af07] Example v0.5.3
 </code></pre>
 
@@ -120,8 +120,8 @@ writing.md
 <p>TLDR: Jupyter or Pluto, depending on your reactivity needs</p>
 </blockquote>
 <p>Notebooks are a popular alternative to IDEs when it comes to short and self-contained code, typically in data science. They are also a good fit for literate programming, where lines of code are interspersed by comments and explanations.</p>
-<p>The most well-known notebook ecosystem is <a href="https://jupyter.org/">Jupyter</a>, which supports <strong>Ju</strong>lia, <strong>Pyt</strong>hon and <strong>R</strong> as its three core languages. To use it with Julia, you will need to install the <strong><a href="https://github.com/JuliaLang/IJulia.jl">IJulia.jl</a></strong> backend. Then, if you have also installed Jupyter, you can run this command to launch the server:</p>
-<pre><code class="bash hljs">jupyter notebook</code></pre>
+<p>The most well-known notebook ecosystem is <a href="https://jupyter.org/">Jupyter</a>, which supports <strong>Ju</strong>lia, <strong>Pyt</strong>hon and <strong>R</strong> as its three core languages. To use it with Julia, you will need to install the <strong><a href="https://github.com/JuliaLang/IJulia.jl">IJulia.jl</a></strong> backend. Then, if you have also <a href="https://jupyter.org/install">installed Jupyter</a> with <code>pip install jupyterlab</code> &#40;jupyterlab&gt;&#61;4.0 is recommended, previous versions could have performance issues&#41;, you can run this command to launch the server:</p>
+<pre><code class="bash hljs">jupyter lab</code></pre>
 <p>If you only have IJulia.jl on your system, you can run this snippet instead:</p>
 <pre><code class="julia-repl hljs"><span class="hljs-meta prompt_">julia&gt;</span><span class=language-julia > <span class=hljs-keyword >using</span> IJulia
 </span>
@@ -143,7 +143,7 @@ writing.md
 </blockquote>
 <p>Pkg.jl and the <a href="#package-mode">Pkg mode</a> built in to the <a href="#repl">REPL</a> let you install packages and manage environments. A &quot;package&quot; is a structured way of reusing code between projects and the active &quot;environment&quot; is responsible for determining which versions of packages to load.</p>
 <p>Pkg.jl can be used from the REPL, as seen before:</p>
-<pre><code class="julia-repl hljs"><span class=hljs-metap>(jl_43m6Zg) pkg&gt;</span> activate MyPackage
+<pre><code class="julia-repl hljs"><span class=hljs-metap>(jl_36X6lq) pkg&gt;</span> activate MyPackage
 Activating new project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyPackage`
 </code></pre>
 
@@ -158,26 +158,26 @@ Activating new project at `~/work/modernjuliaworkflows.github.io/modernjuliawork
 <p>The <code>Project.toml</code> contains information both about the project e.g name, uuid, authors, and its dependencies. Its dependency-related content is visible with <code>&#93;status</code> or just <code>&#93;st</code></p>
 <pre><code class="julia-repl hljs"><span class=hljs-metap>(MyPackage) pkg&gt;</span> add Term OhMyREPL
 Resolving package versions...
+   Installed DataAPI ───────────────────── v1.15.0
    Installed TableTraits ───────────────── v1.0.1
+   Installed Crayons ───────────────────── v4.1.1
    Installed Pipe ──────────────────────── v1.3.0
    Installed Tables ────────────────────── v1.10.1
-   Installed DataAPI ───────────────────── v1.15.0
-   Installed Crayons ───────────────────── v4.1.1
-   Installed Highlights ────────────────── v0.5.2
-   Installed JuliaSyntax ───────────────── v0.4.6
+   Installed ProgressLogging ───────────── v0.1.4
    Installed IteratorInterfaceExtensions ─ v1.0.0
+   Installed OhMyREPL ──────────────────── v0.5.22
    Installed DataValueInterfaces ───────── v1.0.0
    Installed MyterialColors ────────────── v0.3.0
-   Installed fzf_jll ───────────────────── v0.29.0+0
    Installed AbstractTrees ─────────────── v0.4.4
-   Installed ProgressLogging ───────────── v0.1.4
+   Installed fzf_jll ───────────────────── v0.29.0+0
+   Installed JuliaSyntax ───────────────── v0.4.6
+   Installed Highlights ────────────────── v0.5.2
    Installed UnicodeFun ────────────────── v0.4.1
    Installed CodeTracking ──────────────── v1.3.4
-   Installed JLFzf ─────────────────────── v0.1.5
    Installed UnPack ────────────────────── v1.0.2
-   Installed OhMyREPL ──────────────────── v0.5.22
-   Installed Parameters ────────────────── v0.12.3
+   Installed JLFzf ─────────────────────── v0.1.5
    Installed Term ──────────────────────── v2.0.5
+   Installed Parameters ────────────────── v0.12.3
     Updating `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyPackage/Project.toml`
   [5fb14364] + OhMyREPL v0.5.22
   [22787eb5] + Term v2.0.5
@@ -245,8 +245,8 @@ Resolving package versions...
   [3f19e933] + p7zip_jll v17.4.0+0
         Info Packages marked with ⌅ have new versions available but compatibility constraints restrict them from upgrading. To see why use `status --outdated -m`
 Precompiling project...
-e[32m  ✓ e[39me[90mIteratorInterfaceExtensionse[39m
 e[32m  ✓ e[39me[90mDataValueInterfacese[39m
+e[32m  ✓ e[39me[90mIteratorInterfaceExtensionse[39m
 e[32m  ✓ e[39me[90mMyterialColorse[39m
 e[32m  ✓ e[39me[90mDataAPIe[39m
 e[32m  ✓ e[39me[90mCompilerSupportLibraries_jlle[39m
@@ -266,7 +266,7 @@ e[32m  ✓ e[39me[90mHighlightse[39m
 e[32m  ✓ e[39me[90mJuliaSyntaxe[39m
 e[32m  ✓ e[39mOhMyREPL
 e[32m  ✓ e[39mTerm
-  21 dependencies successfully precompiled in 63 seconds. 8 already precompiled.
+  21 dependencies successfully precompiled in 65 seconds. 8 already precompiled.
 
 <span class=hljs-metap>(MyPackage) pkg&gt;</span> st
 Status `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyPackage/Project.toml`
@@ -491,7 +491,7 @@ About to run: (sum)([1, 2, 3, 6])
 </ul>
 <p></p>
 <div class=page-foot >
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: August 31, 2023. 
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 05, 2023. 
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 </div>
