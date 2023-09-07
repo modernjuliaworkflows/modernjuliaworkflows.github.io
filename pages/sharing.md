@@ -84,3 +84,9 @@
 * [Interfaces.jl](https://github.com/rafaqz/Interfaces.jl)
 * [RequiredInterfaces.jl](https://github.com/Seelengrab/RequiredInterfaces.jl)
 * [PropCheck.jl](https://github.com/Seelengrab/PropCheck.jl)
+
+## Other languages
+
+* [C and Fortran](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/)
+* [CondaPkg.jl](https://github.com/cjdoris/CondaPkg.jl) + [PythonCall.jl](https://github.com/cjdoris/PythonCall.jl)
+* [JuliaInterop](https://github.com/JuliaInterop) ([RCall.jl](https://github.com/JuliaInterop/RCall.jl), [Cxx.jl](https://github.com/JuliaInterop/Cxx.jl))
