@@ -1,3 +1,4 @@
+__cache/
 __site/
 .DS_Store
 node_modules/
