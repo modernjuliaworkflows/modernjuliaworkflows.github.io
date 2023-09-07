@@ -6,15 +6,15 @@
 
 ## Setup
 
-* Git(Hub)
-* GitHub actions: [TagBot](https://github.com/JuliaRegistries/TagBot), [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl)
+* GitHub and GitHub actions
 * [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl)
 
-## Formatting
+## Code quality
 
 * style guides ([BlueStyle](https://github.com/invenia/BlueStyle), [SciMLStyle](https://github.com/SciML/SciMLStyle))
 * [JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl)
 * [formatting in VSCode](https://www.julia-vscode.org/docs/stable/userguide/formatter/)
+* [Aqua.jl](https://github.com/JuliaTesting/Aqua.jl)
 
 ## Testing
 
@@ -23,17 +23,11 @@
 * [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl)
 * [ReTest.jl](https://github.com/JuliaTesting/ReTest.jl)
 * [ReferenceTests.jl](https://github.com/JuliaTesting/ReferenceTests.jl)
-* [Aqua.jl](https://github.com/JuliaTesting/Aqua.jl)
-
-## Interfaces
-
-* [Interfaces.jl](https://github.com/rafaqz/Interfaces.jl)
-* [RequiredInterfaces.jl](https://github.com/Seelengrab/RequiredInterfaces.jl)
-* [PropCheck.jl](https://github.com/Seelengrab/PropCheck.jl)
 
 ## Documentation
 
 * [docstrings](https://docs.julialang.org/en/v1/manual/documentation/)
+* [DocStringExtensions.jl](https://github.com/JuliaDocs/DocStringExtensions.jl)
 * [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl)
 * [LiveServer.jl](https://github.com/tlienart/LiveServer.jl)
 * [Replay.jl](https://github.com/rafaqz/Interfaces.jl)
@@ -50,10 +44,14 @@
 * [semantic versioning](https://semver.org/)
 * [PackageCompatUI.jl](https://github.com/GunnarFarneback/PackageCompatUI.jl)
 * [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl)
-* [package extensions](https://pkgdocs.julialang.org/v1/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions))
-* [Requires.jl](https://github.com/JuliaPackaging/Requires.jl)
-* [PackageExtensionTools.jl](https://github.com/cjdoris/PackageExtensionTools.jl)
+* [TagBot](https://github.com/JuliaRegistries/TagBot)
 * [SimpleUnPack.jl](https://github.com/devmotion/SimpleUnPack.jl)
+
+## Extensions
+
+* [Requires.jl](https://github.com/JuliaPackaging/Requires.jl)
+* [package extensions](https://pkgdocs.julialang.org/v1/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions))
+* [PackageExtensionTools.jl](https://github.com/cjdoris/PackageExtensionTools.jl)
 
 ## Reproducibility
 
@@ -61,6 +59,7 @@
 * [DataDeps.jl](https://github.com/oxinabox/DataDeps.jl)
 * [ArtifactUtils.jl](https://github.com/JuliaPackaging/ArtifactUtils.jl)
 * [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl)
+* containers?
 
 ## Publishing
 
@@ -79,3 +78,9 @@
 * [Zenodo](https://zenodo.org/)
 * [PkgCite.jl](https://github.com/SebastianM-C/PkgCite.jl)
 * [DocumenterCitations.jl](https://github.com/ali-ramadhan/DocumenterCitations.jl)
+
+## Composability
+
+* [Interfaces.jl](https://github.com/rafaqz/Interfaces.jl)
+* [RequiredInterfaces.jl](https://github.com/Seelengrab/RequiredInterfaces.jl)
+* [PropCheck.jl](https://github.com/Seelengrab/PropCheck.jl)

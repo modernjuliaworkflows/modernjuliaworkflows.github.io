@@ -3,49 +3,37 @@ on:
   push:
     branches:
       - main
-concurrency:
-  # Skip intermediate builds: always.
-  # Cancel intermediate builds: only if it is a pull request build.
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-      with:
-        persist-credentials: false
-    # NOTE: Python is necessary for the pre-rendering (minification) step
-    - name: Install python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-    # NOTE: Here you can install dependencies such as matplotlib if you use
-    # packages such as PyPlot.
-    # - run: pip install matplotlib
-    - name: Install Julia
-      uses: julia-actions/setup-julia@v1
-      with:
-        version: '1' # Latest stable Julia release.
-    # NOTE
-    #   The steps below ensure that NodeJS and Franklin are loaded then it
-    #   installs highlight.js which is needed for the prerendering step
-    #   (code highlighting + katex prerendering).
-    #   Then the environment is activated and instantiated to install all
-    #   Julia packages which may be required to successfully build your site.
-    #   The last line should be `optimize()` though you may want to give it
-    #   specific arguments, see the documentation or ?optimize in the REPL.
-    - run: julia -e '
-            using Pkg; Pkg.activate("."); Pkg.instantiate();
-            using NodeJS; run(`$(npm_cmd()) install highlight.js`);
-            using Franklin;
-            optimize(clear=true)'
-    - name: Build and Deploy
-      uses: JamesIves/github-pages-deploy-action@releases/v3
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BRANCH: gh-pages
-        FOLDER: __site
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: |
+                __cache
+                ~/.julia
+          key: ${{ runner.os }}-franklin-cache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-franklin-cache-
+
+      # Julia
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: 1
+
+      # Website build
+      - run: julia -e '
+          using Pkg; Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
+          using Xranklin; build();'
+
+      # Deployment and caching
+      - run: touch __site/.nojekyll
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v4
+        with:
+          BRANCH: gh-pages
+          FOLDER: __site

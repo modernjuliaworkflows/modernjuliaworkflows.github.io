@@ -1,9 +1,10 @@
+__cache/
 __site/
 .DS_Store
 node_modules/
 package-lock.json
 .vscode
-Manifest.toml
+# Manifest.toml
 
 MyPackage/
 MyProject/
