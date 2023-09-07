@@ -8,7 +8,8 @@
 
 > TLDR: Use `juliaup`
 
-Do not install Julia from the official [downloads](https://julialang.org/downloads/) page, use **[`juliaup`](https://github.com/JuliaLang/juliaup)** instead.
+The most natural starting point is the [downloads](https://julialang.org/downloads/) page.
+However, for additional flexibility, we recommend to use **[`juliaup`](https://github.com/JuliaLang/juliaup)** instead.
 You can get it from the Windows store, or from the command line on Unix systems:
 
 ```bash

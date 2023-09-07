@@ -20,15 +20,14 @@ There are three blog posts of increasing technical difficulty, plus one page of 
 1. [Writing your code](/pages/writing/): from zero to a basic script
 2. [Sharing your code](/pages/sharing/): from a basic script to a reliable package
 3. [Optimizing your code](/pages/optimizing/): from a basic script to a light-speed algorithm
-4. [Going further](/pages/further/): a collection of other websites to help you dive deeper into the rabbit hole
+4. [Going further](/pages/further/): other websites to help you dive deeper into the rabbit hole
 
-All pages are fairly long and not meant to be read in one sitting, so take your time.
+These are all fairly long and not meant to be read in one sitting, so take your time.
 Keep in mind that while each of these resources _can_ be useful to you, not every one of them _will_ be.
 But at least you will know where to look in case you have a specific question.
 
 ## Before you start
 
 Many of the links you will see point to [GitHub](https://github.com/) repositories for Julia packages.
-When you click them, they will take you to a page called `README.md`, which gives a brief description of what the package does.
-Usually, this description is not enough to actually use the package.
-You can often find a more thorough documentation by looking for a blue badge called [`docs|stable`](https://img.shields.io/badge/docs-stable-blue.svg) at the top of the page.
+When you click them, they will take you to a page called `README.md` that contains a brief description of the package, sometimes insufficient for actual use.
+You can usually find more thorough documentation by looking for a blue badge called [`docs|stable`](https://img.shields.io/badge/docs-stable-blue.svg) at the top of the page.
