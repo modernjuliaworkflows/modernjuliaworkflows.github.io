@@ -6,5 +6,6 @@ package-lock.json
 .vscode
 # Manifest.toml
 
-MyPackage/
 MyProject/
+MyPackage/
+MyOtherPackage/
