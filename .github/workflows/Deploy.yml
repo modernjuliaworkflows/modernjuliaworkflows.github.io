@@ -9,7 +9,9 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v3
-
+      - name: Set git user config
+        run: |
+          git config --global user.name "myusername"
       - name: Cache
         uses: actions/cache@v2
         with:
@@ -32,8 +34,8 @@ jobs:
 
       # Deployment and caching
       - run: touch __site/.nojekyll
-      - name: Deploy 🚀
+      - name: Deploy
         uses: JamesIves/github-pages-deploy-action@releases/v4
         with:
-          BRANCH: gh-pages
+          BRANCH: ${{ github.event_name != 'pull_request' && 'gh-pages' || 'gh-pages-pr' }}
           FOLDER: __site

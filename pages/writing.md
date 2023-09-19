@@ -106,6 +106,14 @@ add Example
 status
 ```
 
+Note that the same keywords are also available in Julia mode:
+
+```>pkg-example-2
+using Pkg
+Pkg.status()
+Pkg.activate(".")
+```
+
 ### Shell mode (`;`)
 
 By pressing `;` you enter a terminal, where you can execute any bash command you want.
@@ -126,7 +134,7 @@ In practice, an Integrated Development Environment (or IDE) makes the experience
 The best IDE for Julia is [Visual Studio Code](https://code.visualstudio.com/), or VSCode, developed by Microsoft.
 Indeed, the [Julia VSCode extension](https://www.julia-vscode.org/) is the most feature-rich of all Julia IDE plugins.
 You can download it from the VSCode Marketplace.
-In what follows, we will somnetimes mention commands and keyboard shortcuts provided by this extension.
+In what follows, we will somnetimes mention commands and [keyboard shortcuts](https://www.julia-vscode.org/docs/stable/userguide/keybindings/) provided by this extension.
 But the only shortcut you need to remember is `Ctrl + Shift + P` (or `Cmd + Shift + P` on Mac): this opens the VSCode command palette, in which you can search for any command.
 Type "julia" in the command palette to see what you can do.
 
@@ -148,9 +156,9 @@ julia myfile.jl
 Julia has a rather high startup, load and compilation latency.
 If you only use scripts, you will pay this cost every time you run a slightly modified version of your code.
 That is why many Julia developers fire up a REPL at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way.
-This is made much easier by IDE integration, and here are the relevant [VSCode commands](https://www.julia-vscode.org/docs/stable/userguide/runningcode/):
+This is made much easier by [VSCode integration](https://www.julia-vscode.org/docs/stable/userguide/runningcode/), and here are the most important commands:
 
-* `Julia: Start REPL` - note that this is different from (and better than) opening a VSCode _terminal_ and running Julia.
+* `Julia: Start REPL` (shortcut `Alt + J` then `Alt + O`) - note that this is different from (and better than) opening a VSCode _terminal_ and running Julia.
 * `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - the executed code is the block containing the cursor, or the selected part if it exists
 
 Once your project grows, you will find yourself several files containing type and function definitions
@@ -207,12 +215,6 @@ julia> Pluto.run()
 
 As we have seen, Pkg.jl is the Julia equivalent of `pip` or `conda` for Python.
 It lets you [install packages](https://pkgdocs.julialang.org/v1/managing-packages/) and [manage environments](https://pkgdocs.julialang.org/v1/environments/) (collections of packages with specific versions).
-It can be used from the REPL, either in package mode (prefixing the first command with a `]`), or directly in Julia mode with the same keywords:
-
-```>env-example
-using Pkg
-Pkg.status()
-```
 
 Once you `]activate` a project, the packages you `]add` will be listed in two files called `Project.toml` and `Manifest.toml`.
 Sharing a project between computers is as simple as sending a folder containing your code and both of these files.
@@ -225,7 +227,7 @@ If you haven't entered any local project, packages will be installed in the defa
 Packages installed that way are available no matter which local environment is active, because of "environment stacking".
 It is therefore recommended to keep the default environment very light, containing only essential development tools like Revise.jl.
 
-In VSCode, if your directory contains a `Project.toml`, you will be asked whether you want to make this the default environment.
+Environments are also [handled by VSCode](https://www.julia-vscode.org/docs/stable/userguide/env/), if your directory contains a `Project.toml`, you will be asked whether you want to make this the default environment.
 You can modify this setting by clicking the `Julia env: ...` button at the bottom.
 Anytime you open a Julia REPL, it will launch within the environment you chose.
 
@@ -428,7 +430,7 @@ About to run: return true
 1
 ```
 
-For a more user-friendly debugging interface, Debugger.jl is [integrated](https://www.julia-vscode.org/docs/stable/userguide/debugging/) into the VSCode extension.
+For a more user-friendly debugging interface, Debugger.jl is [interfaced with VSCode](https://www.julia-vscode.org/docs/stable/userguide/debugging/).
 Click left of a line number in an editor pane to add a _breakpoint_, which is represented by a red circle.
 In the debugging pane of the Julia extension, click `Run and Debug` to start the debugger.
 The program will automatically halt when it hits a breakpoint.

@@ -35,13 +35,27 @@ julia> t = Template(dir=".", user="myusername", interactive=true)
 
 and answer each interactive prompt confidently without freaking out.
 
+Let's take a look at the folder `MyAwesomePackage`.
+
+```;pktemplates-structure
+ls -a MyAwesomePackage
+```
+
+and `]dev` it into our current environment before loading it.
+
+```]activate-awesomepackage
+dev ./MyAwesomePackage
+```
+
+```>using-awesome
+using MyAwesomePackage
+```
+
 ## Testing
 
-Take a look at the folder `MyAwesomePackage`.
 You already know that the `src` subfolder contains your source code, but you might wonder what the `test` subfolder is for.
 Its purpose is [unit testing](https://docs.julialang.org/en/v1/stdlib/Test/): automatically checking that your code behaves the way you want it to.
 For instance, if you write your own square root function, you may want to test that it gives the correct results for positive numbers, and errors for negative numbers.
-These tests belong in `test/runtests.jl`, and they may look somewhat like this:
 
 ```>sqrt
 using Test
@@ -54,24 +68,27 @@ using Test
 end
 ```
 
+These tests belong in `test/runtests.jl`, and they are executed with the `]test` command (in Pkg mode).
 Unit testing may seem rather naive, or even superfluous, but as your code grows more complex, it becomes easier to break something without noticing.
 Testing each part separately will increase the reliability of the software you write.
 
-If your package requires [test-specific dependencies](https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package), you can use [TestEnv.jl](https://github.com/JuliaTesting/TestEnv.jl) to activate the test environment with all necessary packages.
+At some point, your package may require [test-specific dependencies](https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package).
+This often happens when you need to test compatibility with another package, on which you do not depend for the source code itself.
+Or it may simply be due to testing-specific packages like Aqua.jl.
+For interactive testing work, use [TestEnv.jl](https://github.com/JuliaTesting/TestEnv.jl) to activate the full test environment (faster than running `]test` repeatedly).
 
-We list a few advanced testing utilities:
-
-* [ReferenceTests.jl](https://github.com/JuliaTesting/ReferenceTests.jl) allows you to compare function outputs with reference files
-* [ReTest.jl](https://github.com/JuliaTesting/ReTest.jl) lets you define tests next to the source code, and control their execution more precisely
-* [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) leverages the testing interface of VSCode
+We list a few advanced testing utilities without going into details.
+[ReferenceTests.jl](https://github.com/JuliaTesting/ReferenceTests.jl) allows you to compare function outputs with reference files.
+[ReTest.jl](https://github.com/JuliaTesting/ReTest.jl) lets you define tests next to the source code, and control their execution more precisely.
+[TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) leverages the testing interface of VSCode.
 
 ## Style
 
 To make your code easy to read, it is essential to follow a consistent set of guidelines.
 The official [style guide](https://docs.julialang.org/en/v1/manual/style-guide/) is very short, so most people use third party style guides like [BlueStyle](https://github.com/invenia/BlueStyle) or [SciMLStyle](https://github.com/SciML/SciMLStyle).
 
-[JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl) is an automated formatter for Julia files.
-It can help you enforce the style guide of your choice if you add a file `.JuliaFormatter.toml` at the root of your repository, containing a single line like
+[JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl) is an automated formatter for Julia files which can help you enforce the style guide of your choice.
+Just add a file `.JuliaFormatter.toml` at the root of your repository, containing a single line like
 
 ```toml
 style = "blue"
@@ -79,23 +96,61 @@ style = "blue"
 
 Then, the current directory will be formatted in the BlueStyle whenever you call
 
-```julia-repl
-julia> using JuliaFormatter
-
-julia> format(".");
+```>format
+using JuliaFormatter
+JuliaFormatter.format(MyAwesomePackage)  # returns a boolean
 ```
 
-This functionality is even [integrated with VSCode](https://www.julia-vscode.org/docs/stable/userguide/formatter/).
+This functionality is even [integrated with VSCode](https://www.julia-vscode.org/docs/stable/userguide/formatter/), and you can add it to your tests.
 
 ## Code quality
 
-* [Aqua.jl](https://github.com/JuliaTesting/Aqua.jl)
-* [JET.jl](https://github.com/aviatesk/JET.jl)
+Of course, there is more to code quality than just formatting.
+[Aqua.jl](https://github.com/JuliaTesting/Aqua.jl) provides a set of routines that examine other aspects of your package, from unused dependencies to ambiguous methods.
+It is usually a good idea to include the following in your tests:
+
+```>aqua
+using Aqua
+Aqua.test_all(MyAwesomePackage)
+```
+
+Meanwhile, [JET.jl](https://github.com/aviatesk/JET.jl) is a more advanced tool, similar to a static linter.
+Here we focus on its [error analysis](https://aviatesk.github.io/JET.jl/stable/jetanalysis/), which can detect errors or typos without even running the code by leveraging type inference.
+You can either use it in report mode (with a nice [VSCode display](https://www.julia-vscode.org/docs/stable/userguide/linter/#Runtime-diagnostics))
+
+```>jet
+using JET
+JET.report_package(MyAwesomePackage)
+JET.test_package(MyAwesomePackage)
+```
+
+Note that both Aqua.jl and JET.jl might pick up false positives: refer to their respective documentations for ways to make them less sensitive.
 
 ## Documentation
 
-* [docstrings](https://docs.julialang.org/en/v1/manual/documentation/)
-* [DocStringExtensions.jl](https://github.com/JuliaDocs/DocStringExtensions.jl)
+Even if your code does everything it is supposed to, it will be useless to others (and pretty soon to yourself) without proper documentation.
+Adding [docstrings](https://docs.julialang.org/en/v1/manual/documentation/) everywhere needs to be a second nature.
+
+```!
+"""
+    myfunc(a, b; kwargs...)
+
+One-line sentence describing the purpose of the function,
+just below the (indented) signature.
+
+More details if needed.
+"""
+function myfunc end;
+```
+
+This way, readers and users of your code can query them through the REPL help mode:
+
+```?
+myfunc
+```
+
+[DocStringExtensions.jl](https://github.com/JuliaDocs/DocStringExtensions.jl) provides a few shortcuts that can speed up docstring creation by taking care of the obvious parts.
+
 * [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl)
 * [LiveServer.jl](https://github.com/tlienart/LiveServer.jl)
 * [Pollen.jl](https://github.com/lorenzoh/Pollen.jl)
