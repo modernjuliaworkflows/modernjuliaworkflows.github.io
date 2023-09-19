@@ -2,7 +2,7 @@
 
 julia_version = "1.9.3"
 manifest_format = "2.0"
-project_hash = "fccffa3edcd656a12cc31af63af18d7e82c410ed"
+project_hash = "6f279a7959e5b714476ec1e9d33a56ac40fd87d6"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -303,16 +303,6 @@ deps = ["Printf", "Tables"]
 git-tree-sha1 = "821e918c170ead5298ff84bffee41dd28929a681"
 uuid = "ffc61752-8dc7-55ee-8c37-f3e9cdd09e70"
 version = "1.0.17"
-
-[[deps.MyAwesomePackage]]
-path = "MyAwesomePackage"
-uuid = "0c525e58-e250-42c4-bdd9-7409723e89d2"
-version = "1.0.0-DEV"
-
-[[deps.MyPackage]]
-path = "MyPackage"
-uuid = "f5590d0f-853b-4647-a867-f079ca59de90"
-version = "0.1.0"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"

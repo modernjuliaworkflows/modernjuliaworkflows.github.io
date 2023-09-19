@@ -21,19 +21,13 @@ The following code gives you a basic file structure to start with:
 
 ```>pkgtemplates
 using PkgTemplates
-t = Template(dir=".", user="myusername")
+t = Template(dir=".", user="myusername", interactive=false)
 !isdir("MyAwesomePackage") ? t("MyAwesomePackage") : nothing
 ```
 
 Then, you simply need to push this new folder to the remote repository <https://github.com/myusername/MyAwesomePackage.jl>, and you're ready to go.
 The rest of this post will explain to you what each part of this folder does, and how to bend them to your will.
-In particular, once you're done here, you will be able to run
-
-```julia-repl
-julia> t = Template(dir=".", user="myusername", interactive=true)
-```
-
-and answer each interactive prompt confidently without freaking out.
+In particular, once you're done here, you will be able to run PkgTemplates.jl with `interactive=true` and understand every option.
 
 Let's take a look at the folder `MyAwesomePackage`.
 
@@ -41,10 +35,12 @@ Let's take a look at the folder `MyAwesomePackage`.
 ls -a MyAwesomePackage
 ```
 
-and `]dev` it into our current environment before loading it.
+and `]dev` it into a work environment before loading it.
 
 ```]activate-awesomepackage
+activate MyAwesomeProject
 dev ./MyAwesomePackage
+status
 ```
 
 ```>using-awesome

@@ -111,7 +111,6 @@ Note that the same keywords are also available in Julia mode:
 ```>pkg-example-2
 using Pkg
 Pkg.status()
-Pkg.activate(".")
 ```
 
 ### Shell mode (`;`)
