@@ -119,35 +119,46 @@ Pkg.jl allows you to:</p>
 </ul>
 <p>As an illustration, we create a new environment called <code>MyProject</code> and download the package Example.jl inside it:</p>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(modernjuliaworkflows.github.io) pkg&gt;</span></span> activate MyProject
-<span class="sgr32"><span class="sgr1">  Activating</span></span> new project at `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject`
+<span class="sgr33"><span class="sgr1">┌ Warning: </span></span>The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
+<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.3/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382</span>
+<span class="sgr32"><span class="sgr1">  Activating</span></span> new project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject`
 <span class="sgr34"><span class="sgr1">(MyProject) pkg&gt;</span></span> add Example
 <span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
-<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Project.toml`
+<span class="sgr32"><span class="sgr1">   Installed</span></span> Example ─ v0.5.3
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Project.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.3</span>
-<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.3</span>
+<span class="sgr32"><span class="sgr1">Precompiling</span></span> project...
+<span class="sgr32">  ✓ </span>Example
+  1 dependency successfully precompiled in 1 seconds
 <span class="sgr34"><span class="sgr1">(MyProject) pkg&gt;</span></span> status
-<span class="sgr32"><span class="sgr1">Status</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Project.toml`
+<span class="sgr32"><span class="sgr1">Status</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Project.toml`
   <span class="sgr90">[7876af07] </span>Example v0.5.3
 </code></pre>
 <p>Note that the same keywords are also available in Julia mode:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Pkg
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.rm(&quot;Example&quot;)
-<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Project.toml`
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Project.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr91">- Example v0.5.3</span>
-<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr91">- Example v0.5.3</span>
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>We haven&#39;t cleaned this depot up for a bit, running Pkg.gc()...
+<span class="sgr32"><span class="sgr1">      Active</span></span> manifest files: 3 found
+<span class="sgr32"><span class="sgr1">      Active</span></span> artifact files: 2 found
+<span class="sgr32"><span class="sgr1">      Active</span></span> scratchspaces: 0 found
+<span class="sgr32"><span class="sgr1">     Deleted</span></span> no artifacts, repos, packages or scratchspaces
 </code></pre>
 <h3 id="shell_mode_(;)" ><a href="#shell_mode_(;)"> Shell mode (<code>;</code>)</a></h3><p>By pressing <code>;</code> you enter a terminal, where you can execute any bash command you want.</p>
 <pre><code class="julia-repl"><span class="sgr31"><span class="sgr1">shell&gt;</span></span> echo &quot;hello&quot;
 &quot;hello&quot;
 
 <span class="sgr31"><span class="sgr1">shell&gt;</span></span> ls ./pages
-further.md
 Manifest.toml
-optimizing.md
 Project.toml
+further.md
+optimizing.md
 sharing.md
 writing.md
 </code></pre>
@@ -185,8 +196,57 @@ If you are only writing scripts (and not full packages), all you need to do is</
 <li>replace every <code>include</code> with <code>includet</code> (for "include + track")</li>
 </ol>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Revise
+ERROR: ArgumentError: Package Revise not found in current path.
+- Run `import Pkg; Pkg.add(&quot;Revise&quot;)` to install the Revise package.
+Stacktrace:
+  [1] macro expansion
+    @ ./loading.jl:1630 [inlined]
+  [2] macro expansion
+    @ ./lock.jl:267 [inlined]
+  [3] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1611
+  [4] eval
+    @ ./boot.jl:370 [inlined]
+  [5] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:1903
+  [6] include_string
+    @ ./loading.jl:1887 [inlined]
+  [7] #69
+    @ ~/.julia/packages/Xranklin/O1gr6/src/context/code/eval.jl:91 [inlined]
+  [8] (::IOCapture.var&quot;#3#5&quot;{DataType, Xranklin.var&quot;#69#70&quot;{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
+    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:119
+  [9] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:514
+ [10] with_logger
+    @ ./logging.jl:626 [inlined]
+ [11] capture(f::Xranklin.var&quot;#69#70&quot;{Module, String}; rethrow::Type, color::Bool)
+    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:116
+ [12] capture
+    @ ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:72 [inlined]
+ [13] _attempt_eval
+    @ ~/.julia/packages/Xranklin/O1gr6/src/context/code/eval.jl:90 [inlined]
+ [14] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/O1gr6/src/context/code/eval.jl:73
+ [15] eval_nb_cell
+    @ ~/.julia/packages/Xranklin/O1gr6/src/context/code/eval.jl:45 [inlined]
+ [16] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/O1gr6/src/context/code/notebook_code.jl:169
+ [17] eval_code_cell!(lc::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/O1gr6/src/context/code/notebook_code.jl:126
+ [18] eval_code_cell!
+    @ ~/.julia/packages/Xranklin/O1gr6/src/context/code/notebook_code.jl:21 [inlined]
+ [19] _eval_repl_code(io::IOBuffer, ci::Xranklin.CodeInfo, lc::Xranklin.LocalContext; tohtml::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/O1gr6/src/convert/markdown/rules/code.jl:388
+ [20] _eval_repl_code
+    @ ~/.julia/packages/Xranklin/O1gr6/src/convert/markdown/rules/code.jl:352 [inlined]
+ [21] html_repl_code(ci::Xranklin.CodeInfo, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/O1gr6/src/convert/markdown/rules/code.jl:332
+ [22] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/O1gr6/src/convert/markdown/rules/code.jl:257
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> includet(&quot;utils.jl&quot;)
+ERROR: UndefVarError: `includet` not defined
+Stacktrace:
 </code></pre>
 <p>When keeping the same REPL open for a long time, it's common to end up with a "polluted" workspace where the definitions of certain variables or functions have been overwritten in unexpected ways.
 This, along with other events like <code>struct</code> redefinitions, might force you to restart your REPL now and again, and that's okay.</p>
@@ -237,7 +297,7 @@ As soon as you load your package, the files containing its code will be tracked 
 <span class="sgr32"><span class="sgr1">  Generating</span></span>  project MyPackage:
     MyPackage/Project.toml
     MyPackage/src/MyPackage.jl
-Dict{String, Base.UUID}(&quot;MyPackage&quot; =&gt; UUID(&quot;3e5e630f-d8f9-435b-b960-f4257f32ef09&quot;))
+Dict{String, Base.UUID}(&quot;MyPackage&quot; =&gt; UUID(&quot;58fe52bf-bf99-433a-8ccd-afae611048ea&quot;))
 </code></pre>
 <p>This command initializes a simple folder with a <code>Project.toml</code> and a <code>src</code> subfolder.
 The <code>src</code> subfolder contains a file <code>MyPackage.jl</code>, where a <a href="https://docs.julialang.org/en/v1/manual/modules/">module</a> called <code>MyPackage</code> is defined.
@@ -251,14 +311,13 @@ Once complete, that module should contain</p>
 Note the different commands: <code>]add Example</code> installs a specific version of a package from the general registry, while  <code>]dev ./MyPackage</code> relies on the current state of the code in the folder you point to.</p>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(MyProject) pkg&gt;</span></span> dev ./MyPackage
 <span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
-<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Project.toml`
-  <span class="sgr90">[3e5e630f] </span><span class="sgr92">+ MyPackage v0.1.0 `../MyPackage`</span>
-<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
-  <span class="sgr90">[3e5e630f] </span><span class="sgr92">+ MyPackage v0.1.0 `../MyPackage`</span>
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Project.toml`
+  <span class="sgr90">[58fe52bf] </span><span class="sgr92">+ MyPackage v0.1.0 `../MyPackage`</span>
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
+  <span class="sgr90">[58fe52bf] </span><span class="sgr92">+ MyPackage v0.1.0 `../MyPackage`</span>
 </code></pre>
 <p>We can then use the one function defined in <code>MyPackage</code>:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyPackage
-<span class="sgr36"><span class="sgr1">[ Info: </span></span>Precompiling MyPackage [3e5e630f-d8f9-435b-b960-f4257f32ef09]
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> MyPackage.greet()
 Hello World!
