@@ -30,7 +30,7 @@ The rest of this post will explain to you what each part of this folder does, an
 In particular, once you're done here, you will be able to run
 
 ```julia-repl
-t = Template(dir=".", user="myusername", interactive=true)
+julia> t = Template(dir=".", user="myusername", interactive=true)
 ```
 
 and answer each interactive prompt confidently without freaking out.
