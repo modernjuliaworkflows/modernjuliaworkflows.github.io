@@ -307,7 +307,7 @@ Assume you want to debug a function checking whether the $n$-th [Fermat number](
 ```!fermat
 function fermat_prime(n)
     F = 2^(2^n) + 1
-    for d in 2:isqrt(F)
+    for d in 2:isqrt(F)  # integer square root
         if F % d == 0
             return false
         end
@@ -371,7 +371,7 @@ In particular, note that `@debug` messages are suppressed by default.
 You can enable them through the `JULIA_DEBUG` environment variable if you specify the source module name, here `Main`.
 
 ```julia-repl
-ENV["JULIA_DEBUG"] = Main # enable @debug logs
+julia> ENV["JULIA_DEBUG"] = Main # enable @debug logs
 ```
 
 ## Debugging
