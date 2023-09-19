@@ -1,4 +1,13 @@
-@def title = "Sharing your code"
++++
+title = "Sharing your code"
+ignore_cache = true
++++
+
+```!
+# hideall
+isdir("MyAwesomeProject") ? rm("MyAwesomeProject"; recursive=true) : nothing
+isdir("MyAwesomePackage") ? rm("MyAwesomePackage"; recursive=true) : nothing
+```
 
 # Sharing your code
 
@@ -70,13 +79,14 @@ Testing each part separately will increase the reliability of the software you w
 
 At some point, your package may require [test-specific dependencies](https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package).
 This often happens when you need to test compatibility with another package, on which you do not depend for the source code itself.
-Or it may simply be due to testing-specific packages like Aqua.jl.
+Or it may simply be due to testing-specific packages like the ones we will encounter below.
 For interactive testing work, use [TestEnv.jl](https://github.com/JuliaTesting/TestEnv.jl) to activate the full test environment (faster than running `]test` repeatedly).
 
-We list a few advanced testing utilities without going into details.
-[ReferenceTests.jl](https://github.com/JuliaTesting/ReferenceTests.jl) allows you to compare function outputs with reference files.
-[ReTest.jl](https://github.com/JuliaTesting/ReTest.jl) lets you define tests next to the source code, and control their execution more precisely.
-[TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) leverages the testing interface of VSCode.
+We list a few advanced testing utilities without going into detail:
+
+* [ReferenceTests.jl](https://github.com/JuliaTesting/ReferenceTests.jl) to compare function outputs with reference files.
+* [ReTest.jl](https://github.com/JuliaTesting/ReTest.jl) to define tests next to the source code and control their execution.
+* [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) to leverage the testing interface of VSCode.
 
 ## Style
 
@@ -110,7 +120,7 @@ using Aqua
 Aqua.test_all(MyAwesomePackage)
 ```
 
-Meanwhile, [JET.jl](https://github.com/aviatesk/JET.jl) is a more advanced tool, similar to a static linter.
+Meanwhile, [JET.jl](https://github.com/aviatesk/JET.jl) is a complementary tool, similar to a static linter.
 Here we focus on its [error analysis](https://aviatesk.github.io/JET.jl/stable/jetanalysis/), which can detect errors or typos without even running the code by leveraging type inference.
 You can either use it in report mode (with a nice [VSCode display](https://www.julia-vscode.org/docs/stable/userguide/linter/#Runtime-diagnostics))
 
@@ -122,12 +132,27 @@ JET.test_package(MyAwesomePackage)
 
 Note that both Aqua.jl and JET.jl might pick up false positives: refer to their respective documentations for ways to make them less sensitive.
 
+## GitHub Actions
+
+The most useful aspect of PkgTemplates.jl is that it automatically generates workflows for [GitHub Actions](https://docs.github.com/en/actions/quickstart).
+These are stored as YAML files in `.github/workflows`, with a slightly convoluted syntax that you don't need to fully understand.
+For instance, the file `CI.yml` contains instructions that execute the tests of your package for each pull request, tag or push to the `main` branch.
+This is done on a GitHub server and should theoretically cost you money, but your GitHub repository is public, you get an unlimited workflow budget for free.
+
+The other default workflows are less relevant for new users, but we still mention them:
+
+* [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl) monitors your dependencies and their versions.
+* [TagBot](https://github.com/JuliaRegistries/TagBot) helps you manage package releases.
+
+More workflows and functionalities are available through optional [plugins](https://juliaci.github.io/PkgTemplates.jl/stable/user/#Plugins-1).
+The interactive setting `Template(..., interactive=true)` allows you to select the ones you want for a given package.  
+
 ## Documentation
 
 Even if your code does everything it is supposed to, it will be useless to others (and pretty soon to yourself) without proper documentation.
 Adding [docstrings](https://docs.julialang.org/en/v1/manual/documentation/) everywhere needs to be a second nature.
 
-```!
+```!docstring
 """
     myfunc(a, b; kwargs...)
 
@@ -147,22 +172,18 @@ myfunc
 
 [DocStringExtensions.jl](https://github.com/JuliaDocs/DocStringExtensions.jl) provides a few shortcuts that can speed up docstring creation by taking care of the obvious parts.
 
-* [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl)
-* [LiveServer.jl](https://github.com/tlienart/LiveServer.jl)
-* [Pollen.jl](https://github.com/lorenzoh/Pollen.jl)
-* [Replay.jl](https://github.com/AtelierArith/Replay.jl)
+However, package documentation is not limited to docstrings.
+It can also contain high-level overviews, technical explanations, examples, tutorials, etc.
+[Documenter.jl](https://github.com/JuliaDocs/Documenter.jl) allows you to design a website for all of this, based on Markdown files contained in the `docs` subfolder of your package.
+Unsurprisingly, its own [documentation](https://documenter.juliadocs.org/stable/) is excellent and will teach you a lot.
 
-## GitHub Actions
+But if you want your work cut out for you, just select the [`Documenter` plugin](https://juliaci.github.io/PkgTemplates.jl/stable/user/#PkgTemplates.Documenter) from PkgTemplates.jl.
+Not only will this fill the `docs` subfolder with the right contents: it will also initialize a [GitHub Actions workflow](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch) to build and deploy your website online.
+The only thing left to do is to activate GitHub Pages and [select the `gh-pages` branch as source](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch).
+When iteratively updating documentation pages, [LiveServer.jl](https://github.com/tlienart/LiveServer.jl) provides a handy automatic reload function.
 
-The most useful aspect of PkgTemplates.jl is that it automatically generates workflows for [GitHub Actions](https://docs.github.com/en/actions/quickstart).
-These are stored as YAML files in `.github/workflows`, with a slightly convoluted syntax that you don't need to fully understand.
-For instance, the file `CI.yml` contains instructions that execute the tests of your package for each pull request, tag or push to the `main` branch.
-This is done on a GitHub server and should theoretically cost you money, but your GitHub repository is public, you get an unlimited workflow budget for free.
-
-The other default workflows are less relevant for new users, but we still mention them:
-
-* [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl) monitors your dependencies and their versions.
-* [TagBot](https://github.com/JuliaRegistries/TagBot) helps you manage package releases.
+Assuming you are looking for an alternative to Documenter.jl, you can try out [Pollen.jl](https://github.com/lorenzoh/Pollen.jl).
+In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allows you to replay instructions entered into your terminal as an ASCII video.
 
 ## Literate programming
 

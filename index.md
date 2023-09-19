@@ -1,10 +1,12 @@
-@def title = "Modern Julia Workflows"
++++
+title = "Modern Julia Workflows"
++++
 
 # Modern Julia Workflows
 
 A series of blog posts on best practices for Julia development.
 Consider this a draft: once the posts are ready, we will submit them to the [Julia language blog](https://julialang.org/blog/) to make them easily discoverable.
-If you find it useful, please star our [GitHub repo](https://github.com/modernjuliaworkflows/modernjuliaworkflows.github.io)!
+If you find our project useful, please star the [GitHub repo](https://github.com/modernjuliaworkflows/modernjuliaworkflows.github.io)!
 
 \toc
 

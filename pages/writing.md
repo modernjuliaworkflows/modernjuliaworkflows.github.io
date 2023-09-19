@@ -1,4 +1,13 @@
-@def title = "Writing your code"
++++
+title = "Writing your code"
+ignore_cache = true
++++
+
+```!
+# hideall
+isdir("MyProject") ? rm("MyProject"; recursive=true) : nothing
+isdir("MyPackage") ? rm("MyPackage"; recursive=true) : nothing
+```
 
 # Writing your code
 
@@ -89,6 +98,8 @@ println
 
 If you don't know the exact name you are looking for, type a word surrounded by quotes to see in which docstrings it pops up.
 
+If the help mode does not solve your problem, you can also dig into the standard library [InteractiveUtils.jl](https://docs.julialang.org/en/v1/stdlib/InteractiveUtils/) for more powerful search capabilities.
+
 ### Package mode (`]`)
 
 By pressing `]` you access [Pkg.jl](https://github.com/JuliaLang/Pkg.jl), Julia's integrated package manager, whose [documentation](https://pkgdocs.julialang.org/v1/getting-started/) is an absolute must-read.
@@ -110,7 +121,7 @@ Note that the same keywords are also available in Julia mode:
 
 ```>pkg-example-2
 using Pkg
-Pkg.update()
+Pkg.rm("Example")
 ```
 
 ### Shell mode (`;`)
@@ -161,12 +172,17 @@ This is made much easier by [VSCode integration](https://www.julia-vscode.org/do
 * `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - the executed code is the block containing the cursor, or the selected part if it exists
 
 Once your project grows, you will find yourself several files containing type and function definitions
-It is rather tedious to re-run `include("my_definitions.jl")` for every small change, which is why [Revise.jl](https://github.com/timholy/Revise.jl) was created.
+It is rather tedious to re-run `include("utils.jl")` for every small change, which is why [Revise.jl](https://github.com/timholy/Revise.jl) was created.
 This package is used by a vast majority of Julia developers to track code modifications automatically.
 If you are only writing scripts (and not full packages), all you need to do is
 
 1. start your Julia session with `using Revise`
 2. replace every `include` with `includet` (for "include + track")
+
+```>revise
+using Revise
+includet("utils.jl")
+```
 
 When keeping the same REPL open for a long time, it's common to end up with a "polluted" workspace where the definitions of certain variables or functions have been overwritten in unexpected ways.
 This, along with other events like `struct` redefinitions, might force you to restart your REPL now and again, and that's okay.
@@ -246,11 +262,11 @@ To create a new package locally, the easy way is to use `]generate` (we will dis
 
 This command initializes a simple folder with a `Project.toml` and a `src` subfolder.
 The `src` subfolder contains a file `MyPackage.jl`, where a [module](https://docs.julialang.org/en/v1/manual/modules/) called `MyPackage` is defined.
-Said module should contain
+Once complete, that module should contain
 
 * the list of imported dependencies $\to$ `using MyOtherPackage`
-* the list of included scripts in the correct order $\to$ `include("my_definitions.jl")`
-* the list of names you want to make public $\to$ `export my_function`
+* the list of included scripts in the correct order $\to$ `include("utils.jl")`
+* the list of names you want to make public $\to$ `export myfunction`
 
 To experiment with this new package, you can `]dev` it into your current environment.
 Note the different commands: `]add Example` installs a specific version of a package from the general registry, while  `]dev ./MyPackage` relies on the current state of the code in the folder you point to.
@@ -481,4 +497,8 @@ julia> safehouse.F
 1
 ```
 
-More advanced debugging tools include [InteractiveCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl), [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl) and [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl), but we will not describe them in detail.
+We list a few advanced debugging utilities without going into detail:
+
+* [InteractiveCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl) to look for a precise implementation of a function.
+* [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl) to extend InteractiveUtils.jl
+* [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl) to navigate through stacktraces.
