@@ -13,6 +13,7 @@ jobs:
       - name: Set git user config
         run: |
           git config --global user.name "myusername"
+          git config --global user.email "myusername@modernjuliaworkflows.github"
       - name: 🚀 Build and Deploy
         uses: tlienart/xranklin-build-action@main
         with:
