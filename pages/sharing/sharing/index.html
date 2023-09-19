@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
+  <link rel="stylesheet" href="/css/franklin.css">
+<link rel="stylesheet" href="/css/poole_hyde.css">
+<link rel="stylesheet" href="/css/custom.css">
+<link rel="stylesheet" href="/libs/highlight/styles/github-dark.min.css">
+
+<style>
+  html {font-size: 17px;}
+  .franklin-content {position: relative; padding-left: 8%; padding-right: 5%; line-height: 1.35em;}
+  @media (min-width: 940px) {
+    .franklin-content {width: 100%; margin-left: auto; margin-right: auto;}
+  }
+  @media (max-width: 768px) {
+    .franklin-content {padding-left: 6%; padding-right: 6%;}
+  }
+</style>
+<link rel="icon" href="/assets/favicon.png">
+
+   <title>Sharing your code</title>  
+</head>
+<body>
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+      <h1><a href="/">MoJuWo</a></h1>
+      <p class="lead">Modern Julia Workflows</p>
+      <div class="logo-container">
+        <img src="/assets/logo.svg" alt="MoJuWo Logo" class="logo-img">
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item " href="/">Home</a>
+      <a class="sidebar-nav-item " href="/pages/writing/writing/">Writing</a>
+      <a class="sidebar-nav-item active" href="/pages/sharing/sharing/">Sharing</a>
+      <a class="sidebar-nav-item " href="/pages/optimizing/optimizing/">Optimizing</a>
+      <a class="sidebar-nav-item " href="/pages/further/further/">Going further</a>
+    </nav>
+    <p>&copy; G. Dalle, J. Smit, A. Hill.</p>
+  </div>
+</div>
+<div class="content container">
+
+
+<div class="franklin-content" >
+  <h1 id="sharing_your_code" ><a href="#sharing_your_code"> Sharing your code</a></h1><p>In this post, you will learn about tools to initialize, structure and distribute Julia packages.</p>
+<div class="toc"><ol><li><a href="#setup">Setup</a></li><li><a href="#testing">Testing</a></li><li><a href="#style">Style</a></li><li><a href="#code_quality">Code quality</a></li><li><a href="#github_actions">GitHub Actions</a></li><li><a href="#documentation">Documentation</a></li><li><a href="#literate_programming">Literate programming</a></li><li><a href="#compatibility">Compatibility</a></li><li><a href="#extensions">Extensions</a></li><li><a href="#reproducibility">Reproducibility</a></li><li><a href="#publishing">Publishing</a></li><li><a href="#collaboration">Collaboration</a></li><li><a href="#citations">Citations</a></li><li><a href="#composability">Composability</a></li><li><a href="#other_languages">Other languages</a></li></ol></div><h2 id="setup" ><a href="#setup"> Setup</a></h2><p>A vast majority of Julia packages are hosted on <a href="https://github.com/">GitHub</a> (although less common, other options like <a href="https://gitlab.com/">GitLab</a> are also possible).
+GitHub is a platform for collaborative software development, based on the version control system <a href="https://git-scm.com/">Git</a>.
+If you are unfamiliar with these technologies, check out the <a href="https://docs.github.com/en/get-started/quickstart">GitHub documentation</a>.</p>
+<p>The first step is therefore <a href="https://github.com/new">creating</a> an empty GitHub repository.
+You should try to follow <a href="https://pkgdocs.julialang.org/v1/creating-packages/#Package-naming-guidelines">package naming guidelines</a> and add a ".jl" extension at the end, like so: "MyAwesomePackage.jl".
+Do not insert any files like <code>README.md</code>, <code>.gitignore</code> or <code>LICENSE.md</code>, this will be done for you in the next step.</p>
+<p>Indeed, we can leverage <a href="https://github.com/JuliaCI/PkgTemplates.jl">PkgTemplates.jl</a> to automate package creation (like <code>]generate</code> from Pkg.jl but on steroids).
+The following code gives you a basic file structure to start with:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using PkgTemplates
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> t = Template(dir=Utils.path(:site), user=&quot;myusername&quot;, interactive=false);
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> t(&quot;MyAwesomePackage&quot;)
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Running prehooks
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Running hooks
+<span class="sgr32"><span class="sgr1">  Activating</span></span> project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`
+<span class="sgr32"><span class="sgr1">    Updating</span></span> registry at `~/.julia/registries/General.toml`
+<span class="sgr32"><span class="sgr1">  No Changes</span></span> to `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/Project.toml`
+<span class="sgr32"><span class="sgr1">  No Changes</span></span> to `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/Manifest.toml`
+<span class="sgr32"><span class="sgr1">Precompiling</span></span> project...
+<span class="sgr32">  ✓ </span>MyAwesomePackage
+  1 dependency successfully precompiled in 0 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>We haven&#39;t cleaned this depot up for a bit, running Pkg.gc()...
+<span class="sgr32"><span class="sgr1">      Active</span></span> manifest files: 4 found
+<span class="sgr32"><span class="sgr1">      Active</span></span> artifact files: 2 found
+<span class="sgr32"><span class="sgr1">      Active</span></span> scratchspaces: 0 found
+<span class="sgr32"><span class="sgr1">     Deleted</span></span> no artifacts, repos, packages or scratchspaces
+<span class="sgr32"><span class="sgr1">  Activating</span></span> project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/sharing`
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Running posthooks
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>New package is at /home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage
+</code></pre>
+<p>Then, you simply need to push this new folder to the remote repository <a href="https://github.com/myusername/MyAwesomePackage.jl">https://github.com/myusername/MyAwesomePackage.jl</a>, and you're ready to go.
+The rest of this post will explain to you what each part of this folder does, and how to bend them to your will.
+In particular, once you're done here, you will be able to run PkgTemplates.jl with <code>interactive=true</code> and understand every option.</p>
+<p>To work on the package further, we develop it into the current environment and load it:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Pkg
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.develop(path=sitepath(&quot;MyAwesomePackage&quot;))
+<span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/sharing/Project.toml`
+  <span class="sgr90">[9a46dbd3] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/sharing/Manifest.toml`
+  <span class="sgr90">[9a46dbd3] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyAwesomePackage
+</code></pre>
+<h2 id="testing" ><a href="#testing"> Testing</a></h2><p>You already know that the <code>src</code> subfolder contains your source code, but you might wonder what the <code>test</code> subfolder is for.
+Its purpose is <a href="https://docs.julialang.org/en/v1/stdlib/Test/">unit testing</a>: automatically checking that your code behaves the way you want it to.
+For instance, if you write your own square root function, you may want to test that it gives the correct results for positive numbers, and errors for negative numbers.</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Test
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @test sqrt(4) ≈ 2
+Test Passed
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @testset &quot;Invalid inputs&quot; begin
+    @test_throws DomainError sqrt(-1)
+    @test_throws MethodError sqrt(&quot;abc&quot;)
+end
+<span class="sgr1">Test Summary:  | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
+Invalid inputs | <span class="sgr32">   2  </span><span class="sgr36">    2  </span>0.1s
+Test.DefaultTestSet(&quot;Invalid inputs&quot;, Any[], 2, false, false, true, 1.695154374256645e9, 1.695154374308647e9, false)
+</code></pre>
+<p>These tests belong in <code>test/runtests.jl</code>, and they are executed with the <code>]test</code> command (in Pkg mode).
+Unit testing may seem rather naive, or even superfluous, but as your code grows more complex, it becomes easier to break something without noticing.
+Testing each part separately will increase the reliability of the software you write.</p>
+<p>At some point, your package may require <a href="https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package">test-specific dependencies</a>.
+This often happens when you need to test compatibility with another package, on which you do not depend for the source code itself.
+Or it may simply be due to testing-specific packages like the ones we will encounter below.
+For interactive testing work, use <a href="https://github.com/JuliaTesting/TestEnv.jl">TestEnv.jl</a> to activate the full test environment (faster than running <code>]test</code> repeatedly).</p>
+<p>We list a few advanced testing utilities without going into detail:</p>
+<ul>
+<li><a href="https://github.com/JuliaTesting/ReferenceTests.jl">ReferenceTests.jl</a> to compare function outputs with reference files.</li>
+<li><a href="https://github.com/JuliaTesting/ReTest.jl">ReTest.jl</a> to define tests next to the source code and control their execution.</li>
+<li><a href="https://github.com/julia-vscode/TestItemRunner.jl">TestItemRunner.jl</a> to leverage the testing interface of VSCode.</li>
+</ul>
+<h2 id="style" ><a href="#style"> Style</a></h2><p>To make your code easy to read, it is essential to follow a consistent set of guidelines.
+The official <a href="https://docs.julialang.org/en/v1/manual/style-guide/">style guide</a> is very short, so most people use third party style guides like <a href="https://github.com/invenia/BlueStyle">BlueStyle</a> or <a href="https://github.com/SciML/SciMLStyle">SciMLStyle</a>.</p>
+<p><a href="https://github.com/domluna/JuliaFormatter.jl">JuliaFormatter.jl</a> is an automated formatter for Julia files which can help you enforce the style guide of your choice.
+Just add a file <code>.JuliaFormatter.toml</code> at the root of your repository, containing a single line like</p>
+<pre><code class="toml">style = &quot;blue&quot;</code></pre>
+<p>Then, the package directory will be formatted in the BlueStyle whenever you call</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using JuliaFormatter
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> JuliaFormatter.format(MyAwesomePackage)
+true
+</code></pre>
+<p>This functionality is even <a href="https://www.julia-vscode.org/docs/stable/userguide/formatter/">integrated with VSCode</a>, and you can add it to your tests.</p>
+<h2 id="code_quality" ><a href="#code_quality"> Code quality</a></h2><p>Of course, there is more to code quality than just formatting.
+<a href="https://github.com/JuliaTesting/Aqua.jl">Aqua.jl</a> provides a set of routines that examine other aspects of your package, from unused dependencies to ambiguous methods.
+It is usually a good idea to include the following in your tests:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Aqua
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> Aqua.test_all(MyAwesomePackage)
+Skipping Base.active_repl
+Skipping Base.active_repl_backend
+<span class="sgr1">Test Summary:    | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
+Method ambiguity | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>2.1s
+<span class="sgr1">Test Summary:           | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
+Unbound type parameters | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>0.1s
+<span class="sgr1">Test Summary:     | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
+Undefined exports | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>0.0s
+<span class="sgr1">Test Summary:                              | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
+Compare Project.toml and test/Project.toml | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>0.0s
+<span class="sgr1">Test Summary:      | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
+Stale dependencies | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>0.0s
+<span class="sgr1">Test Summary: | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
+Compat bounds | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>0.0s
+<span class="sgr1">Test Summary:           | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
+Project.toml formatting | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>0.3s
+<span class="sgr1">Test Summary: | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
+Piracy        | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>0.1s
+Test.DefaultTestSet(&quot;Piracy&quot;, Any[], 1, false, false, true, 1.695154380728266e9, 1.695154380802505e9, false)
+</code></pre>
+<p>Meanwhile, <a href="https://github.com/aviatesk/JET.jl">JET.jl</a> is a complementary tool, similar to a static linter.
+Here we focus on its <a href="https://aviatesk.github.io/JET.jl/stable/jetanalysis/">error analysis</a>, which can detect errors or typos without even running the code by leveraging type inference.
+You can either use it in report mode (with a nice <a href="https://www.julia-vscode.org/docs/stable/userguide/linter/#Runtime-diagnostics">VSCode display</a>) or in test mode as follows:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using JET
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> JET.test_package(MyAwesomePackage)
+Test Passed
+</code></pre>
+<p>Note that both Aqua.jl and JET.jl might pick up false positives: refer to their respective documentations for ways to make them less sensitive.</p>
+<h2 id="github_actions" ><a href="#github_actions"> GitHub Actions</a></h2><p>The most useful aspect of PkgTemplates.jl is that it automatically generates workflows for <a href="https://docs.github.com/en/actions/quickstart">GitHub Actions</a>.
+These are stored as YAML files in <code>.github/workflows</code>, with a slightly convoluted syntax that you don't need to fully understand.
+For instance, the file <code>CI.yml</code> contains instructions that execute the tests of your package for each pull request, tag or push to the <code>main</code> branch.
+This is done on a GitHub server and should theoretically cost you money, but your GitHub repository is public, you get an unlimited workflow budget for free.</p>
+<p>The other default workflows are less relevant for new users, but we still mention them:</p>
+<ul>
+<li><a href="https://github.com/JuliaRegistries/CompatHelper.jl">CompatHelper.jl</a> monitors your dependencies and their versions.</li>
+<li><a href="https://github.com/JuliaRegistries/TagBot">TagBot</a> helps you manage package releases.</li>
+</ul>
+<p>More workflows and functionalities are available through optional <a href="https://juliaci.github.io/PkgTemplates.jl/stable/user/#Plugins-1">plugins</a>.
+The interactive setting <code>Template(..., interactive=true)</code> allows you to select the ones you want for a given package.  </p>
+<h2 id="documentation" ><a href="#documentation"> Documentation</a></h2><p>Even if your code does everything it is supposed to, it will be useless to others (and pretty soon to yourself) without proper documentation.
+Adding <a href="https://docs.julialang.org/en/v1/manual/documentation/">docstrings</a> everywhere needs to be a second nature.</p>
+<pre><code class="julia">&quot;&quot;&quot;
+    myfunc(a, b; kwargs...)
+
+One-line sentence describing the purpose of the function,
+just below the (indented) signature.
+
+More details if needed.
+&quot;&quot;&quot;
+function myfunc end;</code></pre>
+<p>This way, readers and users of your code can query them through the REPL help mode:</p>
+<pre><code class="julia-repl"><span class="sgr33"><span class="sgr1">help?&gt;</span></span> myfunc
+</code></pre>
+<div class="repl-help">
+<p>No documentation found.</p>
+<p>Binding <code>Xranklin.myfunc</code> does not exist.</p>
+</div>
+<p><a href="https://github.com/JuliaDocs/DocStringExtensions.jl">DocStringExtensions.jl</a> provides a few shortcuts that can speed up docstring creation by taking care of the obvious parts.</p>
+<p>However, package documentation is not limited to docstrings.
+It can also contain high-level overviews, technical explanations, examples, tutorials, etc.
+<a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> allows you to design a website for all of this, based on Markdown files contained in the <code>docs</code> subfolder of your package.
+Unsurprisingly, its own <a href="https://documenter.juliadocs.org/stable/">documentation</a> is excellent and will teach you a lot.</p>
+<p>But if you want your work cut out for you, just select the <a href="https://juliaci.github.io/PkgTemplates.jl/stable/user/#PkgTemplates.Documenter"><code>Documenter</code> plugin</a> from PkgTemplates.jl.
+Not only will this fill the <code>docs</code> subfolder with the right contents: it will also initialize a <a href="https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch">GitHub Actions workflow</a> to build and deploy your website online.
+The only thing left to do is to activate GitHub Pages and <a href="https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch">select the <code>gh-pages</code> branch as source</a>.
+When iteratively updating documentation pages, <a href="https://github.com/tlienart/LiveServer.jl">LiveServer.jl</a> provides a handy automatic reload function.</p>
+<p>Assuming you are looking for an alternative to Documenter.jl, you can try out <a href="https://github.com/lorenzoh/Pollen.jl">Pollen.jl</a>.
+In another category, <a href="https://github.com/AtelierArith/Replay.jl">Replay.jl</a> allows you to replay instructions entered into your terminal as an ASCII video.</p>
+<h2 id="literate_programming" ><a href="#literate_programming"> Literate programming</a></h2><ul>
+<li><a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a></li>
+<li><a href="https://github.com/JunoLab/Weave.jl">Weave.jl</a></li>
+<li><a href="https://github.com/JuliaBooks/Books.jl">Books.jl</a></li>
+<li><a href="https://quarto.org/">Quarto</a></li>
+</ul>
+<h2 id="compatibility" ><a href="#compatibility"> Compatibility</a></h2><ul>
+<li><a href="https://semver.org/">semantic versioning</a></li>
+<li><a href="https://github.com/GunnarFarneback/PackageCompatUI.jl">PackageCompatUI.jl</a></li>
+<li><a href="https://github.com/devmotion/SimpleUnPack.jl">SimpleUnPack.jl</a></li>
+</ul>
+<h2 id="extensions" ><a href="#extensions"> Extensions</a></h2><ul>
+<li><a href="https://github.com/JuliaPackaging/Requires.jl">Requires.jl</a></li>
+<li><a href="https://pkgdocs.julialang.org/v1/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions)">package extensions</a></li>
+<li><a href="https://github.com/cjdoris/PackageExtensionTools.jl">PackageExtensionTools.jl</a></li>
+</ul>
+<h2 id="reproducibility" ><a href="#reproducibility"> Reproducibility</a></h2><ul>
+<li><a href="https://github.com/JuliaRandom/StableRNGs.jl">StableRNGs.jl</a></li>
+<li><a href="https://github.com/oxinabox/DataDeps.jl">DataDeps.jl</a></li>
+<li><a href="https://github.com/JuliaPackaging/ArtifactUtils.jl">ArtifactUtils.jl</a></li>
+<li><a href="https://github.com/JuliaDynamics/DrWatson.jl">DrWatson.jl</a></li>
+<li>containers?</li>
+</ul>
+<h2 id="publishing" ><a href="#publishing"> Publishing</a></h2><ul>
+<li><a href="https://github.com/JuliaRegistries/General">general registry</a></li>
+<li><a href="https://github.com/JuliaRegistries/Registrator.jl">Registrator.jl</a></li>
+<li><a href="https://github.com/GunnarFarneback/LocalRegistry.jl">LocalRegistry.jl</a></li>
+</ul>
+<h2 id="collaboration" ><a href="#collaboration"> Collaboration</a></h2><ul>
+<li><a href="https://github.com/SciML/ColPrac">SciML ColPrac</a></li>
+<li><a href="https://julialang.org/contribute/">contribute</a></li>
+<li><a href="https://kshyatt.github.io/post/firstjuliapr/">GitHub PRs</a></li>
+</ul>
+<h2 id="citations" ><a href="#citations"> Citations</a></h2><ul>
+<li><a href="https://zenodo.org/">Zenodo</a></li>
+<li><a href="https://github.com/SebastianM-C/PkgCite.jl">PkgCite.jl</a></li>
+<li><a href="https://github.com/ali-ramadhan/DocumenterCitations.jl">DocumenterCitations.jl</a></li>
+</ul>
+<h2 id="composability" ><a href="#composability"> Composability</a></h2><ul>
+<li><a href="https://github.com/rafaqz/Interfaces.jl">Interfaces.jl</a></li>
+<li><a href="https://github.com/Seelengrab/RequiredInterfaces.jl">RequiredInterfaces.jl</a></li>
+<li><a href="https://github.com/Seelengrab/PropCheck.jl">PropCheck.jl</a></li>
+</ul>
+<h2 id="other_languages" ><a href="#other_languages"> Other languages</a></h2><ul>
+<li><a href="https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/">C and Fortran</a></li>
+<li><a href="https://github.com/cjdoris/CondaPkg.jl">CondaPkg.jl</a> + <a href="https://github.com/cjdoris/PythonCall.jl">PythonCall.jl</a></li>
+<li><a href="https://github.com/JuliaInterop">JuliaInterop</a> (<a href="https://github.com/JuliaInterop/RCall.jl">RCall.jl</a>, <a href="https://github.com/JuliaInterop/Cxx.jl">Cxx.jl</a>)</li>
+</ul>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.rm(&quot;MyAwesomePackage&quot;)  # hide
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/sharing/Project.toml`
+  <span class="sgr90">[9a46dbd3] </span><span class="sgr91">- MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/sharing/Manifest.toml`
+  <span class="sgr90">[9a46dbd3] </span><span class="sgr91">- MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+</code></pre>
+
+  <div class="page-foot">
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 19, 2023. </br>
+    Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
+</div>
+
+</div>
+
+    </div>  
+    
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
+    
+  </body>
+</html>
