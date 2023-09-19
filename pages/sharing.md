@@ -22,7 +22,7 @@ The following code gives you a basic file structure to start with:
 ```>pkgtemplates
 using PkgTemplates
 t = Template(dir=".", user="myusername", interactive=false)
-!isdir("MyAwesomePackage") ? t("MyAwesomePackage") : nothing
+t("MyAwesomePackage")
 ```
 
 Then, you simply need to push this new folder to the remote repository <https://github.com/myusername/MyAwesomePackage.jl>, and you're ready to go.

@@ -15,6 +15,7 @@ ignore = [
     "CONTRIBUTING.md",
     "MyProject/",
     "MyPackage/",
+    "MyAwesomeProject/",
     "MyAwesomePackage/",
 ]
 

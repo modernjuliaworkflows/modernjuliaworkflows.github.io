@@ -110,7 +110,7 @@ Note that the same keywords are also available in Julia mode:
 
 ```>pkg-example-2
 using Pkg
-Pkg.status()
+Pkg.update()
 ```
 
 ### Shell mode (`;`)
@@ -241,7 +241,7 @@ As soon as you load your package, the files containing its code will be tracked 
 To create a new package locally, the easy way is to use `]generate` (we will discuss a more sophisticated workflow involving GitHub in the next blog post).
 
 ```>generate-package
-!isdir("MyPackage") ? Pkg.generate("MyPackage") : nothing;
+!isdir("MyPackage") ? Pkg.generate("MyPackage") : nothing
 ```
 
 This command initializes a simple folder with a `Project.toml` and a `src` subfolder.

@@ -5,38 +5,13 @@ on:
       - main
   pull_request:
 jobs:
-  build-and-deploy:
+  docs:
     runs-on: ubuntu-latest
+    permissions: write-all
     steps:
-      - name: Git checkout
-        uses: actions/checkout@v3
-      - name: Set git user config
-        run: |
-          git config --global user.name "myusername"
-      - name: Cache
-        uses: actions/cache@v2
-        with:
-          path: |
-                __cache
-                ~/.julia
-          key: ${{ runner.os }}-franklin-cache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-franklin-cache-
+      - uses: actions/checkout@v3
 
-      # Julia
-      - name: Install Julia
-        uses: julia-actions/setup-julia@v1
+      - name: 🚀 Build and Deploy
+        uses: tlienart/xranklin-build-action@main
         with:
-          version: 1
-
-      # Website build
-      - run: julia -e '
-          using Pkg; Pkg.add(url="https://github.com/tlienart/Xranklin.jl", rev="main");
-          using Xranklin; build();'
-
-      # Deployment and caching
-      - run: touch __site/.nojekyll
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@releases/v4
-        with:
-          BRANCH: ${{ github.event_name != 'pull_request' && 'gh-pages' || 'gh-pages-pr' }}
-          FOLDER: __site
+          DEPLOY_BRANCH: ${{ github.event_name != 'pull_request' && 'gh-pages' || 'gh-pages-pr' }}
