@@ -1,4 +1,6 @@
-@def title = "Going further"
++++
+title = "Going further"
++++
 
 # Going further
 

@@ -1,4 +1,13 @@
-@def title = "Writing your code"
++++
+title = "Writing your code"
+ignore_cache = true
++++
+
+```!
+# hideall
+isdir("MyProject") ? rm("MyProject"; recursive=true) : nothing
+isdir("MyPackage") ? rm("MyPackage"; recursive=true) : nothing
+```
 
 # Writing your code
 
@@ -89,6 +98,8 @@ println
 
 If you don't know the exact name you are looking for, type a word surrounded by quotes to see in which docstrings it pops up.
 
+If the help mode does not solve your problem, you can also dig into the standard library [InteractiveUtils.jl](https://docs.julialang.org/en/v1/stdlib/InteractiveUtils/) for more powerful search capabilities.
+
 ### Package mode (`]`)
 
 By pressing `]` you access [Pkg.jl](https://github.com/JuliaLang/Pkg.jl), Julia's integrated package manager, whose [documentation](https://pkgdocs.julialang.org/v1/getting-started/) is an absolute must-read.
@@ -104,6 +115,13 @@ As an illustration, we create a new environment called `MyProject` and download 
 activate MyProject
 add Example
 status
+```
+
+Note that the same keywords are also available in Julia mode:
+
+```>pkg-example-2
+using Pkg
+Pkg.rm("Example")
 ```
 
 ### Shell mode (`;`)
@@ -126,7 +144,7 @@ In practice, an Integrated Development Environment (or IDE) makes the experience
 The best IDE for Julia is [Visual Studio Code](https://code.visualstudio.com/), or VSCode, developed by Microsoft.
 Indeed, the [Julia VSCode extension](https://www.julia-vscode.org/) is the most feature-rich of all Julia IDE plugins.
 You can download it from the VSCode Marketplace.
-In what follows, we will somnetimes mention commands and keyboard shortcuts provided by this extension.
+In what follows, we will somnetimes mention commands and [keyboard shortcuts](https://www.julia-vscode.org/docs/stable/userguide/keybindings/) provided by this extension.
 But the only shortcut you need to remember is `Ctrl + Shift + P` (or `Cmd + Shift + P` on Mac): this opens the VSCode command palette, in which you can search for any command.
 Type "julia" in the command palette to see what you can do.
 
@@ -148,18 +166,23 @@ julia myfile.jl
 Julia has a rather high startup, load and compilation latency.
 If you only use scripts, you will pay this cost every time you run a slightly modified version of your code.
 That is why many Julia developers fire up a REPL at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way.
-This is made much easier by IDE integration, and here are the relevant [VSCode commands](https://www.julia-vscode.org/docs/stable/userguide/runningcode/):
+This is made much easier by [VSCode integration](https://www.julia-vscode.org/docs/stable/userguide/runningcode/), and here are the most important commands:
 
-* `Julia: Start REPL` - note that this is different from (and better than) opening a VSCode _terminal_ and running Julia.
+* `Julia: Start REPL` (shortcut `Alt + J` then `Alt + O`) - note that this is different from (and better than) opening a VSCode _terminal_ and running Julia.
 * `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - the executed code is the block containing the cursor, or the selected part if it exists
 
 Once your project grows, you will find yourself several files containing type and function definitions
-It is rather tedious to re-run `include("my_definitions.jl")` for every small change, which is why [Revise.jl](https://github.com/timholy/Revise.jl) was created.
+It is rather tedious to re-run `include("utils.jl")` for every small change, which is why [Revise.jl](https://github.com/timholy/Revise.jl) was created.
 This package is used by a vast majority of Julia developers to track code modifications automatically.
 If you are only writing scripts (and not full packages), all you need to do is
 
 1. start your Julia session with `using Revise`
 2. replace every `include` with `includet` (for "include + track")
+
+```>revise
+using Revise
+includet("utils.jl")
+```
 
 When keeping the same REPL open for a long time, it's common to end up with a "polluted" workspace where the definitions of certain variables or functions have been overwritten in unexpected ways.
 This, along with other events like `struct` redefinitions, might force you to restart your REPL now and again, and that's okay.
@@ -207,12 +230,6 @@ julia> Pluto.run()
 
 As we have seen, Pkg.jl is the Julia equivalent of `pip` or `conda` for Python.
 It lets you [install packages](https://pkgdocs.julialang.org/v1/managing-packages/) and [manage environments](https://pkgdocs.julialang.org/v1/environments/) (collections of packages with specific versions).
-It can be used from the REPL, either in package mode (prefixing the first command with a `]`), or directly in Julia mode with the same keywords:
-
-```>env-example
-using Pkg
-Pkg.status()
-```
 
 Once you `]activate` a project, the packages you `]add` will be listed in two files called `Project.toml` and `Manifest.toml`.
 Sharing a project between computers is as simple as sending a folder containing your code and both of these files.
@@ -225,7 +242,7 @@ If you haven't entered any local project, packages will be installed in the defa
 Packages installed that way are available no matter which local environment is active, because of "environment stacking".
 It is therefore recommended to keep the default environment very light, containing only essential development tools like Revise.jl.
 
-In VSCode, if your directory contains a `Project.toml`, you will be asked whether you want to make this the default environment.
+Environments are also [handled by VSCode](https://www.julia-vscode.org/docs/stable/userguide/env/), if your directory contains a `Project.toml`, you will be asked whether you want to make this the default environment.
 You can modify this setting by clicking the `Julia env: ...` button at the bottom.
 Anytime you open a Julia REPL, it will launch within the environment you chose.
 
@@ -240,16 +257,16 @@ As soon as you load your package, the files containing its code will be tracked 
 To create a new package locally, the easy way is to use `]generate` (we will discuss a more sophisticated workflow involving GitHub in the next blog post).
 
 ```>generate-package
-!isdir("MyPackage") ? Pkg.generate("MyPackage") : nothing;
+!isdir("MyPackage") ? Pkg.generate("MyPackage") : nothing
 ```
 
 This command initializes a simple folder with a `Project.toml` and a `src` subfolder.
 The `src` subfolder contains a file `MyPackage.jl`, where a [module](https://docs.julialang.org/en/v1/manual/modules/) called `MyPackage` is defined.
-Said module should contain
+Once complete, that module should contain
 
 * the list of imported dependencies $\to$ `using MyOtherPackage`
-* the list of included scripts in the correct order $\to$ `include("my_definitions.jl")`
-* the list of names you want to make public $\to$ `export my_function`
+* the list of included scripts in the correct order $\to$ `include("utils.jl")`
+* the list of names you want to make public $\to$ `export myfunction`
 
 To experiment with this new package, you can `]dev` it into your current environment.
 Note the different commands: `]add Example` installs a specific version of a package from the general registry, while  `]dev ./MyPackage` relies on the current state of the code in the folder you point to.
@@ -428,7 +445,7 @@ About to run: return true
 1
 ```
 
-For a more user-friendly debugging interface, Debugger.jl is [integrated](https://www.julia-vscode.org/docs/stable/userguide/debugging/) into the VSCode extension.
+For a more user-friendly debugging interface, Debugger.jl is [interfaced with VSCode](https://www.julia-vscode.org/docs/stable/userguide/debugging/).
 Click left of a line number in an editor pane to add a _breakpoint_, which is represented by a red circle.
 In the debugging pane of the Julia extension, click `Run and Debug` to start the debugger.
 The program will automatically halt when it hits a breakpoint.
@@ -480,4 +497,8 @@ julia> safehouse.F
 1
 ```
 
-More advanced debugging tools include [InteractiveCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl), [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl) and [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl), but we will not describe them in detail.
+We list a few advanced debugging utilities without going into detail:
+
+* [InteractiveCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl) to look for a precise implementation of a function.
+* [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl) to extend InteractiveUtils.jl
+* [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl) to navigate through stacktraces.

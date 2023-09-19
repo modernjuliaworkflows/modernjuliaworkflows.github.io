@@ -1,4 +1,13 @@
-@def title = "Sharing your code"
++++
+title = "Sharing your code"
+ignore_cache = true
++++
+
+```!
+# hideall
+isdir("MyAwesomeProject") ? rm("MyAwesomeProject"; recursive=true) : nothing
+isdir("MyAwesomePackage") ? rm("MyAwesomePackage"; recursive=true) : nothing
+```
 
 # Sharing your code
 
@@ -20,28 +29,32 @@ Indeed, we can leverage [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplate
 The following code gives you a basic file structure to start with:
 
 ```>pkgtemplates
-using PkgTemplates
-t = Template(dir=".", user="myusername")
-!isdir("MyAwesomePackage") ? t("MyAwesomePackage") : nothing
+using PkgTemplates, Pkg
+t = Template(dir=".", user="myusername", interactive=false)
+t("MyAwesomePackage")
+Pkg.activate("MyAwesomeProject")
+Pkg.develop(path="./MyAwesomePackage")
 ```
 
 Then, you simply need to push this new folder to the remote repository <https://github.com/myusername/MyAwesomePackage.jl>, and you're ready to go.
 The rest of this post will explain to you what each part of this folder does, and how to bend them to your will.
-In particular, once you're done here, you will be able to run
+In particular, once you're done here, you will be able to run PkgTemplates.jl with `interactive=true` and understand every option.
 
-```julia-repl
-julia> t = Template(dir=".", user="myusername", interactive=true)
+Let's take a look at the folder `MyAwesomePackage`.
+
+```;pktemplates-structure
+ls -a MyAwesomePackage
 ```
-
-and answer each interactive prompt confidently without freaking out.
+ 
+```>using-awesome
+using MyAwesomePackage
+```
 
 ## Testing
 
-Take a look at the folder `MyAwesomePackage`.
 You already know that the `src` subfolder contains your source code, but you might wonder what the `test` subfolder is for.
 Its purpose is [unit testing](https://docs.julialang.org/en/v1/stdlib/Test/): automatically checking that your code behaves the way you want it to.
 For instance, if you write your own square root function, you may want to test that it gives the correct results for positive numbers, and errors for negative numbers.
-These tests belong in `test/runtests.jl`, and they may look somewhat like this:
 
 ```>sqrt
 using Test
@@ -54,24 +67,28 @@ using Test
 end
 ```
 
+These tests belong in `test/runtests.jl`, and they are executed with the `]test` command (in Pkg mode).
 Unit testing may seem rather naive, or even superfluous, but as your code grows more complex, it becomes easier to break something without noticing.
 Testing each part separately will increase the reliability of the software you write.
 
-If your package requires [test-specific dependencies](https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package), you can use [TestEnv.jl](https://github.com/JuliaTesting/TestEnv.jl) to activate the test environment with all necessary packages.
+At some point, your package may require [test-specific dependencies](https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package).
+This often happens when you need to test compatibility with another package, on which you do not depend for the source code itself.
+Or it may simply be due to testing-specific packages like the ones we will encounter below.
+For interactive testing work, use [TestEnv.jl](https://github.com/JuliaTesting/TestEnv.jl) to activate the full test environment (faster than running `]test` repeatedly).
 
-We list a few advanced testing utilities:
+We list a few advanced testing utilities without going into detail:
 
-* [ReferenceTests.jl](https://github.com/JuliaTesting/ReferenceTests.jl) allows you to compare function outputs with reference files
-* [ReTest.jl](https://github.com/JuliaTesting/ReTest.jl) lets you define tests next to the source code, and control their execution more precisely
-* [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) leverages the testing interface of VSCode
+* [ReferenceTests.jl](https://github.com/JuliaTesting/ReferenceTests.jl) to compare function outputs with reference files.
+* [ReTest.jl](https://github.com/JuliaTesting/ReTest.jl) to define tests next to the source code and control their execution.
+* [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) to leverage the testing interface of VSCode.
 
 ## Style
 
 To make your code easy to read, it is essential to follow a consistent set of guidelines.
 The official [style guide](https://docs.julialang.org/en/v1/manual/style-guide/) is very short, so most people use third party style guides like [BlueStyle](https://github.com/invenia/BlueStyle) or [SciMLStyle](https://github.com/SciML/SciMLStyle).
 
-[JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl) is an automated formatter for Julia files.
-It can help you enforce the style guide of your choice if you add a file `.JuliaFormatter.toml` at the root of your repository, containing a single line like
+[JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl) is an automated formatter for Julia files which can help you enforce the style guide of your choice.
+Just add a file `.JuliaFormatter.toml` at the root of your repository, containing a single line like
 
 ```toml
 style = "blue"
@@ -79,27 +96,35 @@ style = "blue"
 
 Then, the current directory will be formatted in the BlueStyle whenever you call
 
-```julia-repl
-julia> using JuliaFormatter
-
-julia> format(".");
+```>format
+using JuliaFormatter
+JuliaFormatter.format(MyAwesomePackage)  # returns a boolean
 ```
 
-This functionality is even [integrated with VSCode](https://www.julia-vscode.org/docs/stable/userguide/formatter/).
+This functionality is even [integrated with VSCode](https://www.julia-vscode.org/docs/stable/userguide/formatter/), and you can add it to your tests.
 
 ## Code quality
 
-* [Aqua.jl](https://github.com/JuliaTesting/Aqua.jl)
-* [JET.jl](https://github.com/aviatesk/JET.jl)
+Of course, there is more to code quality than just formatting.
+[Aqua.jl](https://github.com/JuliaTesting/Aqua.jl) provides a set of routines that examine other aspects of your package, from unused dependencies to ambiguous methods.
+It is usually a good idea to include the following in your tests:
 
-## Documentation
+```>aqua
+using Aqua
+Aqua.test_all(MyAwesomePackage)
+```
 
-* [docstrings](https://docs.julialang.org/en/v1/manual/documentation/)
-* [DocStringExtensions.jl](https://github.com/JuliaDocs/DocStringExtensions.jl)
-* [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl)
-* [LiveServer.jl](https://github.com/tlienart/LiveServer.jl)
-* [Pollen.jl](https://github.com/lorenzoh/Pollen.jl)
-* [Replay.jl](https://github.com/AtelierArith/Replay.jl)
+Meanwhile, [JET.jl](https://github.com/aviatesk/JET.jl) is a complementary tool, similar to a static linter.
+Here we focus on its [error analysis](https://aviatesk.github.io/JET.jl/stable/jetanalysis/), which can detect errors or typos without even running the code by leveraging type inference.
+You can either use it in report mode (with a nice [VSCode display](https://www.julia-vscode.org/docs/stable/userguide/linter/#Runtime-diagnostics))
+
+```>jet
+using JET
+JET.report_package(MyAwesomePackage)
+JET.test_package(MyAwesomePackage)
+```
+
+Note that both Aqua.jl and JET.jl might pick up false positives: refer to their respective documentations for ways to make them less sensitive.
 
 ## GitHub Actions
 
@@ -112,6 +137,47 @@ The other default workflows are less relevant for new users, but we still mentio
 
 * [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl) monitors your dependencies and their versions.
 * [TagBot](https://github.com/JuliaRegistries/TagBot) helps you manage package releases.
+
+More workflows and functionalities are available through optional [plugins](https://juliaci.github.io/PkgTemplates.jl/stable/user/#Plugins-1).
+The interactive setting `Template(..., interactive=true)` allows you to select the ones you want for a given package.  
+
+## Documentation
+
+Even if your code does everything it is supposed to, it will be useless to others (and pretty soon to yourself) without proper documentation.
+Adding [docstrings](https://docs.julialang.org/en/v1/manual/documentation/) everywhere needs to be a second nature.
+
+```!docstring
+"""
+    myfunc(a, b; kwargs...)
+
+One-line sentence describing the purpose of the function,
+just below the (indented) signature.
+
+More details if needed.
+"""
+function myfunc end;
+```
+
+This way, readers and users of your code can query them through the REPL help mode:
+
+```?
+myfunc
+```
+
+[DocStringExtensions.jl](https://github.com/JuliaDocs/DocStringExtensions.jl) provides a few shortcuts that can speed up docstring creation by taking care of the obvious parts.
+
+However, package documentation is not limited to docstrings.
+It can also contain high-level overviews, technical explanations, examples, tutorials, etc.
+[Documenter.jl](https://github.com/JuliaDocs/Documenter.jl) allows you to design a website for all of this, based on Markdown files contained in the `docs` subfolder of your package.
+Unsurprisingly, its own [documentation](https://documenter.juliadocs.org/stable/) is excellent and will teach you a lot.
+
+But if you want your work cut out for you, just select the [`Documenter` plugin](https://juliaci.github.io/PkgTemplates.jl/stable/user/#PkgTemplates.Documenter) from PkgTemplates.jl.
+Not only will this fill the `docs` subfolder with the right contents: it will also initialize a [GitHub Actions workflow](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch) to build and deploy your website online.
+The only thing left to do is to activate GitHub Pages and [select the `gh-pages` branch as source](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch).
+When iteratively updating documentation pages, [LiveServer.jl](https://github.com/tlienart/LiveServer.jl) provides a handy automatic reload function.
+
+Assuming you are looking for an alternative to Documenter.jl, you can try out [Pollen.jl](https://github.com/lorenzoh/Pollen.jl).
+In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allows you to replay instructions entered into your terminal as an ASCII video.
 
 ## Literate programming
 
