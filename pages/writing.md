@@ -20,25 +20,28 @@ Some of the vocabulary used by community members may appear unfamiliar, but don'
 
 > Use `juliaup`
 
-The most natural starting point is the [downloads](https://julialang.org/downloads/) page.
+The most natural starting point to install Julia onto your system is the [Julia downloads page](https://julialang.org/downloads/).
 However, for additional flexibility, we recommend to use [`juliaup`](https://github.com/JuliaLang/juliaup) instead.
-You can get it from the Windows store, or from the command line on Unix systems:
+Here is how you can get it for your system:
+
+1. **Windows Users:** the easiest way is to download it from the [Windows Store](https://apps.microsoft.com/store/detail/julia/9NJNWW8PVKMN?hl=en-us&gl=us&rtc=1). 
+Not only should this create an application launcher for Julia on your system but you will be able to utilize `juliaup` from the Windows PowerShell.
+
+2. **OSX or Linux Users:** execute the following `curl` and `bash` commands to install `juliaup` to your system:
 
 ```bash
 curl -fsSL https://install.julialang.org | sh
 ```
 
-It provides [various utilities](https://github.com/JuliaLang/juliaup#using-juliaup) to download, update, organize and switch between Julia versions.
-As a bonus, you no longer have to manually specify the path to your executable.
+`juliaup` provides [various utilities](https://github.com/JuliaLang/juliaup#using-juliaup) to download, update, organize and switch between different Julia versions.
+As a bonus, you no longer have to manually specify the path to your executable (don't worry if "path" is an unfamiliar term -- `juliaup` manages it for you).
 
-`juliaup` relies on adaptive shortcuts called "channels", which allow you to access specific Julia versions without giving their exact number.
+### `juliaup` Channels
+
+`juliaup` relies on adaptive shortcuts called "channels", which allow you to access specific Julia versions without giving their exact version number.
 For instance, the `release` channel will always point to the [current stable version](https://julialang.org/downloads/#current_stable_release), and the `lts` channel will always point to the [long-term support version](https://julialang.org/downloads/#long_term_support_release).
-Upon installation of `juliaup`, the current stable version of Julia is downloaded and selected as the default.
-This is the one you get when you run
-
-```bash
-julia
-```
+Upon installation of `juliaup`, the current stable release version of Julia is downloaded and selected as the default.
+This is the one you get when you run `julia` in your REPL (or the one that gets called by the Julia Windows app launcher).
 
 To use other channels, add them to `juliaup` and put a `+` in fron the of the channel name when you start Julia:
 
@@ -62,9 +65,9 @@ juliaup update
 
 ## REPL
 
-> The REPL has 4 primary modes: Julia, package (`]`), help (`?`) and shell (`;`).
+> The Julia REPL has 4 primary modes: Julia, package (`]`), help (`?`) and shell (`;`).
 
-The Read-Eval-Print Loop (or REPL) is the most basic way to interact with Julia, check out its [documentation](https://docs.julialang.org/en/v1/stdlib/REPL/) for details.
+The Julia Read-Eval-Print Loop (or REPL) is the most basic way to interact with Julia, check out its [documentation](https://docs.julialang.org/en/v1/stdlib/REPL/) for details.
 You can start a REPL by typing `julia` into a terminal, or by clicking on the Julia application in your computer.
 It will allow you to play around with arbitrary Julia code:
 
