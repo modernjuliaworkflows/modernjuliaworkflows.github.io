@@ -10,7 +10,9 @@ jobs:
     permissions: write-all
     steps:
       - uses: actions/checkout@v3
-
+      - name: Set git user config
+        run: |
+          git config --global user.name "myusername"
       - name: 🚀 Build and Deploy
         uses: tlienart/xranklin-build-action@main
         with:

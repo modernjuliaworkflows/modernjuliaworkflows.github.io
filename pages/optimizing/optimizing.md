@@ -2,6 +2,8 @@
 title = "Optimizing your code"
 +++
 
+\activate{}
+
 # Optimizing your code
 
 \toc

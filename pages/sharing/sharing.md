@@ -3,11 +3,16 @@ title = "Sharing your code"
 ignore_cache = true
 +++
 
+<!-- Setup -->
+
 ```!
 # hideall
-isdir("MyAwesomeProject") ? rm("MyAwesomeProject"; recursive=true) : nothing
-isdir("MyAwesomePackage") ? rm("MyAwesomePackage"; recursive=true) : nothing
+if isdir(sitepath("MyAwesomePackage"))
+    rm(sitepath("MyAwesomePackage"); recursive=true)
+end
 ```
+
+\activate{}
 
 # Sharing your code
 
@@ -29,25 +34,21 @@ Indeed, we can leverage [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplate
 The following code gives you a basic file structure to start with:
 
 ```>pkgtemplates
-using PkgTemplates, Pkg
-t = Template(dir=".", user="myusername", interactive=false)
+using PkgTemplates
+t = Template(dir=Utils.path(:site), user="myusername", interactive=false)
 t("MyAwesomePackage")
-Pkg.activate("MyAwesomeProject")
-Pkg.develop(path="./MyAwesomePackage")
 ```
 
 Then, you simply need to push this new folder to the remote repository <https://github.com/myusername/MyAwesomePackage.jl>, and you're ready to go.
 The rest of this post will explain to you what each part of this folder does, and how to bend them to your will.
 In particular, once you're done here, you will be able to run PkgTemplates.jl with `interactive=true` and understand every option.
 
-Let's take a look at the folder `MyAwesomePackage`.
+To work on the package further, we develop it into the current environment and load it:
 
-```;pktemplates-structure
-ls -a MyAwesomePackage
-```
- 
 ```>using-awesome
-using MyAwesomePackage
+using Pkg
+Pkg.develop(path=sitepath("MyAwesomePackage"))
+using MyAwesomePackage  # todo: understand loading failure
 ```
 
 ## Testing
@@ -94,11 +95,11 @@ Just add a file `.JuliaFormatter.toml` at the root of your repository, containin
 style = "blue"
 ```
 
-Then, the current directory will be formatted in the BlueStyle whenever you call
+Then, the package directory will be formatted in the BlueStyle whenever you call
 
 ```>format
 using JuliaFormatter
-JuliaFormatter.format(MyAwesomePackage)  # returns a boolean
+JuliaFormatter.format(sitepath("MyAwesomePackage"))
 ```
 
 This functionality is even [integrated with VSCode](https://www.julia-vscode.org/docs/stable/userguide/formatter/), and you can add it to your tests.
@@ -235,3 +236,9 @@ In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allo
 * [C and Fortran](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/)
 * [CondaPkg.jl](https://github.com/cjdoris/CondaPkg.jl) + [PythonCall.jl](https://github.com/cjdoris/PythonCall.jl)
 * [JuliaInterop](https://github.com/JuliaInterop) ([RCall.jl](https://github.com/JuliaInterop/RCall.jl), [Cxx.jl](https://github.com/JuliaInterop/Cxx.jl))
+
+<!-- Clean up -->
+
+```>cleanup
+Pkg.rm("MyAwesomePackage")  # hide
+```
