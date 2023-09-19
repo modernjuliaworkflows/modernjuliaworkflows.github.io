@@ -35,7 +35,7 @@ The following code gives you a basic file structure to start with:
 
 ```>pkgtemplates
 using PkgTemplates
-t = Template(dir=Utils.path(:site), user="myusername", interactive=false).
+t = Template(dir=Utils.path(:site), user="myusername", interactive=false);
 t("MyAwesomePackage")
 ```
 
