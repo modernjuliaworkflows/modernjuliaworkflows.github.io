@@ -3,11 +3,16 @@ title = "Writing your code"
 ignore_cache = true
 +++
 
+<!-- Setup -->
+
 ```!
 # hideall
-isdir("MyProject") ? rm("MyProject"; recursive=true) : nothing
-isdir("MyPackage") ? rm("MyPackage"; recursive=true) : nothing
+if isdir(sitepath("MyPackage"))
+    rm(sitepath("MyPackage"); recursive=true)
+end
 ```
+
+\activate{}
 
 # Writing your code
 
@@ -98,8 +103,6 @@ println
 
 If you don't know the exact name you are looking for, type a word surrounded by quotes to see in which docstrings it pops up.
 
-If the help mode does not solve your problem, you can also dig into the standard library [InteractiveUtils.jl](https://docs.julialang.org/en/v1/stdlib/InteractiveUtils/) for more powerful search capabilities.
-
 ### Package mode (`]`)
 
 By pressing `]` you access [Pkg.jl](https://github.com/JuliaLang/Pkg.jl), Julia's integrated package manager, whose [documentation](https://pkgdocs.julialang.org/v1/getting-started/) is an absolute must-read.
@@ -109,10 +112,9 @@ Pkg.jl allows you to:
 * `add`, `update` (or `up`) and `remove` (or `rm`) packages;
 * get the `status` (or `st`) of your current environment.
 
-As an illustration, we create a new environment called `MyProject` and download the package Example.jl inside it:
+As an illustration, we download the package Example.jl inside our current environment:
 
 ```]pkg-example
-activate MyProject
 add Example
 status
 ```
@@ -130,7 +132,7 @@ By pressing `;` you enter a terminal, where you can execute any bash command you
 
 ```;shell-example
 echo "hello"
-ls ./pages
+ls pages
 ```
 
 ## Editor
@@ -178,11 +180,6 @@ If you are only writing scripts (and not full packages), all you need to do is
 
 1. start your Julia session with `using Revise`
 2. replace every `include` with `includet` (for "include + track")
-
-```>revise
-using Revise
-includet("utils.jl")
-```
 
 When keeping the same REPL open for a long time, it's common to end up with a "polluted" workspace where the definitions of certain variables or functions have been overwritten in unexpected ways.
 This, along with other events like `struct` redefinitions, might force you to restart your REPL now and again, and that's okay.
@@ -233,7 +230,7 @@ It lets you [install packages](https://pkgdocs.julialang.org/v1/managing-package
 
 Once you `]activate` a project, the packages you `]add` will be listed in two files called `Project.toml` and `Manifest.toml`.
 Sharing a project between computers is as simple as sending a folder containing your code and both of these files.
-Using them, the user can run `]instantiate` and Julia will recreate the state of your local environment.
+Using them, the user can run `]instantiate` and Julia will recreate the exact state of the environment.
 
 * `Project.toml` contains general project information (name of the package, unique id, authors) and direct dependencies with version bounds.
 * `Manifest.toml` contains the exact versions of all direct and indirect dependencies, which you can visualize with [PkgDependency.jl](https://github.com/peng1999/PkgDependency.jl).
@@ -257,7 +254,7 @@ As soon as you load your package, the files containing its code will be tracked 
 To create a new package locally, the easy way is to use `]generate` (we will discuss a more sophisticated workflow involving GitHub in the next blog post).
 
 ```>generate-package
-!isdir("MyPackage") ? Pkg.generate("MyPackage") : nothing
+Pkg.generate(sitepath("MyPackage"))
 ```
 
 This command initializes a simple folder with a `Project.toml` and a `src` subfolder.
@@ -271,8 +268,8 @@ Once complete, that module should contain
 To experiment with this new package, you can `]dev` it into your current environment.
 Note the different commands: `]add Example` installs a specific version of a package from the general registry, while  `]dev ./MyPackage` relies on the current state of the code in the folder you point to.
 
-```]dev-package
-dev ./MyPackage
+```>dev-package
+Pkg.develop(path=sitepath("MyPackage"))
 ```
 
 We can then use the one function defined in `MyPackage`:
@@ -314,6 +311,13 @@ Here are a few options to do so, all of can be added to your default environment
 
 Finally, [AbbreviatedStackTraces.jl](https://github.com/BioTurboNick/AbbreviatedStackTraces.jl) allows you to shorten error stacktraces, which can sometimes get pretty long (although Julia 1.10 cleaned them up already).
 [Suppressor.jl](https://github.com/JuliaIO/Suppressor.jl) can sometimes be handy when you need to suppress warnings or other bothersome messages.
+
+## Interactivity
+
+* [InteractiveUtils.jl](https://docs.julialang.org/en/v1/stdlib/InteractiveUtils/)
+* [InteractiveCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl) to look for a precise implementation of a function.
+* [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl) to extend InteractiveUtils.jl
+* [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl) to navigate through stacktraces.
 
 ## Logging
 
@@ -388,20 +392,66 @@ In particular, note that `@debug` messages are suppressed by default.
 You can enable them through the `JULIA_DEBUG` environment variable if you specify the source module name, here `Main`.
 
 ```julia-repl
-julia> ENV["JULIA_DEBUG"] = Main # enable @debug logs
+julia> ENV["JULIA_DEBUG"] = Main
 ```
 
 ## Debugging
 
-> Debugger.jl and Infiltrator.jl allow you to peek inside a function while its execution is paused.
+> Infiltrator.jl and Debugger.jl allow you to peek inside a function while its execution is paused.
 
 The problem with logging is that you cannot interact with local variables or save them for further analysis.
 The following two packages solve this issue, and they probably belong in your default environment `@v1.X`, like Revise.jl.
 
+### Infiltrator.jl
+
+[Infiltrator.jl](https://github.com/JuliaDebug/Infiltrator.jl) is a lightweight inspection package, which will not slow down your code at all.
+Its `@infiltrate` macro allows you to directly set breakpoints in your code.
+Calling a function which hits a breakpoint will activate the Infiltrator REPL-mode
+and change the prompt to `infil>`.
+Typing `?` in this mode will summarize available commands.
+For example, typing `@locals` in Infiltrator-mode will print local variables:
+
+```!infiltrator
+using Infiltrator
+
+function fermat_prime_infil(n)
+    F = 2^(2^n) + 1
+    @infiltrate
+    for d in 2:isqrt(F)
+        if F % d == 0
+            return false
+        end
+    end
+    return true
+end;
+```
+
+What makes Infiltrator.jl even more powerful is the `@exfiltrate` macro, which allows you to move local variables into a global storage called the `safehouse`.
+
+```julia-repl
+julia> fermat_prime_infil(6)
+Infiltrating fermat_prime_infil(n::Int64)
+  at REPL[2]:3
+
+infil> F
+1
+
+infil> @exfiltrate F
+Exfiltrating 1 local variable into the safehouse.
+
+infil> @continue
+
+true
+
+julia> safehouse.F
+1
+```
+
 ### Debugger.jl
 
 [Debugger.jl](https://github.com/JuliaDebug/Debugger.jl) allows us to interrupt code execution anywhere we want, even in functions we did not write.
-Using its `@enter` macro, we can enter a function call and walk through the call stack.
+Using its `@enter` macro, we can enter a function call and walk through the call stack, at the cost of reduced performance.
+
 The REPL prompt changes to `1|debug>`, allowing you to use [custom navigation commands](https://github.com/JuliaDebug/Debugger.jl#debugger-commands) to step into and out of function calls, show local variables and set breakpoints.
 Typing a backtick `` ` `` will change the prompt to `1|julia>`, indicating evaluation mode.
 Any expression typed in this mode will be evaluated in the local context.
@@ -452,53 +502,8 @@ The program will automatically halt when it hits a breakpoint.
 Using the toolbar at the top of the editor, you can then _continue_, _step over_, _step into_ and _step out_ of your code.
 The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.
 
-### Infiltrator.jl
+<!-- Clean up -->
 
-[Infiltrator.jl](https://github.com/JuliaDebug/Infiltrator.jl) is a lightweight alternative to Debugger.jl, which will not slow down your code at all.
-Its `@infiltrate` macro allows you to directly set breakpoints in your code.
-Calling a function which hits a breakpoint will activate the Infiltrator REPL-mode
-and change the prompt to `infil>`.
-Typing `?` in this mode will summarize available commands.
-For example, typing `@locals` in Infiltrator-mode will print local variables:
-
-```!infiltrator
-using Infiltrator
-
-function fermat_prime_infil(n)
-    F = 2^(2^n) + 1
-    @infiltrate
-    for d in 2:isqrt(F)
-        if F % d == 0
-            return false
-        end
-    end
-    return true
-end;
+```>cleanup
+Pkg.rm("MyPackage")  # hide
 ```
-
-What makes Infiltrator.jl even more powerful is the `@exfiltrate` macro, which allows you to move local variables into a global storage called the `safehouse`.
-
-```julia-repl
-julia> fermat_prime_infil(6)
-Infiltrating fermat_prime_infil(n::Int64)
-  at REPL[2]:3
-
-infil> F
-1
-
-infil> @exfiltrate F
-Exfiltrating 1 local variable into the safehouse.
-
-infil> @continue
-
-true
-
-julia> safehouse.F
-1
-```
-
-We list a few advanced debugging utilities without going into detail:
-
-* [InteractiveCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl) to look for a precise implementation of a function.
-* [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl) to extend InteractiveUtils.jl
-* [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl) to navigate through stacktraces.

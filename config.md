@@ -13,10 +13,6 @@ maxtoclevel = 2
 ignore = [
     "node_modules/",
     "CONTRIBUTING.md",
-    "MyProject/",
-    "MyPackage/",
-    "MyAwesomeProject/",
-    "MyAwesomePackage/",
 ]
 
 # RSS (the website_{title, descr, url} must be defined to get RSS)
