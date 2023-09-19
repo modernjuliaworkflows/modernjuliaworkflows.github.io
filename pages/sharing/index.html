@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
   <link rel="stylesheet" href="/css/franklin.css">
 <link rel="stylesheet" href="/css/poole_hyde.css">
 <link rel="stylesheet" href="/css/custom.css">
@@ -48,29 +49,123 @@
 
 
 <div class="franklin-content" >
-  <h1 id="sharing_your_code" ><a href="#sharing_your_code"> Sharing your code</a></h1><div class="toc"><ol><li><a href="#setup">Setup</a></li><li><a href="#code_quality">Code quality</a></li><li><a href="#testing">Testing</a></li><li><a href="#documentation">Documentation</a></li><li><a href="#literate_programming">Literate programming</a></li><li><a href="#compatibility">Compatibility</a></li><li><a href="#extensions">Extensions</a></li><li><a href="#reproducibility">Reproducibility</a></li><li><a href="#publishing">Publishing</a></li><li><a href="#collaboration">Collaboration</a></li><li><a href="#citations">Citations</a></li><li><a href="#composability">Composability</a></li><li><a href="#other_languages">Other languages</a></li></ol></div><h2 id="setup" ><a href="#setup"> Setup</a></h2><ul>
-<li>GitHub and GitHub actions</li>
-<li><a href="https://github.com/JuliaCI/PkgTemplates.jl">PkgTemplates.jl</a></li>
+  <h1 id="sharing_your_code" ><a href="#sharing_your_code"> Sharing your code</a></h1><p>In this post, you will learn about tools to initialize, structure and distribute Julia packages.</p>
+<div class="toc"><ol><li><a href="#setup">Setup</a></li><li><a href="#testing">Testing</a></li><li><a href="#style">Style</a></li><li><a href="#code_quality">Code quality</a></li><li><a href="#documentation">Documentation</a></li><li><a href="#github_actions">GitHub Actions</a></li><li><a href="#literate_programming">Literate programming</a></li><li><a href="#compatibility">Compatibility</a></li><li><a href="#extensions">Extensions</a></li><li><a href="#reproducibility">Reproducibility</a></li><li><a href="#publishing">Publishing</a></li><li><a href="#collaboration">Collaboration</a></li><li><a href="#citations">Citations</a></li><li><a href="#composability">Composability</a></li><li><a href="#other_languages">Other languages</a></li></ol></div><h2 id="setup" ><a href="#setup"> Setup</a></h2><p>A vast majority of Julia packages are hosted on <a href="https://github.com/">GitHub</a> (although less common, other options like <a href="https://gitlab.com/">GitLab</a> are also possible).
+GitHub is a platform for collaborative software development, based on the version control system <a href="https://git-scm.com/">Git</a>.
+If you are unfamiliar with these technologies, check out the <a href="https://docs.github.com/en/get-started/quickstart">GitHub documentation</a>.</p>
+<p>The first step is therefore <a href="https://github.com/new">creating</a> an empty GitHub repository.
+You should try to follow <a href="https://pkgdocs.julialang.org/v1/creating-packages/#Package-naming-guidelines">package naming guidelines</a> and add a ".jl" extension at the end, like so: "MyAwesomePackage.jl".
+Do not insert any files like <code>README.md</code>, <code>.gitignore</code> or <code>LICENSE.md</code>, this will be done for you in the next step.</p>
+<p>Indeed, we can leverage <a href="https://github.com/JuliaCI/PkgTemplates.jl">PkgTemplates.jl</a> to automate package creation (like <code>]generate</code> from Pkg.jl but on steroids).
+The following code gives you a basic file structure to start with:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using PkgTemplates
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> t = Template(dir=&quot;.&quot;, user=&quot;myusername&quot;)
+ERROR: ArgumentError: Git: Global Git config is missing required value &#39;user.name&#39;
+Stacktrace:
+  [1] (::PkgTemplates.var&quot;#71#72&quot;{PkgTemplates.Git})(k::Symbol)
+    @ PkgTemplates ~/.julia/packages/PkgTemplates/sjxlK/src/plugins/git.jl:54
+  [2] #59
+    @ ./tuple.jl:602 [inlined]
+  [3] BottomRF
+    @ ./reduce.jl:81 [inlined]
+  [4] afoldl
+    @ ./operators.jl:535 [inlined]
+  [5] _foldl_impl
+    @ ./tuple.jl:329 [inlined]
+  [6] foldl_impl
+    @ ./reduce.jl:48 [inlined]
+  [7] mapfoldl_impl
+    @ ./reduce.jl:44 [inlined]
+  [8] #mapfoldl#288
+    @ ./reduce.jl:170 [inlined]
+  [9] mapfoldl
+    @ ./reduce.jl:170 [inlined]
+ [10] #foldl#289
+    @ ./reduce.jl:193 [inlined]
+ [11] foldl
+    @ ./reduce.jl:193 [inlined]
+ [12] foreach
+    @ ./tuple.jl:602 [inlined]
+ [13] validate
+    @ ~/.julia/packages/PkgTemplates/sjxlK/src/plugins/git.jl:51 [inlined]
+ [14] (::PkgTemplates.var&quot;#9#15&quot;{PkgTemplates.Template})(p::PkgTemplates.Git)
+    @ PkgTemplates ~/.julia/packages/PkgTemplates/sjxlK/src/template.jl:117
+ [15] foreach(f::PkgTemplates.var&quot;#9#15&quot;{PkgTemplates.Template}, itr::Vector{PkgTemplates.Plugin})
+    @ Base ./abstractarray.jl:3075
+ [16] PkgTemplates.Template(::Val{false}; kwargs::Base.Pairs{Symbol, String, Tuple{Symbol, Symbol}, NamedTuple{(:dir, :user), Tuple{String, String}}})
+    @ PkgTemplates ~/.julia/packages/PkgTemplates/sjxlK/src/template.jl:117
+ [17] Template
+    @ ~/.julia/packages/PkgTemplates/sjxlK/src/template.jl:85 [inlined]
+ [18] #Template#1
+    @ ~/.julia/packages/PkgTemplates/sjxlK/src/template.jl:82 [inlined]
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> !isdir(&quot;MyAwesomePackage&quot;) ? t(&quot;MyAwesomePackage&quot;) : nothing
+ERROR: UndefVarError: `t` not defined
+Stacktrace:
+</code></pre>
+<p>Then, you simply need to push this new folder to the remote repository <a href="https://github.com/myusername/MyAwesomePackage.jl">https://github.com/myusername/MyAwesomePackage.jl</a>, and you're ready to go.
+The rest of this post will explain to you what each part of this folder does, and how to bend them to your will.
+In particular, once you're done here, you will be able to run</p>
+<pre><code class="julia-repl">julia&gt; t = Template(dir=&quot;.&quot;, user=&quot;myusername&quot;, interactive=true)</code></pre>
+<p>and answer each interactive prompt confidently without freaking out.</p>
+<h2 id="testing" ><a href="#testing"> Testing</a></h2><p>Take a look at the folder <code>MyAwesomePackage</code>.
+You already know that the <code>src</code> subfolder contains your source code, but you might wonder what the <code>test</code> subfolder is for.
+Its purpose is <a href="https://docs.julialang.org/en/v1/stdlib/Test/">unit testing</a>: automatically checking that your code behaves the way you want it to.
+For instance, if you write your own square root function, you may want to test that it gives the correct results for positive numbers, and errors for negative numbers.
+These tests belong in <code>test/runtests.jl</code>, and they may look somewhat like this:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Test
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @test sqrt(4) ≈ 2
+Test Passed
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @testset &quot;Invalid inputs&quot; begin
+    @test_throws DomainError sqrt(-1)
+    @test_throws MethodError sqrt(&quot;abc&quot;)
+end
+Test Summary:  | Pass  Total  Time
+Invalid inputs |    2      2  0.1s
+Test.DefaultTestSet(&quot;Invalid inputs&quot;, Any[], 2, false, false, true, 1.695120251943595e9, 1.695120251993996e9, false)
+</code></pre>
+<p>Unit testing may seem rather naive, or even superfluous, but as your code grows more complex, it becomes easier to break something without noticing.
+Testing each part separately will increase the reliability of the software you write.</p>
+<p>If your package requires <a href="https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package">test-specific dependencies</a>, you can use <a href="https://github.com/JuliaTesting/TestEnv.jl">TestEnv.jl</a> to activate the test environment with all necessary packages.</p>
+<p>We list a few advanced testing utilities:</p>
+<ul>
+<li><a href="https://github.com/JuliaTesting/ReferenceTests.jl">ReferenceTests.jl</a> allows you to compare function outputs with reference files</li>
+<li><a href="https://github.com/JuliaTesting/ReTest.jl">ReTest.jl</a> lets you define tests next to the source code, and control their execution more precisely</li>
+<li><a href="https://github.com/julia-vscode/TestItemRunner.jl">TestItemRunner.jl</a> leverages the testing interface of VSCode</li>
 </ul>
+<h2 id="style" ><a href="#style"> Style</a></h2><p>To make your code easy to read, it is essential to follow a consistent set of guidelines.
+The official <a href="https://docs.julialang.org/en/v1/manual/style-guide/">style guide</a> is very short, so most people use third party style guides like <a href="https://github.com/invenia/BlueStyle">BlueStyle</a> or <a href="https://github.com/SciML/SciMLStyle">SciMLStyle</a>.</p>
+<p><a href="https://github.com/domluna/JuliaFormatter.jl">JuliaFormatter.jl</a> is an automated formatter for Julia files.
+It can help you enforce the style guide of your choice if you add a file <code>.JuliaFormatter.toml</code> at the root of your repository, containing a single line like</p>
+<pre><code class="toml">style = &quot;blue&quot;</code></pre>
+<p>Then, the current directory will be formatted in the BlueStyle whenever you call</p>
+<pre><code class="julia-repl">julia&gt; using JuliaFormatter
+
+julia&gt; format(&quot;.&quot;);</code></pre>
+<p>This functionality is even <a href="https://www.julia-vscode.org/docs/stable/userguide/formatter/">integrated with VSCode</a>.</p>
 <h2 id="code_quality" ><a href="#code_quality"> Code quality</a></h2><ul>
-<li>style guides (<a href="https://github.com/invenia/BlueStyle">BlueStyle</a>, <a href="https://github.com/SciML/SciMLStyle">SciMLStyle</a>)</li>
-<li><a href="https://github.com/domluna/JuliaFormatter.jl">JuliaFormatter.jl</a></li>
-<li><a href="https://www.julia-vscode.org/docs/stable/userguide/formatter/">formatting in VSCode</a></li>
 <li><a href="https://github.com/JuliaTesting/Aqua.jl">Aqua.jl</a></li>
-</ul>
-<h2 id="testing" ><a href="#testing"> Testing</a></h2><ul>
-<li><a href="https://docs.julialang.org/en/v1/stdlib/Test/">unit testing</a></li>
-<li><a href="https://github.com/JuliaTesting/TestEnv.jl">TestEnv.jl</a></li>
-<li><a href="https://github.com/julia-vscode/TestItemRunner.jl">TestItemRunner.jl</a></li>
-<li><a href="https://github.com/JuliaTesting/ReTest.jl">ReTest.jl</a></li>
-<li><a href="https://github.com/JuliaTesting/ReferenceTests.jl">ReferenceTests.jl</a></li>
+<li><a href="https://github.com/aviatesk/JET.jl">JET.jl</a></li>
 </ul>
 <h2 id="documentation" ><a href="#documentation"> Documentation</a></h2><ul>
 <li><a href="https://docs.julialang.org/en/v1/manual/documentation/">docstrings</a></li>
 <li><a href="https://github.com/JuliaDocs/DocStringExtensions.jl">DocStringExtensions.jl</a></li>
 <li><a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a></li>
 <li><a href="https://github.com/tlienart/LiveServer.jl">LiveServer.jl</a></li>
-<li><a href="https://github.com/rafaqz/Interfaces.jl">Replay.jl</a></li>
+<li><a href="https://github.com/lorenzoh/Pollen.jl">Pollen.jl</a></li>
+<li><a href="https://github.com/AtelierArith/Replay.jl">Replay.jl</a></li>
+</ul>
+<h2 id="github_actions" ><a href="#github_actions"> GitHub Actions</a></h2><p>The most useful aspect of PkgTemplates.jl is that it automatically generates workflows for <a href="https://docs.github.com/en/actions/quickstart">GitHub Actions</a>.
+These are stored as YAML files in <code>.github/workflows</code>, with a slightly convoluted syntax that you don't need to fully understand.
+For instance, the file <code>CI.yml</code> contains instructions that execute the tests of your package for each pull request, tag or push to the <code>main</code> branch.
+This is done on a GitHub server and should theoretically cost you money, but your GitHub repository is public, you get an unlimited workflow budget for free.</p>
+<p>The other default workflows are less relevant for new users, but we still mention them:</p>
+<ul>
+<li><a href="https://github.com/JuliaRegistries/CompatHelper.jl">CompatHelper.jl</a> monitors your dependencies and their versions.</li>
+<li><a href="https://github.com/JuliaRegistries/TagBot">TagBot</a> helps you manage package releases.</li>
 </ul>
 <h2 id="literate_programming" ><a href="#literate_programming"> Literate programming</a></h2><ul>
 <li><a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a></li>
@@ -81,8 +176,6 @@
 <h2 id="compatibility" ><a href="#compatibility"> Compatibility</a></h2><ul>
 <li><a href="https://semver.org/">semantic versioning</a></li>
 <li><a href="https://github.com/GunnarFarneback/PackageCompatUI.jl">PackageCompatUI.jl</a></li>
-<li><a href="https://github.com/JuliaRegistries/CompatHelper.jl">CompatHelper.jl</a></li>
-<li><a href="https://github.com/JuliaRegistries/TagBot">TagBot</a></li>
 <li><a href="https://github.com/devmotion/SimpleUnPack.jl">SimpleUnPack.jl</a></li>
 </ul>
 <h2 id="extensions" ><a href="#extensions"> Extensions</a></h2><ul>
@@ -132,6 +225,10 @@
 
     </div>  
     
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
     
   </body>
 </html>

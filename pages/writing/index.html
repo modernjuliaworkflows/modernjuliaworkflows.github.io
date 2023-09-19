@@ -50,7 +50,8 @@
 
 
 <div class="franklin-content" >
-  <h1 id="writing_your_code" ><a href="#writing_your_code"> Writing your code</a></h1><div class="toc"><ol><li><a href="#getting_help">Getting help</a></li><li><a href="#installation">Installation</a></li><li><a href="#repl">REPL</a></li><li><a href="#editor">Editor</a></li><li><a href="#running_code">Running code</a></li><li><a href="#notebooks">Notebooks</a></li><li><a href="#environments">Environments</a></li><li><a href="#local_packages">Local packages</a></li><li><a href="#configuration">Configuration</a></li><li><a href="#esthetics">Esthetics</a></li><li><a href="#logging">Logging</a></li><li><a href="#debugging">Debugging</a></li></ol></div><h2 id="getting_help" ><a href="#getting_help"> Getting help</a></h2><blockquote><p>You're not alone!</p>
+  <h1 id="writing_your_code" ><a href="#writing_your_code"> Writing your code</a></h1><p>In this post, you will learn about tools to create, run and debug Julia code.</p>
+<div class="toc"><ol><li><a href="#getting_help">Getting help</a></li><li><a href="#installation">Installation</a></li><li><a href="#repl">REPL</a></li><li><a href="#editor">Editor</a></li><li><a href="#running_code">Running code</a></li><li><a href="#notebooks">Notebooks</a></li><li><a href="#environments">Environments</a></li><li><a href="#local_packages">Local packages</a></li><li><a href="#configuration">Configuration</a></li><li><a href="#esthetics">Esthetics</a></li><li><a href="#logging">Logging</a></li><li><a href="#debugging">Debugging</a></li></ol></div><h2 id="getting_help" ><a href="#getting_help"> Getting help</a></h2><blockquote><p>You're not alone!</p>
 </blockquote><p>Before you write any line of code, it's good to know where to find help.
 The official <a href="https://julialang.org/about/help/">help page</a> is a good place to start.
 In particular, the Julia <a href="https://julialang.org/community/">community</a> is always happy to guide beginners.</p>
@@ -122,14 +123,10 @@ Pkg.jl allows you to:</p>
   Activating new project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject`
 <span class="sgr34"><span class="sgr1">(MyProject) pkg&gt;</span></span> add Example
 Resolving package versions...
-   Installed Example ─ v0.5.3
     Updating `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Project.toml`
   [7876af07] + Example v0.5.3
     Updating `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
   [7876af07] + Example v0.5.3
-Precompiling project...
-<span class="sgr32">  ✓ </span>Example
-  1 dependency successfully precompiled in 1 seconds
 <span class="sgr34"><span class="sgr1">(MyProject) pkg&gt;</span></span> status
 Status `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Project.toml`
   [7876af07] Example v0.5.3
@@ -247,9 +244,9 @@ Note the different commands: <code>]add Example</code> installs a specific versi
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(MyProject) pkg&gt;</span></span> dev ./MyPackage
 Resolving package versions...
     Updating `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Project.toml`
-  [48729aaa] + MyPackage v0.1.0 `../MyPackage`
+  [9dc9e91c] + MyPackage v0.1.0 `../MyPackage`
     Updating `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
-  [48729aaa] + MyPackage v0.1.0 `../MyPackage`
+  [9dc9e91c] + MyPackage v0.1.0 `../MyPackage`
 </code></pre>
 <p>We can then use the one function defined in <code>MyPackage</code>:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyPackage
@@ -280,7 +277,7 @@ Here are a few options to do so, all of can be added to your default environment
 </blockquote><p>Assume you want to debug a function checking whether the \(n\)-th <a href="https://en.wikipedia.org/wiki/Fermat_number">Fermat number</a> \(F_n = 2^{2^n} + 1\) is prime:</p>
 <pre><code class="julia">function fermat_prime(n)
     F = 2^(2^n) + 1
-    for d in 2:isqrt(F)
+    for d in 2:isqrt(F)  # integer square root
         if F % d == 0
             return false
         end
@@ -342,7 +339,7 @@ Julia offers the logging macros <code>@debug</code>, <code>@info</code>, <code>@
 <p>Refer to the logging <a href="https://docs.julialang.org/en/v1/stdlib/Logging/">documentation</a> for more information.
 In particular, note that <code>@debug</code> messages are suppressed by default.
 You can enable them through the <code>JULIA_DEBUG</code> environment variable if you specify the source module name, here <code>Main</code>.</p>
-<pre><code class="julia-repl">ENV[&quot;JULIA_DEBUG&quot;] = Main # enable @debug logs</code></pre>
+<pre><code class="julia-repl">julia&gt; ENV[&quot;JULIA_DEBUG&quot;] = Main # enable @debug logs</code></pre>
 <h2 id="debugging" ><a href="#debugging"> Debugging</a></h2><blockquote><p>Debugger.jl and Infiltrator.jl allow you to peek inside a function while its execution is paused.</p>
 </blockquote><p>The problem with logging is that you cannot interact with local variables or save them for further analysis.
 The following two packages solve this issue, and they probably belong in your default environment <code>@v1.X</code>, like Revise.jl.</p>
