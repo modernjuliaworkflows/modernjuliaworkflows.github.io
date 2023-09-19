@@ -109,6 +109,7 @@ julia&gt; String&#40;take&#33;&#40;io&#41;&#41;
 &quot;Hello, world.\n&quot;</code></pre>
 </div>
 <p>If you don't know the exact name you are looking for, type a word surrounded by quotes to see in which docstrings it pops up.</p>
+<p>If the help mode does not solve your problem, you can also dig into the standard library <a href="https://docs.julialang.org/en/v1/stdlib/InteractiveUtils/">InteractiveUtils.jl</a> for more powerful search capabilities.</p>
 <h3 id="package_mode_(])" ><a href="#package_mode_(])"> Package mode (<code>]</code>)</a></h3><p>By pressing <code>]</code> you access <a href="https://github.com/JuliaLang/Pkg.jl">Pkg.jl</a>, Julia's integrated package manager, whose <a href="https://pkgdocs.julialang.org/v1/getting-started/">documentation</a> is an absolute must-read.
 Pkg.jl allows you to:</p>
 <ul>
@@ -118,18 +119,25 @@ Pkg.jl allows you to:</p>
 </ul>
 <p>As an illustration, we create a new environment called <code>MyProject</code> and download the package Example.jl inside it:</p>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(modernjuliaworkflows.github.io) pkg&gt;</span></span> activate MyProject
-┌ Warning: The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
-└ @ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.3/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382
-  Activating new project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject`
+<span class="sgr32"><span class="sgr1">  Activating</span></span> new project at `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject`
 <span class="sgr34"><span class="sgr1">(MyProject) pkg&gt;</span></span> add Example
-Resolving package versions...
-    Updating `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Project.toml`
-  [7876af07] + Example v0.5.3
-    Updating `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
-  [7876af07] + Example v0.5.3
+<span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Project.toml`
+  <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.3</span>
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
+  <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.3</span>
 <span class="sgr34"><span class="sgr1">(MyProject) pkg&gt;</span></span> status
-Status `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Project.toml`
-  [7876af07] Example v0.5.3
+<span class="sgr32"><span class="sgr1">Status</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Project.toml`
+  <span class="sgr90">[7876af07] </span>Example v0.5.3
+</code></pre>
+<p>Note that the same keywords are also available in Julia mode:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Pkg
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.rm(&quot;Example&quot;)
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Project.toml`
+  <span class="sgr90">[7876af07] </span><span class="sgr91">- Example v0.5.3</span>
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
+  <span class="sgr90">[7876af07] </span><span class="sgr91">- Example v0.5.3</span>
 </code></pre>
 <h3 id="shell_mode_(;)" ><a href="#shell_mode_(;)"> Shell mode (<code>;</code>)</a></h3><p>By pressing <code>;</code> you enter a terminal, where you can execute any bash command you want.</p>
 <pre><code class="julia-repl"><span class="sgr31"><span class="sgr1">shell&gt;</span></span> echo &quot;hello&quot;
@@ -137,7 +145,9 @@ Status `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyP
 
 <span class="sgr31"><span class="sgr1">shell&gt;</span></span> ls ./pages
 further.md
+Manifest.toml
 optimizing.md
+Project.toml
 sharing.md
 writing.md
 </code></pre>
@@ -148,7 +158,7 @@ In practice, an Integrated Development Environment (or IDE) makes the experience
 <p>The best IDE for Julia is <a href="https://code.visualstudio.com/">Visual Studio Code</a>, or VSCode, developed by Microsoft.
 Indeed, the <a href="https://www.julia-vscode.org/">Julia VSCode extension</a> is the most feature-rich of all Julia IDE plugins.
 You can download it from the VSCode Marketplace.
-In what follows, we will somnetimes mention commands and keyboard shortcuts provided by this extension.
+In what follows, we will somnetimes mention commands and <a href="https://www.julia-vscode.org/docs/stable/userguide/keybindings/">keyboard shortcuts</a> provided by this extension.
 But the only shortcut you need to remember is <code>Ctrl + Shift + P</code> (or <code>Cmd + Shift + P</code> on Mac): this opens the VSCode command palette, in which you can search for any command.
 Type "julia" in the command palette to see what you can do.</p>
 <p>Assuming you want to avoid the Microsoft ecosystem, <a href="https://vscodium.com/">VSCodium</a> is a nearly bit-for-bit replacement for VSCode, but with an open source license and without telemetry.
@@ -161,19 +171,23 @@ The available functionalities should be roughly similar to those of VSCode, at l
 <p>Julia has a rather high startup, load and compilation latency.
 If you only use scripts, you will pay this cost every time you run a slightly modified version of your code.
 That is why many Julia developers fire up a REPL at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way.
-This is made much easier by IDE integration, and here are the relevant <a href="https://www.julia-vscode.org/docs/stable/userguide/runningcode/">VSCode commands</a>:</p>
+This is made much easier by <a href="https://www.julia-vscode.org/docs/stable/userguide/runningcode/">VSCode integration</a>, and here are the most important commands:</p>
 <ul>
-<li><code>Julia: Start REPL</code> - note that this is different from (and better than) opening a VSCode <em>terminal</em> and running Julia.</li>
+<li><code>Julia: Start REPL</code> (shortcut <code>Alt + J</code> then <code>Alt + O</code>) - note that this is different from (and better than) opening a VSCode <em>terminal</em> and running Julia.</li>
 <li><code>Julia: Execute Code in REPL and Move</code> (shortcut <code>Shift + Enter</code>) - the executed code is the block containing the cursor, or the selected part if it exists</li>
 </ul>
 <p>Once your project grows, you will find yourself several files containing type and function definitions
-It is rather tedious to re-run <code>include(&quot;my_definitions.jl&quot;)</code> for every small change, which is why <a href="https://github.com/timholy/Revise.jl">Revise.jl</a> was created.
+It is rather tedious to re-run <code>include(&quot;utils.jl&quot;)</code> for every small change, which is why <a href="https://github.com/timholy/Revise.jl">Revise.jl</a> was created.
 This package is used by a vast majority of Julia developers to track code modifications automatically.
 If you are only writing scripts (and not full packages), all you need to do is</p>
 <ol>
 <li>start your Julia session with <code>using Revise</code></li>
 <li>replace every <code>include</code> with <code>includet</code> (for "include + track")</li>
 </ol>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Revise
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> includet(&quot;utils.jl&quot;)
+</code></pre>
 <p>When keeping the same REPL open for a long time, it's common to end up with a "polluted" workspace where the definitions of certain variables or functions have been overwritten in unexpected ways.
 This, along with other events like <code>struct</code> redefinitions, might force you to restart your REPL now and again, and that's okay.</p>
 <h2 id="notebooks" ><a href="#notebooks"> Notebooks</a></h2><blockquote><p>Jupyter or Pluto, depending on your reactivity needs</p>
@@ -199,14 +213,7 @@ Unlike Jupyter notebooks, Pluto notebooks are</p>
 julia&gt; Pluto.run()</code></pre>
 <h2 id="environments" ><a href="#environments"> Environments</a></h2><blockquote><p>Julia projects are entered with <code>]activate</code>, and their details are stored in <code>Project.toml</code> and <code>Manifest.toml</code>.</p>
 </blockquote><p>As we have seen, Pkg.jl is the Julia equivalent of <code>pip</code> or <code>conda</code> for Python.
-It lets you <a href="https://pkgdocs.julialang.org/v1/managing-packages/">install packages</a> and <a href="https://pkgdocs.julialang.org/v1/environments/">manage environments</a> (collections of packages with specific versions).
-It can be used from the REPL, either in package mode (prefixing the first command with a <code>]</code>), or directly in Julia mode with the same keywords:</p>
-<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Pkg
-
-<span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.status()
-Status `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Project.toml`
-  [7876af07] Example v0.5.3
-</code></pre>
+It lets you <a href="https://pkgdocs.julialang.org/v1/managing-packages/">install packages</a> and <a href="https://pkgdocs.julialang.org/v1/environments/">manage environments</a> (collections of packages with specific versions).</p>
 <p>Once you <code>]activate</code> a project, the packages you <code>]add</code> will be listed in two files called <code>Project.toml</code> and <code>Manifest.toml</code>.
 Sharing a project between computers is as simple as sending a folder containing your code and both of these files.
 Using them, the user can run <code>]instantiate</code> and Julia will recreate the state of your local environment.</p>
@@ -217,7 +224,7 @@ Using them, the user can run <code>]instantiate</code> and Julia will recreate t
 <p>If you haven't entered any local project, packages will be installed in the default environment, called <code>@v1.X</code> after the active version of Julia (note the <code>@</code> before the name).
 Packages installed that way are available no matter which local environment is active, because of "environment stacking".
 It is therefore recommended to keep the default environment very light, containing only essential development tools like Revise.jl.</p>
-<p>In VSCode, if your directory contains a <code>Project.toml</code>, you will be asked whether you want to make this the default environment.
+<p>Environments are also <a href="https://www.julia-vscode.org/docs/stable/userguide/env/">handled by VSCode</a>, if your directory contains a <code>Project.toml</code>, you will be asked whether you want to make this the default environment.
 You can modify this setting by clicking the <code>Julia env: ...</code> button at the bottom.
 Anytime you open a Julia REPL, it will launch within the environment you chose.</p>
 <h2 id="local_packages" ><a href="#local_packages"> Local packages</a></h2><p>Once your code base grows beyond a few scripts, you may want to <a href="https://pkgdocs.julialang.org/v1/creating-packages/">create a package</a> of your own.
@@ -226,30 +233,32 @@ Furthermore, you can specify versions for your package and its dependencies, mak
 And of course, the Revise.jl niceties presented earlier still work, without even resorting to <code>includet</code>.
 As soon as you load your package, the files containing its code will be tracked automatically.</p>
 <p>To create a new package locally, the easy way is to use <code>]generate</code> (we will discuss a more sophisticated workflow involving GitHub in the next blog post).</p>
-<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> !isdir(&quot;MyPackage&quot;) ? Pkg.generate(&quot;MyPackage&quot;) : nothing;
-Generating  project MyPackage:
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> !isdir(&quot;MyPackage&quot;) ? Pkg.generate(&quot;MyPackage&quot;) : nothing
+<span class="sgr32"><span class="sgr1">  Generating</span></span>  project MyPackage:
     MyPackage/Project.toml
     MyPackage/src/MyPackage.jl
+Dict{String, Base.UUID}(&quot;MyPackage&quot; =&gt; UUID(&quot;3e5e630f-d8f9-435b-b960-f4257f32ef09&quot;))
 </code></pre>
 <p>This command initializes a simple folder with a <code>Project.toml</code> and a <code>src</code> subfolder.
 The <code>src</code> subfolder contains a file <code>MyPackage.jl</code>, where a <a href="https://docs.julialang.org/en/v1/manual/modules/">module</a> called <code>MyPackage</code> is defined.
-Said module should contain</p>
+Once complete, that module should contain</p>
 <ul>
 <li>the list of imported dependencies \(\to\) <code>using MyOtherPackage</code></li>
-<li>the list of included scripts in the correct order \(\to\) <code>include(&quot;my_definitions.jl&quot;)</code></li>
-<li>the list of names you want to make public \(\to\) <code>export my_function</code></li>
+<li>the list of included scripts in the correct order \(\to\) <code>include(&quot;utils.jl&quot;)</code></li>
+<li>the list of names you want to make public \(\to\) <code>export myfunction</code></li>
 </ul>
 <p>To experiment with this new package, you can <code>]dev</code> it into your current environment.
 Note the different commands: <code>]add Example</code> installs a specific version of a package from the general registry, while  <code>]dev ./MyPackage</code> relies on the current state of the code in the folder you point to.</p>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(MyProject) pkg&gt;</span></span> dev ./MyPackage
-Resolving package versions...
-    Updating `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Project.toml`
-  [9dc9e91c] + MyPackage v0.1.0 `../MyPackage`
-    Updating `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
-  [9dc9e91c] + MyPackage v0.1.0 `../MyPackage`
+<span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Project.toml`
+  <span class="sgr90">[3e5e630f] </span><span class="sgr92">+ MyPackage v0.1.0 `../MyPackage`</span>
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/Work/GitHub/Websites/modernjuliaworkflows.github.io/MyProject/Manifest.toml`
+  <span class="sgr90">[3e5e630f] </span><span class="sgr92">+ MyPackage v0.1.0 `../MyPackage`</span>
 </code></pre>
 <p>We can then use the one function defined in <code>MyPackage</code>:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyPackage
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Precompiling MyPackage [3e5e630f-d8f9-435b-b960-f4257f32ef09]
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> MyPackage.greet()
 Hello World!
@@ -384,7 +393,7 @@ In fermat_prime(n) at REPL[1]:1
 About to run: return true
 1|julia&gt; F
 1</code></pre>
-<p>For a more user-friendly debugging interface, Debugger.jl is <a href="https://www.julia-vscode.org/docs/stable/userguide/debugging/">integrated</a> into the VSCode extension.
+<p>For a more user-friendly debugging interface, Debugger.jl is <a href="https://www.julia-vscode.org/docs/stable/userguide/debugging/">interfaced with VSCode</a>.
 Click left of a line number in an editor pane to add a <em>breakpoint</em>, which is represented by a red circle.
 In the debugging pane of the Julia extension, click <code>Run and Debug</code> to start the debugger.
 The program will automatically halt when it hits a breakpoint.
@@ -425,7 +434,12 @@ true
 
 julia&gt; safehouse.F
 1</code></pre>
-<p>More advanced debugging tools include <a href="https://github.com/tkf/InteractiveCodeSearch.jl">InteractiveCodeSearch.jl</a>, <a href="https://github.com/MichaelHatherly/InteractiveErrors.jl">InteractiveErrors.jl</a> and <a href="https://github.com/timholy/CodeTracking.jl">CodeTracking.jl</a>, but we will not describe them in detail.</p>
+<p>We list a few advanced debugging utilities without going into detail:</p>
+<ul>
+<li><a href="https://github.com/tkf/InteractiveCodeSearch.jl">InteractiveCodeSearch.jl</a> to look for a precise implementation of a function.</li>
+<li><a href="https://github.com/timholy/CodeTracking.jl">CodeTracking.jl</a> to extend InteractiveUtils.jl</li>
+<li><a href="https://github.com/MichaelHatherly/InteractiveErrors.jl">InteractiveErrors.jl</a> to navigate through stacktraces.</li>
+</ul>
 
   <div class="page-foot">
     <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 19, 2023. </br>
