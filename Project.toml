@@ -1,4 +1,5 @@
 [deps]
 InteractiveUtils = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 NodeJS = "2bd173c7-0d6d-553b-b6af-13a54713934c"
+PkgTemplates = "14b8a8f1-9102-5b29-a752-f990bacb7fe1"
 Xranklin = "558449b0-171e-4e1f-900f-d076a5ddf486"

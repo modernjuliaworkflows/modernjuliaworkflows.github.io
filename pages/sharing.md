@@ -2,12 +2,52 @@
 
 # Sharing your code
 
+In this post, you will learn about tools to initialize, structure and distribute Julia packages.
+
 \toc
 
 ## Setup
 
-* GitHub and GitHub actions
-* [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl)
+A vast majority of Julia packages are hosted on [GitHub](https://github.com/) (although less common, other options like [GitLab](https://gitlab.com/) are also possible).
+GitHub is a platform for collaborative software development, based on the version control system [Git](https://git-scm.com/).
+If you are unfamiliar with these technologies, check out the [GitHub documentation](https://docs.github.com/en/get-started/quickstart).
+
+The first step is therefore [creating](https://github.com/new) an empty GitHub repository.
+You should try to follow [package naming guidelines](https://pkgdocs.julialang.org/v1/creating-packages/#Package-naming-guidelines) and add a ".jl" extension at the end, like so: "MyAwesomePackage.jl".
+Do not insert any files like `README.md`, `.gitignore` or `LICENSE.md`, this will be done for you in the next step.
+
+Now it is time to leverage [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl), which automates package creation (like `]generate` on steroids).
+The following code gives you a basic file structure to start with:
+
+```>pkgtemplates
+using PkgTemplates
+t = Template(dir=".", user="myusername")
+!isdir("MyAwesomePackage") ? t("MyAwesomePackage") : nothing
+```
+
+Then, you simply need to push this new folder to the remote repository MyAwesomePackage.jl, and you're ready to go.
+The rest of this post will explain to you what each part of this folder does, and how to bend them to your will.
+In particular, once you're done here, you will be able to run
+
+```julia-repl
+t = Template(dir=".", user="myusername", interactive=true)
+```
+
+and answer each interactive prompt confidently without freaking out.
+
+## GitHub actions
+
+The most useful aspect of PkgTemplates.jl is that it automatically generates workflows for [GitHub Actions](https://docs.github.com/en/actions/quickstart).
+These are stored as YAML files in `.github/workflows`, with a slightly convoluted syntax that you don't need to fully understand.
+For instance, the file `CI.yml` contains instructions that execute the tests of your package for each pull request, tag or push to the `main` branch.
+This is done on a GitHub server and should theoretically cost you money, but your GitHub repository is public, you get an unlimited workflow budget for free.
+
+The other default workflows are less relevant for new users, but we still mention them:
+
+- [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl) monitors your dependencies and their versions.
+- [TagBot](https://github.com/JuliaRegistries/TagBot) helps you manage package releases.
+
+A very common workflow that is not present by default (but can be enabled manually) is building a documentation website and deploying it, more on that below.
 
 ## Code quality
 
@@ -30,7 +70,8 @@
 * [DocStringExtensions.jl](https://github.com/JuliaDocs/DocStringExtensions.jl)
 * [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl)
 * [LiveServer.jl](https://github.com/tlienart/LiveServer.jl)
-* [Replay.jl](https://github.com/rafaqz/Interfaces.jl)
+* [Pollen.jl](https://github.com/lorenzoh/Pollen.jl)
+* [Replay.jl](https://github.com/AtelierArith/Replay.jl)
 
 ## Literate programming
 

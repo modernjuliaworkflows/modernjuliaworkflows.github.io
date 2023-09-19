@@ -2,6 +2,8 @@
 
 # Writing your code
 
+In this post, you will learn about tools to create, run and debug Julia code.
+
 \toc
 
 ## Getting help
