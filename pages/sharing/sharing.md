@@ -35,7 +35,7 @@ The following code gives you a basic file structure to start with:
 
 ```>pkgtemplates
 using PkgTemplates
-t = Template(dir=Utils.path(:site), user="myusername", interactive=false)
+t = Template(dir=Utils.path(:site), user="myusername", interactive=false).
 t("MyAwesomePackage")
 ```
 
@@ -48,7 +48,7 @@ To work on the package further, we develop it into the current environment and l
 ```>using-awesome
 using Pkg
 Pkg.develop(path=sitepath("MyAwesomePackage"))
-using MyAwesomePackage  # todo: understand loading failure
+using MyAwesomePackage
 ```
 
 ## Testing
@@ -99,7 +99,7 @@ Then, the package directory will be formatted in the BlueStyle whenever you call
 
 ```>format
 using JuliaFormatter
-JuliaFormatter.format(sitepath("MyAwesomePackage"))
+JuliaFormatter.format(MyAwesomePackage)
 ```
 
 This functionality is even [integrated with VSCode](https://www.julia-vscode.org/docs/stable/userguide/formatter/), and you can add it to your tests.
@@ -117,11 +117,10 @@ Aqua.test_all(MyAwesomePackage)
 
 Meanwhile, [JET.jl](https://github.com/aviatesk/JET.jl) is a complementary tool, similar to a static linter.
 Here we focus on its [error analysis](https://aviatesk.github.io/JET.jl/stable/jetanalysis/), which can detect errors or typos without even running the code by leveraging type inference.
-You can either use it in report mode (with a nice [VSCode display](https://www.julia-vscode.org/docs/stable/userguide/linter/#Runtime-diagnostics))
+You can either use it in report mode (with a nice [VSCode display](https://www.julia-vscode.org/docs/stable/userguide/linter/#Runtime-diagnostics)) or in test mode as follows:
 
 ```>jet
 using JET
-JET.report_package(MyAwesomePackage)
 JET.test_package(MyAwesomePackage)
 ```
 
