@@ -28,7 +28,7 @@ Do not insert any files like `README.md`, `.gitignore` or `LICENSE.md`, this wil
 Indeed, we can leverage [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl) to automate package creation (like `]generate` from Pkg.jl but on steroids).
 The following code gives you a basic file structure to start with:
 
-```>pkgtemplates
+```>>pkgtemplates
 using PkgTemplates
 t = Template(dir=".", user="myusername", interactive=false)
 t("MyAwesomePackage")
@@ -46,7 +46,7 @@ ls -a MyAwesomePackage
 
 and `]dev` it into a work environment before loading it.
 
-```]activate-awesomepackage
+```]]activate-awesomepackage
 activate MyAwesomeProject
 dev ./MyAwesomePackage
 status
