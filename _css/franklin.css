@@ -322,8 +322,10 @@ code {
   text-transform: uppercase;
 }
 
-.language-bash::before {content: "Bash";}
-.language-julia::before {content: "Julia";}
+.bash::before {content: "Bash";}
+.toml::before {content: "TOML";}
+.language-ruby::before {content: "Julia";}
+.julia::before {content: "Julia";}
 .language-julia-repl::before {content: "Julia REPL";}
 .julia-repl::before {content: "Julia REPL";}
 .julia-repl-pkg::before {content: "Julia REPL: Pkg mode";}
