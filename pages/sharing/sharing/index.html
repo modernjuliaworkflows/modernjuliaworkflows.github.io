@@ -74,7 +74,7 @@ The following code gives you a basic file structure to start with:</p>
   1 dependency successfully precompiled in 0 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>We haven&#39;t cleaned this depot up for a bit, running Pkg.gc()...
 <span class="sgr32"><span class="sgr1">      Active</span></span> manifest files: 4 found
-<span class="sgr32"><span class="sgr1">      Active</span></span> artifact files: 2 found
+<span class="sgr32"><span class="sgr1">      Active</span></span> artifact files: 3 found
 <span class="sgr32"><span class="sgr1">      Active</span></span> scratchspaces: 0 found
 <span class="sgr32"><span class="sgr1">     Deleted</span></span> no artifacts, repos, packages or scratchspaces
 <span class="sgr32"><span class="sgr1">  Activating</span></span> project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/sharing`
@@ -90,9 +90,9 @@ In particular, once you're done here, you will be able to run PkgTemplates.jl wi
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.develop(path=sitepath(&quot;MyAwesomePackage&quot;))
 <span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/sharing/Project.toml`
-  <span class="sgr90">[9a46dbd3] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+  <span class="sgr90">[2cc0d3c0] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/sharing/Manifest.toml`
-  <span class="sgr90">[9a46dbd3] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+  <span class="sgr90">[2cc0d3c0] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyAwesomePackage
 </code></pre>
@@ -109,8 +109,8 @@ Test Passed
     @test_throws MethodError sqrt(&quot;abc&quot;)
 end
 <span class="sgr1">Test Summary:  | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
-Invalid inputs | <span class="sgr32">   2  </span><span class="sgr36">    2  </span>0.1s
-Test.DefaultTestSet(&quot;Invalid inputs&quot;, Any[], 2, false, false, true, 1.695154374256645e9, 1.695154374308647e9, false)
+Invalid inputs | <span class="sgr32">   2  </span><span class="sgr36">    2  </span>0.0s
+Test.DefaultTestSet(&quot;Invalid inputs&quot;, Any[], 2, false, false, true, 1.695592332539138e9, 1.695592332586666e9, false)
 </code></pre>
 <p>These tests belong in <code>test/runtests.jl</code>, and they are executed with the <code>]test</code> command (in Pkg mode).
 Unit testing may seem rather naive, or even superfluous, but as your code grows more complex, it becomes easier to break something without noticing.
@@ -146,7 +146,7 @@ It is usually a good idea to include the following in your tests:</p>
 Skipping Base.active_repl
 Skipping Base.active_repl_backend
 <span class="sgr1">Test Summary:    | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
-Method ambiguity | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>2.1s
+Method ambiguity | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>2.2s
 <span class="sgr1">Test Summary:           | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
 Unbound type parameters | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>0.1s
 <span class="sgr1">Test Summary:     | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
@@ -161,7 +161,7 @@ Compat bounds | <span class="sgr32">   1  </span><span class="sgr36">    1  </sp
 Project.toml formatting | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>0.3s
 <span class="sgr1">Test Summary: | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
 Piracy        | <span class="sgr32">   1  </span><span class="sgr36">    1  </span>0.1s
-Test.DefaultTestSet(&quot;Piracy&quot;, Any[], 1, false, false, true, 1.695154380728266e9, 1.695154380802505e9, false)
+Test.DefaultTestSet(&quot;Piracy&quot;, Any[], 1, false, false, true, 1.695592410039149e9, 1.695592410149665e9, false)
 </code></pre>
 <p>Meanwhile, <a href="https://github.com/aviatesk/JET.jl">JET.jl</a> is a complementary tool, similar to a static linter.
 Here we focus on its <a href="https://aviatesk.github.io/JET.jl/stable/jetanalysis/">error analysis</a>, which can detect errors or typos without even running the code by leveraging type inference.
@@ -262,13 +262,13 @@ In another category, <a href="https://github.com/AtelierArith/Replay.jl">Replay.
 </ul>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.rm(&quot;MyAwesomePackage&quot;)  # hide
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/sharing/Project.toml`
-  <span class="sgr90">[9a46dbd3] </span><span class="sgr91">- MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+  <span class="sgr90">[2cc0d3c0] </span><span class="sgr91">- MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/sharing/Manifest.toml`
-  <span class="sgr90">[9a46dbd3] </span><span class="sgr91">- MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+  <span class="sgr90">[2cc0d3c0] </span><span class="sgr91">- MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
 </code></pre>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 19, 2023. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 24, 2023. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
