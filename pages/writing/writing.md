@@ -56,7 +56,7 @@ This is the one you get when you run
 julia
 ```
 
-To use other channels, add them to `juliaup` and put a `+` in fron the of the channel name when you start Julia:
+To use other channels, add them to `juliaup` and put a `+` in front of the channel name when you start Julia:
 
 ```bash
 juliaup add lts
@@ -146,12 +146,12 @@ In practice, an Integrated Development Environment (or IDE) makes the experience
 The best IDE for Julia is [Visual Studio Code](https://code.visualstudio.com/), or VSCode, developed by Microsoft.
 Indeed, the [Julia VSCode extension](https://www.julia-vscode.org/) is the most feature-rich of all Julia IDE plugins.
 You can download it from the VSCode Marketplace.
-In what follows, we will somnetimes mention commands and [keyboard shortcuts](https://www.julia-vscode.org/docs/stable/userguide/keybindings/) provided by this extension.
+In what follows, we will sometimes mention commands and [keyboard shortcuts](https://www.julia-vscode.org/docs/stable/userguide/keybindings/) provided by this extension.
 But the only shortcut you need to remember is `Ctrl + Shift + P` (or `Cmd + Shift + P` on Mac): this opens the VSCode command palette, in which you can search for any command.
 Type "julia" in the command palette to see what you can do.
 
 Assuming you want to avoid the Microsoft ecosystem, [VSCodium](https://vscodium.com/) is a nearly bit-for-bit replacement for VSCode, but with an open source license and without telemetry.
-If you don't want to use VSCode at all, other options include [emacs](https://www.gnu.org/software/emacs/) and [vim](https://www.vim.org/).
+If you don't want to use VSCode at all, other options include [Emacs](https://www.gnu.org/software/emacs/) and [Vim](https://www.vim.org/).
 Check out [JuliaEditorSupport](https://github.com/JuliaEditorSupport) to see if your favorite IDE has a Julia plugin.
 The available functionalities should be roughly similar to those of VSCode, at least for the basic aspects like running code.
 
