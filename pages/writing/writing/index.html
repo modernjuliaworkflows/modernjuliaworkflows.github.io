@@ -51,15 +51,15 @@
 
 <div class="franklin-content" >
   <h1 id="writing_your_code" ><a href="#writing_your_code"> Writing your code</a></h1><p>In this post, you will learn about tools to create, run and debug Julia code.</p>
-<div class="toc"><ol><li><a href="#getting_help">Getting help</a></li><li><a href="#installation">Installation</a></li><li><a href="#repl">REPL</a></li><li><a href="#editor">Editor</a></li><li><a href="#running_code">Running code</a></li><li><a href="#notebooks">Notebooks</a></li><li><a href="#environments">Environments</a></li><li><a href="#local_packages">Local packages</a></li><li><a href="#configuration">Configuration</a></li><li><a href="#esthetics">Esthetics</a></li><li><a href="#interactivity">Interactivity</a></li><li><a href="#logging">Logging</a></li><li><a href="#debugging">Debugging</a></li></ol></div><h2 id="getting_help" ><a href="#getting_help"> Getting help</a></h2><blockquote><p>You're not alone!</p>
-</blockquote><p>Before you write any line of code, it's good to know where to find help.
+<div class="toc"><ol><li><a href="#getting_help">Getting help</a></li><li><a href="#installation">Installation</a></li><li><a href="#repl">REPL</a></li><li><a href="#editor">Editor</a></li><li><a href="#running_code">Running code</a></li><li><a href="#notebooks">Notebooks</a></li><li><a href="#environments">Environments</a></li><li><a href="#local_packages">Local packages</a></li><li><a href="#development_workflow">Development workflow</a></li><li><a href="#configuration">Configuration</a></li><li><a href="#interactivity">Interactivity</a></li><li><a href="#logging">Logging</a></li><li><a href="#debugging">Debugging</a></li></ol></div><h2 id="getting_help" ><a href="#getting_help"> Getting help</a></h2><div class="tldr"><p><strong>TLDR</strong>: You're not alone! </p>
+</div><p>Before you write any line of code, it's good to know where to find help.
 The official <a href="https://julialang.org/about/help/">help page</a> is a good place to start.
 In particular, the Julia <a href="https://julialang.org/community/">community</a> is always happy to guide beginners.</p>
 <p>As a rule of thumb, the <a href="https://discourse.julialang.org/">Discourse forum</a> is where you should ask your questions to make the answers discoverable for future users.
-If you just want to chat with someone, you should go to our very active <a href="https://julialang.org/slack/">Slack</a> instead.
-Some of the vocabulary used by community members may appear unfamiliar, but don't worry: <a href="https://github.com/JuliaCommunity/StartHere.jl">StartHere.jl</a> gives you a good head start.</p>
-<h2 id="installation" ><a href="#installation"> Installation</a></h2><blockquote><p>Use <code>juliaup</code></p>
-</blockquote><p>The most natural starting point is the <a href="https://julialang.org/downloads/">downloads</a> page.
+If you just want to chat with someone, you have a choice between the open source <a href="https://julialang.zulipchat.com/register/">Zulip</a> and the closed source <a href="https://julialang.org/slack/">Slack</a>.
+Some of the vocabulary used by community members may appear unfamiliar, but don't worry: <a href="https://github.com/JuliaCommunity/StartHere.jl">StartHere.jl</a> gives you a good overview.</p>
+<h2 id="installation" ><a href="#installation"> Installation</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use <code>juliaup</code> </p>
+</div><p>The most natural starting point is the <a href="https://julialang.org/downloads/">downloads</a> page.
 However, for additional flexibility, we recommend to use <a href="https://github.com/JuliaLang/juliaup"><code>juliaup</code></a> instead.
 You can get it from the Windows store, or from the command line on Unix systems:</p>
 <pre><code class="bash">curl -fsSL https://install.julialang.org | sh</code></pre>
@@ -70,16 +70,19 @@ For instance, the <code>release</code> channel will always point to the <a href=
 Upon installation of <code>juliaup</code>, the current stable version of Julia is downloaded and selected as the default.
 This is the one you get when you run</p>
 <pre><code class="bash">julia</code></pre>
-<p>To use other channels, add them to <code>juliaup</code> and put a <code>+</code> in front of the channel name when you start Julia:</p>
-<pre><code class="bash">juliaup add lts
-julia +lts</code></pre>
-<p>You can get an overview of the channels installed on your computer with</p>
-<pre><code class="bash">juliaup status</code></pre>
-<p>When new versions are tagged, the version associated with a given channel can change, which means a new executable needs to be downloaded.
-If you want to catch up with the latest developments, just do</p>
-<pre><code class="bash">juliaup update</code></pre>
-<h2 id="repl" ><a href="#repl"> REPL</a></h2><blockquote><p>The REPL has 4 primary modes: Julia, package (<code>]</code>), help (<code>?</code>) and shell (<code>;</code>).</p>
-</blockquote><p>The Read-Eval-Print Loop (or REPL) is the most basic way to interact with Julia, check out its <a href="https://docs.julialang.org/en/v1/stdlib/REPL/">documentation</a> for details.
+<div class="advanced"><p><strong>Advanced</strong>: To use other channels, add them to <code>juliaup</code> and put a <code>+</code> in front of the channel name when you start Julia:</p>
+ <pre><code class="bash"> juliaup add lts
+ julia +lts
+ </code></pre>
+<p> You can get an overview of the channels installed on your computer with</p>
+ <pre><code class="bash"> juliaup status
+ </code></pre>
+<p> When new versions are tagged, the version associated with a given channel can change, which means a new executable needs to be downloaded.
+ If you want to catch up with the latest developments, just do</p>
+ <pre><code class="bash"> juliaup update
+ </code></pre>
+</div><h2 id="repl" ><a href="#repl"> REPL</a></h2><div class="tldr"><p><strong>TLDR</strong>: The REPL has 4 primary modes: Julia, package (<code>]</code>), help (<code>?</code>) and shell (<code>;</code>). </p>
+</div><p>The Read-Eval-Print Loop (or REPL) is the most basic way to interact with Julia, check out its <a href="https://docs.julialang.org/en/v1/stdlib/REPL/">documentation</a> for details.
 You can start a REPL by typing <code>julia</code> into a terminal, or by clicking on the Julia application in your computer.
 It will allow you to play around with arbitrary Julia code:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> a, b = 1, 2;
@@ -112,11 +115,12 @@ julia&gt; String&#40;take&#33;&#40;io&#41;&#41;
 <h3 id="package_mode_(])" ><a href="#package_mode_(])"> Package mode (<code>]</code>)</a></h3><p>By pressing <code>]</code> you access <a href="https://github.com/JuliaLang/Pkg.jl">Pkg.jl</a>, Julia's integrated package manager, whose <a href="https://pkgdocs.julialang.org/v1/getting-started/">documentation</a> is an absolute must-read.
 Pkg.jl allows you to:</p>
 <ul>
-<li><code>activate</code> different local, shared or temporary environments;</li>
-<li><code>add</code>, <code>update</code> (or <code>up</code>) and <code>remove</code> (or <code>rm</code>) packages;</li>
-<li>get the <code>status</code> (or <code>st</code>) of your current environment.</li>
+<li><code>]activate</code> different local, shared or temporary environments;</li>
+<li><code>]instantiate</code> them by downloading the necessary packages;</li>
+<li><code>]add</code>, <code>]update</code> (or <code>]up</code>) and <code>]remove</code> (or <code>]rm</code>) packages;</li>
+<li>get the <code>]status</code> (or <code>]st</code>) of your current environment.</li>
 </ul>
-<p>As an illustration, we download the package Example.jl inside our current environment:</p>
+<p>As an illustration, we download the package Example.jl inside our current environment (which already contains some other stuff for later):</p>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(writing) pkg&gt;</span></span> add Example
 <span class="sgr33"><span class="sgr1">┌ Warning: </span></span>The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
 <span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.3/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382</span>
@@ -124,8 +128,18 @@ Pkg.jl allows you to:</p>
 <span class="sgr32"><span class="sgr1">   Installed</span></span> Example ─ v0.5.3
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Project.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.3</span>
+  <span class="sgr90">[44cfe95a] </span><span class="sgr95">↓ Pkg v1.10.0 ⇒ v1.9.2</span>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Manifest.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.3</span>
+  <span class="sgr90">[b27032c2] </span><span class="sgr95">↓ LibCURL v0.6.4 ⇒ v0.6.3</span>
+  <span class="sgr90">[44cfe95a] </span><span class="sgr95">↓ Pkg v1.10.0 ⇒ v1.9.2</span>
+  <span class="sgr90">[deac9b47] </span><span class="sgr95">↓ LibCURL_jll v8.0.1+1 ⇒ v7.84.0+0</span>
+  <span class="sgr90">[29816b5a] </span><span class="sgr95">↓ LibSSH2_jll v1.11.0+1 ⇒ v1.10.2+0</span>
+  <span class="sgr90">[c8ffd9c3] </span><span class="sgr95">↓ MbedTLS_jll v2.28.2+1 ⇒ v2.28.2+0</span>
+  <span class="sgr90">[14a3606d] </span><span class="sgr95">↓ MozillaCACerts_jll v2023.1.10 ⇒ v2022.10.11</span>
+  <span class="sgr90">[83775a58] </span><span class="sgr95">↓ Zlib_jll v1.2.13+1 ⇒ v1.2.13+0</span>
+  <span class="sgr90">[8e850ede] </span><span class="sgr95">↓ nghttp2_jll v1.52.0+1 ⇒ v1.48.0+0</span>
+  <span class="sgr90">[3f19e933] </span><span class="sgr95">↓ p7zip_jll v17.4.0+2 ⇒ v17.4.0+0</span>
 <span class="sgr32"><span class="sgr1">Precompiling</span></span> project...
 <span class="sgr32">  ✓ </span>Example
   1 dependency successfully precompiled in 0 seconds. 14 already precompiled.
@@ -156,43 +170,35 @@ optimizing
 sharing
 writing
 </code></pre>
-<h2 id="editor" ><a href="#editor"> Editor</a></h2><blockquote><p>VSCode has the best Julia support.</p>
-</blockquote><p>Most computer programs are just plain text files with a specific extension (in our case <code>.jl</code>).
+<h2 id="editor" ><a href="#editor"> Editor</a></h2><div class="tldr"><p><strong>TLDR</strong>: VSCode is the IDE with the best Julia support. </p>
+</div><p>Most computer programs are just plain text files with a specific extension (in our case <code>.jl</code>).
 So in theory, any text editor suffices to write and modify Julia code.
 In practice, an Integrated Development Environment (or IDE) makes the experience much more pleasant, thanks to code-related utilities and language-specific plugins.</p>
 <p>The best IDE for Julia is <a href="https://code.visualstudio.com/">Visual Studio Code</a>, or VSCode, developed by Microsoft.
 Indeed, the <a href="https://www.julia-vscode.org/">Julia VSCode extension</a> is the most feature-rich of all Julia IDE plugins.
-You can download it from the VSCode Marketplace.
-In what follows, we will sometimes mention commands and <a href="https://www.julia-vscode.org/docs/stable/userguide/keybindings/">keyboard shortcuts</a> provided by this extension.
-But the only shortcut you need to remember is <code>Ctrl + Shift + P</code> (or <code>Cmd + Shift + P</code> on Mac): this opens the VSCode command palette, in which you can search for any command.
-Type "julia" in the command palette to see what you can do.</p>
-<p>Assuming you want to avoid the Microsoft ecosystem, <a href="https://vscodium.com/">VSCodium</a> is a nearly bit-for-bit replacement for VSCode, but with an open source license and without telemetry.
-If you don't want to use VSCode at all, other options include <a href="https://www.gnu.org/software/emacs/">Emacs</a> and <a href="https://www.vim.org/">Vim</a>.
-Check out <a href="https://github.com/JuliaEditorSupport">JuliaEditorSupport</a> to see if your favorite IDE has a Julia plugin.
-The available functionalities should be roughly similar to those of VSCode, at least for the basic aspects like running code.</p>
-<h2 id="running_code" ><a href="#running_code"> Running code</a></h2><blockquote><p>Open a REPL and run all your code there interactively</p>
-</blockquote><p>You can execute a Julia script from your terminal, but in most cases that is not what you want to do.</p>
+You can download it from the VSCode Marketplace and read its <a href="https://www.julia-vscode.org/docs/stable/">documentation</a> cover to cover.</p>
+<div class="vscode"><p><strong>VSCode</strong>: In what follows, we will sometimes mention commands and <a href="https://www.julia-vscode.org/docs/stable/userguide/keybindings/">keyboard shortcuts</a> provided by this extension.
+ But the only shortcut you need to remember is <code>Ctrl + Shift + P</code> (or <code>Cmd + Shift + P</code> on Mac): this opens the VSCode command palette, in which you can search for any command.
+ Type "julia" in the command palette to see what you can do.</p>
+</div><div class="advanced"><p><strong>Advanced</strong>: Assuming you want to avoid the Microsoft ecosystem, <a href="https://vscodium.com/">VSCodium</a> is a nearly bit-for-bit replacement for VSCode, but with an open source license and without telemetry.
+ If you don't want to use VSCode at all, other options include <a href="https://www.gnu.org/software/emacs/">Emacs</a> and <a href="https://www.vim.org/">Vim</a>.
+ Check out <a href="https://github.com/JuliaEditorSupport">JuliaEditorSupport</a> to see if your favorite IDE has a Julia plugin.
+ The available functionalities should be roughly similar to those of VSCode, at least for the basic aspects like running code.</p>
+</div><h2 id="running_code" ><a href="#running_code"> Running code</a></h2><div class="tldr"><p><strong>TLDR</strong>: Open a REPL and run all your code there interactively. </p>
+</div><p>You can execute a Julia script from your terminal, but in most cases that is not what you want to do.</p>
 <pre><code class="bash">julia myfile.jl</code></pre>
-<p>Julia has a rather high startup, load and compilation latency.
+<p>Julia has a rather high startup and compilation latency.
 If you only use scripts, you will pay this cost every time you run a slightly modified version of your code.
-That is why many Julia developers fire up a REPL at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way.
-This is made much easier by <a href="https://www.julia-vscode.org/docs/stable/userguide/runningcode/">VSCode integration</a>, and here are the most important commands:</p>
+That is why many Julia developers fire up a REPL at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way.</p>
+<div class="vscode"><p><strong>VSCode</strong>: <a href="https://www.julia-vscode.org/docs/stable/userguide/runningcode/">Running code</a> is made much easier by the following commands:</p>
 <ul>
-<li><code>Julia: Start REPL</code> (shortcut <code>Alt + J</code> then <code>Alt + O</code>) - note that this is different from (and better than) opening a VSCode <em>terminal</em> and running Julia.</li>
-<li><code>Julia: Execute Code in REPL and Move</code> (shortcut <code>Shift + Enter</code>) - the executed code is the block containing the cursor, or the selected part if it exists</li>
+<li><code>Julia: Start REPL</code> (shortcut <code>Alt + J</code> then <code>Alt + O</code>) - this is different from opening a VSCode <em>terminal</em> and launching Julia manually from there, because the integrated Julia REPL allows you to send code from files to the REPL directly.</li>
+<li><code>Julia: Execute Code in REPL and Move</code> (shortcut <code>Shift + Enter</code>) - the executed code is the block containing the cursor, or the selected part if it exists.</li>
 </ul>
-<p>Once your project grows, you will find yourself several files containing type and function definitions
-It is rather tedious to re-run <code>include(&quot;utils.jl&quot;)</code> for every small change, which is why <a href="https://github.com/timholy/Revise.jl">Revise.jl</a> was created.
-This package is used by a vast majority of Julia developers to track code modifications automatically.
-If you are only writing scripts (and not full packages), all you need to do is</p>
-<ol>
-<li>start your Julia session with <code>using Revise</code></li>
-<li>replace every <code>include</code> with <code>includet</code> (for "include + track")</li>
-</ol>
-<p>When keeping the same REPL open for a long time, it's common to end up with a "polluted" workspace where the definitions of certain variables or functions have been overwritten in unexpected ways.
+</div><p>When keeping the same REPL open for a long time, it's common to end up with a "polluted" workspace where the definitions of certain variables or functions have been overwritten in unexpected ways.
 This, along with other events like <code>struct</code> redefinitions, might force you to restart your REPL now and again, and that's okay.</p>
-<h2 id="notebooks" ><a href="#notebooks"> Notebooks</a></h2><blockquote><p>Jupyter or Pluto, depending on your reactivity needs</p>
-</blockquote><p>Notebooks are a popular alternative to IDEs when it comes to short and self-contained code, typically in data science.
+<h2 id="notebooks" ><a href="#notebooks"> Notebooks</a></h2><div class="tldr"><p><strong>TLDR</strong>: Try either Jupyter or Pluto, depending on your reactivity needs. </p>
+</div><p>Notebooks are a popular alternative to IDEs when it comes to short and self-contained code, typically in data science.
 They are also a good fit for literate programming, where lines of code are interspersed with comments and explanations.</p>
 <p>The most well-known notebook ecosystem is <a href="https://jupyter.org/">Jupyter</a>, which supports Julia, Python and R as its three core languages.
 To use it with Julia, you will need to install the <a href="https://github.com/JuliaLang/IJulia.jl">IJulia.jl</a> backend.
@@ -202,68 +208,292 @@ Then, if you have also <a href="https://jupyter.org/install">installed Jupyter</
 <pre><code class="julia-repl">julia&gt; using IJulia
 
 julia&gt; IJulia.notebook()</code></pre>
-<p>A pure-Julia alternative to Jupyter is given by <a href="https://plutojl.org/">Pluto.jl</a>.
+<div class="vscode"><p><strong>VSCode</strong>: Jupyter notebooks can be modified and run directly from your editor.</p>
+</div><p>A pure-Julia alternative to Jupyter is given by <a href="https://plutojl.org/">Pluto.jl</a>.
 Unlike Jupyter notebooks, Pluto notebooks are</p>
 <ul>
 <li>Reactive: when you update a cell, the other cells depending on it are updated.</li>
-<li>Reproducible: they come bundled with an exhaustive list of dependencies.</li>
+<li>Reproducible: they come bundled with an exhaustive list of dependencies that are installed automatically.</li>
 </ul>
 <p>To try them out, install the package and then run</p>
 <pre><code class="julia-repl">julia&gt; using Pluto
 
 julia&gt; Pluto.run()</code></pre>
-<h2 id="environments" ><a href="#environments"> Environments</a></h2><blockquote><p>Julia projects are entered with <code>]activate</code>, and their details are stored in <code>Project.toml</code> and <code>Manifest.toml</code>.</p>
-</blockquote><p>As we have seen, Pkg.jl is the Julia equivalent of <code>pip</code> or <code>conda</code> for Python.
+<h2 id="environments" ><a href="#environments"> Environments</a></h2><div class="tldr"><p><strong>TLDR</strong>: Julia environments are activated with <code>]activate path</code>, their details are stored in <code>Project.toml</code> and <code>Manifest.toml</code>. </p>
+</div><p>As we have seen, Pkg.jl is the Julia equivalent of <code>pip</code> or <code>conda</code> for Python.
 It lets you <a href="https://pkgdocs.julialang.org/v1/managing-packages/">install packages</a> and <a href="https://pkgdocs.julialang.org/v1/environments/">manage environments</a> (collections of packages with specific versions).</p>
-<p>Once you <code>]activate</code> a project, the packages you <code>]add</code> will be listed in two files called <code>Project.toml</code> and <code>Manifest.toml</code>.
-Sharing a project between computers is as simple as sending a folder containing your code and both of these files.
-Using them, the user can run <code>]instantiate</code> and Julia will recreate the exact state of the environment.</p>
+<p>Once you activate an environment by specifying its path <code>]activate path</code>, the packages you <code>]add</code> will be listed in two files <code>path/Project.toml</code> and <code>path/Manifest.toml</code>.</p>
 <ul>
 <li><code>Project.toml</code> contains general project information (name of the package, unique id, authors) and direct dependencies with version bounds.</li>
-<li><code>Manifest.toml</code> contains the exact versions of all direct and indirect dependencies, which you can visualize with <a href="https://github.com/peng1999/PkgDependency.jl">PkgDependency.jl</a>.</li>
+<li><code>Manifest.toml</code> contains the exact versions of all direct and indirect dependencies</li>
 </ul>
 <p>If you haven't entered any local project, packages will be installed in the default environment, called <code>@v1.X</code> after the active version of Julia (note the <code>@</code> before the name).
 Packages installed that way are available no matter which local environment is active, because of "environment stacking".
-It is therefore recommended to keep the default environment very light, containing only essential development tools like Revise.jl.</p>
-<p>Environments are also <a href="https://www.julia-vscode.org/docs/stable/userguide/env/">handled by VSCode</a>, if your directory contains a <code>Project.toml</code>, you will be asked whether you want to make this the default environment.
-You can modify this setting by clicking the <code>Julia env: ...</code> button at the bottom.
-Anytime you open a Julia REPL, it will launch within the environment you chose.</p>
-<h2 id="local_packages" ><a href="#local_packages"> Local packages</a></h2><p>Once your code base grows beyond a few scripts, you may want to <a href="https://pkgdocs.julialang.org/v1/creating-packages/">create a package</a> of your own.
+It is therefore recommended to keep the default environment very light, containing only essential development tools.</p>
+<div class="vscode"><p><strong>VSCode</strong>: You can configure the <a href="https://www.julia-vscode.org/docs/stable/userguide/env/">environment</a> in which a VSCode Julia REPL opens.
+ Just click the <code>Julia env: ...</code> button at the bottom.
+ Note however that the Julia version itself will always be the default one from <code>juliaup</code>.</p>
+</div><div class="advanced"><p><strong>Advanced</strong>: You can visualize the dependency graph of an environment with <a href="https://github.com/peng1999/PkgDependency.jl">PkgDependency.jl</a>.</p>
+</div><h2 id="local_packages" ><a href="#local_packages"> Local packages</a></h2><div class="tldr"><p><strong>TLDR</strong>: A package makes your code modular and reproducible. </p>
+</div><p>Once your code base grows beyond a few scripts, you will want to <a href="https://pkgdocs.julialang.org/v1/creating-packages/">create a package</a> of your own.
 The first advantage is that you don't need to specify the path of every file: <code>using MyPackage</code> is enough to get access to the names you choose to make public.
-Furthermore, you can specify versions for your package and its dependencies, making your code easier and safer to reuse.
-And of course, the Revise.jl niceties presented earlier still work, without even resorting to <code>includet</code>.
-As soon as you load your package, the files containing its code will be tracked automatically.</p>
+Furthermore, you can specify versions for your package and its dependencies, making your code easier and safer to reuse.</p>
 <p>To create a new package locally, the easy way is to use <code>]generate</code> (we will discuss a more sophisticated workflow involving GitHub in the next blog post).</p>
-<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.generate(sitepath(&quot;MyPackage&quot;))
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.generate(sitepath(&quot;MyPackage&quot;));  # ignore sitepath
 <span class="sgr32"><span class="sgr1">  Generating</span></span>  project MyPackage:
     ~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage/Project.toml
     ~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage/src/MyPackage.jl
-Dict{String, Base.UUID}(&quot;MyPackage&quot; =&gt; UUID(&quot;08917f33-21be-46c2-9cd4-bc4709385d23&quot;))
 </code></pre>
 <p>This command initializes a simple folder with a <code>Project.toml</code> and a <code>src</code> subfolder.
-The <code>src</code> subfolder contains a file <code>MyPackage.jl</code>, where a <a href="https://docs.julialang.org/en/v1/manual/modules/">module</a> called <code>MyPackage</code> is defined.
-Once complete, that module should contain</p>
-<ul>
-<li>the list of imported dependencies \(\to\) <code>using MyOtherPackage</code></li>
-<li>the list of included scripts in the correct order \(\to\) <code>include(&quot;utils.jl&quot;)</code></li>
-<li>the list of names you want to make public \(\to\) <code>export myfunction</code></li>
-</ul>
-<p>To experiment with this new package, you can <code>]dev</code> it into your current environment.
-Note the different commands: <code>]add Example</code> installs a specific version of a package from the general registry, while  <code>]dev ./MyPackage</code> relies on the current state of the code in the folder you point to.</p>
-<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.develop(path=sitepath(&quot;MyPackage&quot;))
-<span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
-<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Project.toml`
-  <span class="sgr90">[08917f33] </span><span class="sgr92">+ MyPackage v0.1.0 `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage`</span>
-<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Manifest.toml`
-  <span class="sgr90">[08917f33] </span><span class="sgr92">+ MyPackage v0.1.0 `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage`</span>
-</code></pre>
-<p>We can then use the one function defined in <code>MyPackage</code>:</p>
-<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyPackage
+As we have seen, the <code>Project.toml</code> specifies the dependencies.
+Meanwhile, the <code>src</code> subfolder contains a file <code>MyPackage.jl</code>, where a <a href="https://docs.julialang.org/en/v1/manual/modules/">module</a> called <code>MyPackage</code> is defined.
+It is the heart of your package, and will typically look like this when you're done:</p>
+<pre><code class="julia">module MyPackage
+
+# imported dependencies
+using OtherPackage1
+using OtherPackage2
+
+# files defining functions, types, etc.
+include(&quot;file1.jl&quot;)
+include(&quot;subfolder/file2.jl&quot;)
+
+# names you want to make public
+export myfunc
+export MyType
+
+end</code></pre>
+<h2 id="development_workflow" ><a href="#development_workflow"> Development workflow</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use Revise.jl to track code changes while you play with your package in its own environment. </p>
+</div><p>Once you have created a package, your daily routine will look like this:</p>
+<ol>
+<li>Open a REPL in which you import <code>MyPackage</code></li>
+<li>Run some functions interactively, either by writing them directly in the REPL or from a Julia file that you use as a notebook</li>
+<li>Modify some files in <code>MyPackage</code></li>
+<li>Go back to step 2</li>
+</ol>
+<p>For that to work well, you need code modifications to be taken into account automatically.
+That is why <a href="https://github.com/timholy/Revise.jl">Revise.jl</a> exists.
+In fact, it is used by so many Julia developers that some wish it were part of the core language: you can read its <a href="https://timholy.github.io/Revise.jl/stable/">documentation</a> for more details.
+If you start every REPL session by importing Revise.jl, then all the other packages you import after that will have their code tracked.
+Whenever you edit a source file and hit save, the REPL will update its state accordingly.</p>
+<div class="vscode"><p><strong>VSCode</strong>: The Julia extension imports Revise.jl by default when it starts a REPL.</p>
+</div><p>The only remaining question is: in which environment should you work?
+In general, you can work within the environment defined by your package, and add all the dependencies you need there.
+To summarize, this is how you get started:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Revise
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.activate(sitepath(&quot;MyPackage&quot;))  # ignore sitepath
+<span class="sgr32"><span class="sgr1">  Activating</span></span> project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage`
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyPackage
+<span class="sgr91"><span class="sgr1">┌ Error: </span></span>Error during package callback
+<span class="sgr91"><span class="sgr1">│ </span></span>  exception =
+<span class="sgr91"><span class="sgr1">│ </span></span>   1-element ExceptionStack:
+<span class="sgr91"><span class="sgr1">│ </span></span>   MethodError: Cannot `convert` an object of type <span class="sgr92">Nothing</span> to an object of type <span class="sgr91">String</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   
+<span class="sgr91"><span class="sgr1">│ </span></span>   Closest candidates are:
+<span class="sgr91"><span class="sgr1">│ </span></span>     convert(::Type{String}, <span class="sgr91">::String</span>)
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">   @</span> <span class="sgr90">Base</span> <span class="sgr90"><span class="sgr4">essentials.jl:298</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     convert(::Type{T}, <span class="sgr91">::T</span>) where T&lt;:AbstractString
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">   @</span> <span class="sgr90">Base</span> <span class="sgr90">strings/<span class="sgr4">basic.jl:231</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     convert(::Type{T}, <span class="sgr91">::AbstractString</span>) where T&lt;:AbstractString
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">   @</span> <span class="sgr90">Base</span> <span class="sgr90">strings/<span class="sgr4">basic.jl:232</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     ...
+<span class="sgr91"><span class="sgr1">│ </span></span>   
+<span class="sgr91"><span class="sgr1">│ </span></span>   Stacktrace:
+<span class="sgr91"><span class="sgr1">│ </span></span>     [1] <span class="sgr1">setindex!(</span><span class="sgr90">h</span>::Dict<span class="sgr90">{String, Nothing}</span>, <span class="sgr90">v0</span>::Nothing, <span class="sgr90">key0</span>::Nothing<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">dict.jl:361</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [2] <span class="sgr1">push!(</span><span class="sgr90">s</span>::Set<span class="sgr90">{String}</span>, <span class="sgr90">x</span>::Nothing<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">set.jl:103</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [3] <span class="sgr1">active_project_watcher()</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr35">Revise</span> <span class="sgr90">~/.julia/packages/Revise/dbu85/src/<span class="sgr4">pkgs.jl:497</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [4] <span class="sgr1">watch_package(</span><span class="sgr90">id</span>::Base.PkgId<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr35">Revise</span> <span class="sgr90">~/.julia/packages/Revise/dbu85/src/<span class="sgr4">pkgs.jl:335</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [5] <span class="sgr1">#invokelatest#2</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:819</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [6] <span class="sgr1">invokelatest</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:816</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [7] <span class="sgr1">watch_package_callback(</span><span class="sgr90">id</span>::Base.PkgId<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr35">Revise</span> <span class="sgr90">~/.julia/packages/Revise/dbu85/src/<span class="sgr4">packagedef.jl:1372</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [8] <span class="sgr1">#invokelatest#2</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:819</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [9] <span class="sgr1">invokelatest</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:816</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [10] <span class="sgr1">run_package_callbacks(</span><span class="sgr90">modkey</span>::Base.PkgId<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:1129</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [11] <span class="sgr1">_require_prelocked(</span><span class="sgr90">uuidkey</span>::Base.PkgId, <span class="sgr90">env</span>::String<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:1667</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [12] <span class="sgr1">macro expansion</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">loading.jl:1648</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [13] <span class="sgr1">macro expansion</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">lock.jl:267</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [14] <span class="sgr1">require(</span><span class="sgr90">into</span>::Module, <span class="sgr90">mod</span>::Symbol<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:1611</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [15] <span class="sgr1">eval</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">boot.jl:370</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [16] <span class="sgr1">include_string(</span><span class="sgr90">mapexpr</span>::typeof(REPL.softscope), <span class="sgr90">mod</span>::Module, <span class="sgr90">code</span>::String, <span class="sgr90">filename</span>::String<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:1903</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [17] <span class="sgr1">include_string</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">loading.jl:1887</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [18] <span class="sgr1">#69</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/context/code/<span class="sgr4">eval.jl:91</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [19] <span class="sgr1">(::IOCapture.var&quot;#3#5&quot;{DataType, Xranklin.var&quot;#69#70&quot;{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr36">IOCapture</span> <span class="sgr90">~/.julia/packages/IOCapture/8Uj7o/src/<span class="sgr4">IOCapture.jl:119</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [20] <span class="sgr1">with_logstate(</span><span class="sgr90">f</span>::Function, <span class="sgr90">logstate</span>::Any<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base.CoreLogging</span> <span class="sgr90">./<span class="sgr4">logging.jl:514</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [21] <span class="sgr1">with_logger</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">logging.jl:626</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [22] <span class="sgr1">capture(</span><span class="sgr90">f</span>::Xranklin.var&quot;#69#70&quot;<span class="sgr90">{Module, String}</span>; <span class="sgr90">rethrow</span>::Type, <span class="sgr90">color</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr36">IOCapture</span> <span class="sgr90">~/.julia/packages/IOCapture/8Uj7o/src/<span class="sgr4">IOCapture.jl:116</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [23] <span class="sgr1">capture</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/IOCapture/8Uj7o/src/<span class="sgr4">IOCapture.jl:72</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [24] <span class="sgr1">_attempt_eval</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/context/code/<span class="sgr4">eval.jl:90</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [25] <span class="sgr1">eval_nb_cell(</span><span class="sgr90">mdl</span>::Module, <span class="sgr90">code</span>::String; <span class="sgr90">cell_name</span>::String, <span class="sgr90">repl_mode</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/context/code/<span class="sgr4">eval.jl:73</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [26] <span class="sgr1">eval_nb_cell</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/context/code/<span class="sgr4">eval.jl:45</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [27] <span class="sgr1">_eval_code_cell(</span><span class="sgr90">mdl</span>::Module, <span class="sgr90">code</span>::String, <span class="sgr90">cell_name</span>::String, <span class="sgr90">repl_mode</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/context/code/<span class="sgr4">notebook_code.jl:169</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [28] <span class="sgr1">eval_code_cell!(</span><span class="sgr90">lc</span>::Xranklin.LocalContext, <span class="sgr90">cell_code</span>::SubString<span class="sgr90">{String}</span>, <span class="sgr90">cell_name</span>::String; <span class="sgr90">imgdir_html</span>::String, <span class="sgr90">imgdir_latex</span>::String, <span class="sgr90">force</span>::Bool, <span class="sgr90">indep</span>::Bool, <span class="sgr90">repl_mode</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/context/code/<span class="sgr4">notebook_code.jl:126</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [29] <span class="sgr1">eval_code_cell!</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/context/code/<span class="sgr4">notebook_code.jl:21</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [30] <span class="sgr1">_eval_repl_code(</span><span class="sgr90">io</span>::IOBuffer, <span class="sgr90">ci</span>::Xranklin.CodeInfo, <span class="sgr90">lc</span>::Xranklin.LocalContext; <span class="sgr90">tohtml</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/rules/<span class="sgr4">code.jl:388</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [31] <span class="sgr1">_eval_repl_code</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/rules/<span class="sgr4">code.jl:352</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [32] <span class="sgr1">html_repl_code(</span><span class="sgr90">ci</span>::Xranklin.CodeInfo, <span class="sgr90">lc</span>::Xranklin.LocalContext<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/rules/<span class="sgr4">code.jl:332</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [33] <span class="sgr1">html_code_block(</span><span class="sgr90">b</span>::FranklinParser.Block, <span class="sgr90">lc</span>::Xranklin.LocalContext<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/rules/<span class="sgr4">code.jl:257</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [34] top-level scope
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90"><span class="sgr4">none:1</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [35] <span class="sgr1">eval</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">boot.jl:370</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [36] <span class="sgr1">eval</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/<span class="sgr4">Xranklin.jl:1</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [37] <span class="sgr1">convert_block(</span><span class="sgr90">b</span>::FranklinParser.Block, <span class="sgr90">c</span>::Xranklin.LocalContext; <span class="sgr90">tohtml</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/<span class="sgr4">md_core.jl:201</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [38] <span class="sgr1">convert_block</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/<span class="sgr4">md_core.jl:189</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [39] <span class="sgr1">html</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/<span class="sgr4">md_core.jl:203</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [40] <span class="sgr1">convert_md(</span><span class="sgr90">md</span>::SubString<span class="sgr90">{String}</span>, <span class="sgr90">c</span>::Xranklin.LocalContext; <span class="sgr90">tohtml</span>::Bool, <span class="sgr90">nop</span>::Bool, <span class="sgr90">error_backtracking_iteration</span>::Int64, <span class="sgr90">kw</span>::Base.Pairs<span class="sgr90">{Symbol, Union{}, Tuple{}, NamedTuple{(), Tuple{}}}</span><span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/<span class="sgr4">md_core.jl:145</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [41] <span class="sgr1">convert_md</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/<span class="sgr4">md_core.jl:20</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [42] <span class="sgr1">#convert_md#140</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/<span class="sgr4">md_core.jl:153</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [43] <span class="sgr1">convert_md</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/<span class="sgr4">md_core.jl:153</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [44] <span class="sgr1">process_md_file_pass_1(</span><span class="sgr90">lc</span>::Xranklin.LocalContext, <span class="sgr90">fpath</span>::String; <span class="sgr90">allow_init_skip</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/process/md/<span class="sgr4">pass_1.jl:72</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [45] <span class="sgr1">process_md_file_pass_1</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/process/md/<span class="sgr4">pass_1.jl:19</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [46] <span class="sgr1">_md_loop_1(</span><span class="sgr90">gc</span>::Xranklin.GlobalContext<span class="sgr90">{Xranklin.LocalContext}</span>, <span class="sgr90">fp</span>::Pair<span class="sgr90">{String, String}</span>, <span class="sgr90">skip_dict</span>::Dict<span class="sgr90">{Pair{String, String}, Bool}</span>, <span class="sgr90">allow_init_skip</span>::Bool; <span class="sgr90">reproc</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/build/<span class="sgr4">full_pass.jl:347</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [47] <span class="sgr1">_md_loop_1</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/build/<span class="sgr4">full_pass.jl:337</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [48] <span class="sgr1">full_pass_markdown(</span><span class="sgr90">gc</span>::Xranklin.GlobalContext<span class="sgr90">{Xranklin.LocalContext}</span>, <span class="sgr90">watched</span>::Dict<span class="sgr90">{Pair{String, String}, Float64}</span>; <span class="sgr90">skip_files</span>::Vector<span class="sgr90">{Pair{String, String}}</span>, <span class="sgr90">allow_init_skip</span>::Bool, <span class="sgr90">final</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/build/<span class="sgr4">full_pass.jl:426</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [49] <span class="sgr1">full_pass_markdown</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/build/<span class="sgr4">full_pass.jl:388</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [50] <span class="sgr1">full_pass(</span><span class="sgr90">gc</span>::Xranklin.GlobalContext<span class="sgr90">{Xranklin.LocalContext}</span>, <span class="sgr90">watched_files</span>::Dict<span class="sgr90">{Symbol, Dict{Pair{String, String}, Float64}}</span>; <span class="sgr90">skip_files</span>::Vector<span class="sgr90">{Pair{String, String}}</span>, <span class="sgr90">initial_pass</span>::Bool, <span class="sgr90">config_changed</span>::Bool, <span class="sgr90">utils_changed</span>::Bool, <span class="sgr90">allow_no_index</span>::Bool, <span class="sgr90">final</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/build/<span class="sgr4">full_pass.jl:179</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [51] <span class="sgr1">serve(</span><span class="sgr90">d</span>::String; <span class="sgr90">dir</span>::String, <span class="sgr90">folder</span>::String, <span class="sgr90">clear</span>::Bool, <span class="sgr90">final</span>::Bool, <span class="sgr90">single</span>::Bool, <span class="sgr90">eval</span>::Bool, <span class="sgr90">nocode</span>::Bool, <span class="sgr90">threads</span>::Bool, <span class="sgr90">use_threads</span>::Bool, <span class="sgr90">prepath</span>::String, <span class="sgr90">prefix</span>::String, <span class="sgr90">base_url_prefix</span>::String, <span class="sgr90">allow_no_index</span>::Bool, <span class="sgr90">debug</span>::Bool, <span class="sgr90">cleanup</span>::Bool, <span class="sgr90">skip</span>::Vector<span class="sgr90">{String}</span>, <span class="sgr90">port</span>::Int64, <span class="sgr90">host</span>::String, <span class="sgr90">launch</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/build/<span class="sgr4">serve.jl:222</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [52] <span class="sgr1">serve</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/build/<span class="sgr4">serve.jl:58</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [53] <span class="sgr1">#build#317</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/kPPKO/src/build/<span class="sgr4">serve.jl:337</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [54] top-level scope
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/work/_actions/tlienart/xranklin-build-action/main/<span class="sgr4">main.jl:68</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [55] <span class="sgr1">include(</span><span class="sgr90">mod</span>::Module, <span class="sgr90">_path</span>::String<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">Base.jl:457</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [56] <span class="sgr1">exec_options(</span><span class="sgr90">opts</span>::Base.JLOptions<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">client.jl:307</span></span>
+<span class="sgr91"><span class="sgr1">└ </span></span><span class="sgr90">@ Base loading.jl:1134</span>
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> MyPackage.greet()
 Hello World!
 </code></pre>
-<h2 id="configuration" ><a href="#configuration"> Configuration</a></h2><p>Julia accepts <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface">startup flags</a> to handle settings such as the number of threads available or the environment in which it launches.
+<div class="advanced"><p><strong>Advanced</strong>: There are situations where the previous method does not work:</p>
+<ul>
+<li>if you are developing several packages at once and want to use them together</li>
+<li>if your interactive work requires heavy dependencies that your package itself does not need (for instance plotting).</li>
+</ul>
+<p> Then, you will need to use another environment as a playground, and <code>]develop</code> (or <code>]dev</code>) your package(s) into it.
+ Note the new Pkg.jl keyword: <code>]add PackageName</code> is used to download a fixed version of a registered package, while <code>]develop path</code> links to the current state of the code in a local folder.
+ To summarize, this is how you get started:</p>
+ <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Revise, Pkg
+ERROR: ArgumentError: Package Revise not found in current path, maybe you meant `import/using .Revise`.
+- Otherwise, run `import Pkg; Pkg.add(&quot;Revise&quot;)` to install the Revise package.
+Stacktrace:
+  [1] macro expansion
+    @ ./loading.jl:1630 [inlined]
+  [2] macro expansion
+    @ ./lock.jl:267 [inlined]
+  [3] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1611
+  [4] eval
+    @ ./boot.jl:370 [inlined]
+  [5] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:1903
+  [6] include_string
+    @ ./loading.jl:1887 [inlined]
+  [7] #69
+    @ ~/.julia/packages/Xranklin/kPPKO/src/context/code/eval.jl:91 [inlined]
+  [8] (::IOCapture.var&quot;#3#5&quot;{DataType, Xranklin.var&quot;#69#70&quot;{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
+    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:119
+  [9] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:514
+ [10] with_logger
+    @ ./logging.jl:626 [inlined]
+ [11] capture(f::Xranklin.var&quot;#69#70&quot;{Module, String}; rethrow::Type, color::Bool)
+    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:116
+ [12] capture
+    @ ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:72 [inlined]
+ [13] _attempt_eval
+    @ ~/.julia/packages/Xranklin/kPPKO/src/context/code/eval.jl:90 [inlined]
+ [14] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/kPPKO/src/context/code/eval.jl:73
+ [15] eval_nb_cell
+    @ ~/.julia/packages/Xranklin/kPPKO/src/context/code/eval.jl:45 [inlined]
+ [16] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/kPPKO/src/context/code/notebook_code.jl:169
+ [17] eval_code_cell!(lc::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/kPPKO/src/context/code/notebook_code.jl:126
+ [18] eval_code_cell!
+    @ ~/.julia/packages/Xranklin/kPPKO/src/context/code/notebook_code.jl:21 [inlined]
+ [19] _eval_repl_code(io::IOBuffer, ci::Xranklin.CodeInfo, lc::Xranklin.LocalContext; tohtml::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/rules/code.jl:388
+ [20] _eval_repl_code
+    @ ~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/rules/code.jl:352 [inlined]
+ [21] html_repl_code(ci::Xranklin.CodeInfo, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/rules/code.jl:332
+ [22] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/rules/code.jl:257
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.activate(sitepath(&quot;MyPlayground&quot;))  # ignore sitepath
+<span class="sgr32"><span class="sgr1">  Activating</span></span> new project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPlayground`
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.develop(path=sitepath(&quot;MyPackage&quot;))  # ignore sitepath
+<span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPlayground/Project.toml`
+  <span class="sgr90">[05a03d8b] </span><span class="sgr92">+ MyPackage v0.1.0 `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage`</span>
+<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPlayground/Manifest.toml`
+  <span class="sgr90">[05a03d8b] </span><span class="sgr92">+ MyPackage v0.1.0 `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage`</span>
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyPackage
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> MyPackage.greet()
+Hello World!
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> 
+</code></pre>
+</div><h2 id="configuration" ><a href="#configuration"> Configuration</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use the startup file to import packages as soon as Julia starts. </p>
+</div><p>Julia accepts <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface">startup flags</a> to handle settings such as the number of threads available or the environment in which it launches.
 In addition, most Julia developers also have a <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file">startup file</a> which is run automatically every time the language is started.
 It is located at <code>.julia/config/startup.jl</code>.</p>
 <p>The basic component that everyone puts in the startup file is Revise.jl:</p>
@@ -272,33 +502,127 @@ It is located at <code>.julia/config/startup.jl</code>.</p>
 catch e
     @warn &quot;Error initializing Revise&quot;
 end</code></pre>
-<p>In addition, users commonly load packages that affect the REPL experience, as well as esthetic, benchmarking or profiling utilities: <a href="https://github.com/abraemer/StartupCustomizer.jl">StartupCustomizer.jl</a> can help you set them up.
-More generally, the startup file allows you to define your own favorite helper functions and have them immediately available in every Julia session.</p>
-<h2 id="esthetics" ><a href="#esthetics"> Esthetics</a></h2><p>Now that you know your way around the Julia REPL, perhaps you want to make it a little prettier.
-Here are a few options to do so, all of can be added to your default environment <code>@v1.X</code> and startup file without fear.</p>
-<p><a href="https://github.com/KristofferC/OhMyREPL.jl">OhMyREPL.jl</a> is a widely used package for syntax highlighting in the REPL.
-<a href="https://github.com/FedeClaudi/Term.jl">Term.jl</a> goes a bit further by offering a completely new way to display things like types and errors (see the <a href="https://fedeclaudi.github.io/Term.jl/stable/adv/adv/">advanced configuration</a> to enable it by default).</p>
-<p><a href="https://github.com/timholy/ProgressMeter.jl">ProgressMeter.jl</a> provides the macro <code>@showprogress</code>, which you can use to track <code>for</code> loops in the REPL.
-<a href="https://github.com/JuliaLogging/ProgressLogging.jl">ProgressLogging.jl</a> has a similar macro <code>@progress</code>, but it interfaces better with VSCode and Pluto to display the progress bar.</p>
-<p>Finally, <a href="https://github.com/BioTurboNick/AbbreviatedStackTraces.jl">AbbreviatedStackTraces.jl</a> allows you to shorten error stacktraces, which can sometimes get pretty long (although Julia 1.10 cleaned them up already).
-<a href="https://github.com/JuliaIO/Suppressor.jl">Suppressor.jl</a> can sometimes be handy when you need to suppress warnings or other bothersome messages.</p>
-<h2 id="interactivity" ><a href="#interactivity"> Interactivity</a></h2><ul>
-<li><a href="https://docs.julialang.org/en/v1/stdlib/InteractiveUtils/">InteractiveUtils.jl</a></li>
-<li><a href="https://github.com/tkf/InteractiveCodeSearch.jl">InteractiveCodeSearch.jl</a> to look for a precise implementation of a function.</li>
-<li><a href="https://github.com/timholy/CodeTracking.jl">CodeTracking.jl</a> to extend InteractiveUtils.jl</li>
-<li><a href="https://github.com/MichaelHatherly/InteractiveErrors.jl">InteractiveErrors.jl</a> to navigate through stacktraces.</li>
+<p>In addition, users commonly import packages that affect the REPL experience, as well as esthetic, benchmarking or profiling utilities.
+A typical example is <a href="https://github.com/KristofferC/OhMyREPL.jl">OhMyREPL.jl</a> which is widely used for syntax highlighting in the REPL.
+More generally, the startup file allows you to define your own favorite helper functions and have them immediately available in every Julia session.
+<a href="https://github.com/abraemer/StartupCustomizer.jl">StartupCustomizer.jl</a> can help you set up your startup file.</p>
+<div class="advanced"><p><strong>Advanced</strong>: Here are a few more startup packages that can make your life easier once you know the language better:</p>
+<ul>
+<li><a href="https://github.com/BioTurboNick/AbbreviatedStackTraces.jl">AbbreviatedStackTraces.jl</a> allows you to shorten error stacktraces, which can sometimes get pretty long (beware of its <a href="https://github.com/BioTurboNick/AbbreviatedStackTraces.jl/issues/38">interactions with VSCode</a>)</li>
+<li><a href="https://github.com/FedeClaudi/Term.jl">Term.jl</a> offers a completely new way to display things like types and errors (see the <a href="https://fedeclaudi.github.io/Term.jl/stable/adv/adv/">advanced configuration</a> to enable it by default).</li>
+<li><a href="https://github.com/timholy/ProgressMeter.jl">ProgressMeter.jl</a> provides the macro <code>@showprogress</code>, which you can use to track <code>for</code> loops in the REPL.</li>
 </ul>
-<h2 id="logging" ><a href="#logging"> Logging</a></h2><blockquote><p>Prefer logging macros to printing</p>
-</blockquote><p>Assume you want to debug a function checking whether the \(n\)-th <a href="https://en.wikipedia.org/wiki/Fermat_number">Fermat number</a> \(F_n = 2^{2^n} + 1\) is prime:</p>
+</div><h2 id="interactivity" ><a href="#interactivity"> Interactivity</a></h2><div class="tldr"><p><strong>TLDR</strong>: Explore source code from within the REPL. </p>
+</div><p>The Julia REPL comes bundled with <a href="https://docs.julialang.org/en/v1/stdlib/InteractiveUtils/">InteractiveUtils.jl</a>, a bunch of very useful functions for interacting with source code.</p>
+<p>Here are a few examples:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> supertypes(Int64)
+(Int64, Signed, Integer, Real, Number, Any)
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> subtypes(Integer)
+Any[Bool, Signed, Unsigned]
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> length(methodswith(Integer))
+787
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @which exp(1)
+exp(x::Real) @ Base.Math math.jl:1488
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> apropos(&quot;matrix exponential&quot;)
+Base.exp
+Base.:^
+</code></pre>
+<p>When you ask for help on a Julia forum, you might want to include your local Julia information:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> versioninfo()
+Julia Version 1.9.3
+Commit bed2cd540a1 (2023-08-24 14:43 UTC)
+Build Info:
+  Official https://julialang.org/ release
+Platform Info:
+  OS: Linux (x86_64-linux-gnu)
+  CPU: 2 × Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz
+  WORD_SIZE: 64
+  LIBM: libopenlibm
+  LLVM: libLLVM-14.0.6 (ORCJIT, skylake-avx512)
+  Threads: 1 on 2 virtual cores
+Environment:
+  JULIA_PRE = 
+  JULIA_POST = 
+  JULIA_IMAGE_THREADS = 1
+  JULIA_DEBUG =
+</code></pre>
+<div class="advanced"><p><strong>Advanced</strong>: The following packages can give you even more interactive power:</p>
+<ul>
+<li><a href="https://github.com/tkf/InteractiveCodeSearch.jl">InteractiveCodeSearch.jl</a> to look for a precise implementation of a function.</li>
+<li><a href="https://github.com/MichaelHatherly/InteractiveErrors.jl">InteractiveErrors.jl</a> to navigate through stacktraces.</li>
+<li><a href="https://github.com/timholy/CodeTracking.jl">CodeTracking.jl</a> to extend InteractiveUtils.jl</li>
+</ul>
+</div><h2 id="logging" ><a href="#logging"> Logging</a></h2><div class="tldr"><p><strong>TLDR</strong>: Logging macros are more versatile than printing. </p>
+</div><p>When you encounter a problem in your code or want to track progress, a common reflex is to add <code>print</code> statements everywhere.</p>
+<pre><code class="julia">function printing_func(n)
+    for i in 1:n
+        println(2i)
+    end
+end</code></pre>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> printing_func(3)
+2
+4
+6
+</code></pre>
+<p>A slight improvement is given by the <code>@show</code> macro, which displays the variable name:</p>
+<pre><code class="julia">function showing_func(n)
+    for i in 1:n
+        @show 2i
+    end
+end</code></pre>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> showing_func(3)
+2i = 2
+2i = 4
+2i = 6
+</code></pre>
+<p>But you can go even further with the macros <code>@debug</code>, <code>@info</code>, <code>@warn</code> and <code>@error</code>.
+They have several advantages over printing:</p>
+<ul>
+<li>They display variable names and a custom message</li>
+<li>They show the line number they were called from</li>
+<li>They can be disabled and filtered according to source module and severity level</li>
+<li>They work well in multithreaded code</li>
+<li>They can write their output to a file</li>
+</ul>
+<pre><code class="julia">function warning_func(n)
+    for i in 1:n
+        @warn &quot;This is bad&quot; 2i
+    end
+end</code></pre>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> warning_func(3)
+<span class="sgr33"><span class="sgr1">┌ Warning: </span></span>This is bad
+<span class="sgr33"><span class="sgr1">│ </span></span>  2i = 2
+<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ [Franklin]:3</span>
+<span class="sgr33"><span class="sgr1">┌ Warning: </span></span>This is bad
+<span class="sgr33"><span class="sgr1">│ </span></span>  2i = 4
+<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ [Franklin]:3</span>
+<span class="sgr33"><span class="sgr1">┌ Warning: </span></span>This is bad
+<span class="sgr33"><span class="sgr1">│ </span></span>  2i = 6
+<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ [Franklin]:3</span>
+</code></pre>
+<p>Refer to the logging <a href="https://docs.julialang.org/en/v1/stdlib/Logging/">documentation</a> for more information.</p>
+<div class="advanced"><p><strong>Advanced</strong>: In particular, note that <code>@debug</code> messages are suppressed by default.
+ You can enable them through the <code>JULIA_DEBUG</code> environment variable if you specify the source module name, typically <code>Main</code> or your package module.</p>
+</div><p>Beyond the built-in logging utilities, <a href="https://github.com/JuliaLogging/ProgressLogging.jl">ProgressLogging.jl</a> has a macro <code>@progress</code>, which interfaces nicely with VSCode and Pluto to display progress bars.
+And <a href="https://github.com/JuliaIO/Suppressor.jl">Suppressor.jl</a> can sometimes be handy when you need to suppress warnings or other bothersome messages (use at your own risk).</p>
+<h2 id="debugging" ><a href="#debugging"> Debugging</a></h2><div class="tldr"><p><strong>TLDR</strong>: Infiltrator.jl and Debugger.jl allow you to peek inside a function while its execution is paused. </p>
+</div><p>The problem with printing or logging is that you cannot interact with local variables or save them for further analysis.
+The following two packages solve this issue, and they probably belong in your default environment <code>@v1.X</code>, like Revise.jl.</p>
+<h3 id="setting" ><a href="#setting"> Setting</a></h3><p>Assume you want to debug a function checking whether the \(n\)-th <a href="https://en.wikipedia.org/wiki/Fermat_number">Fermat number</a> \(F_n = 2^{2^n} + 1\) is prime:</p>
 <pre><code class="julia">function fermat_prime(n)
-    F = 2^(2^n) + 1
+    k = 2^n
+    F = 2^k + 1
     for d in 2:isqrt(F)  # integer square root
         if F % d == 0
             return false
         end
     end
     return true
-end;</code></pre>
+end</code></pre>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> fermat_prime(4)
 true
 
@@ -307,57 +631,6 @@ true
 </code></pre>
 <p>Unfortunately, \(F_4 = 65537\) is the largest known Fermat prime, which means \(F_6\) is incorrectly classified.
 Let's investigate why this happens!</p>
-<p>As a first step, the macro <code>@show</code> lets you print local variables with their name:</p>
-<pre><code class="julia">function fermat_prime_show(n)
-    F = 2^(2^n) + 1
-    @show n 2^n F
-    for d in 2:isqrt(F)
-        if F % d == 0
-            return false
-        end
-    end
-    return true
-end;</code></pre>
-<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> fermat_prime_show(4)
-n = 4
-2 ^ n = 16
-F = 65537
-true
-
-<span class="sgr32"><span class="sgr1">julia&gt;</span></span> fermat_prime_show(6)
-n = 6
-2 ^ n = 64
-F = 1
-true
-</code></pre>
-<p>The diagnosis is a classic one: <a href="https://docs.julialang.org/en/v1/manual/faq/#faq-integer-arithmetic">integer overflow</a>.
-Indeed, \(2^{64}\) is larger than the maximum integer value in Julia:</p>
-<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> typemax(Int)
-9223372036854775807
-</code></pre>
-<p>And the solution is to call our function on "big" integers with an arbitrary number of bits:</p>
-<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> fermat_prime_show(big(6))
-n = 6
-2 ^ n = 64
-F = 18446744073709551617
-false
-</code></pre>
-<p>While printing might suffice to debug simple problems, we can do better.
-Julia offers the logging macros <code>@debug</code>, <code>@info</code>, <code>@warn</code> and <code>@error</code>, which have several advantages over printing:</p>
-<ul>
-<li>They show the line number they were called from</li>
-<li>They label arguments, similar to <code>@show</code></li>
-<li>They can be disabled and filtered according to source module and severity level</li>
-<li>They work well in multithreaded code</li>
-<li>They can write their output to a file</li>
-</ul>
-<p>Refer to the logging <a href="https://docs.julialang.org/en/v1/stdlib/Logging/">documentation</a> for more information.
-In particular, note that <code>@debug</code> messages are suppressed by default.
-You can enable them through the <code>JULIA_DEBUG</code> environment variable if you specify the source module name, here <code>Main</code>.</p>
-<pre><code class="julia-repl">julia&gt; ENV[&quot;JULIA_DEBUG&quot;] = Main</code></pre>
-<h2 id="debugging" ><a href="#debugging"> Debugging</a></h2><blockquote><p>Infiltrator.jl and Debugger.jl allow you to peek inside a function while its execution is paused.</p>
-</blockquote><p>The problem with logging is that you cannot interact with local variables or save them for further analysis.
-The following two packages solve this issue, and they probably belong in your default environment <code>@v1.X</code>, like Revise.jl.</p>
 <h3 id="infiltrator.jl" ><a href="#infiltrator.jl"> Infiltrator.jl</a></h3><p><a href="https://github.com/JuliaDebug/Infiltrator.jl">Infiltrator.jl</a> is a lightweight inspection package, which will not slow down your code at all.
 Its <code>@infiltrate</code> macro allows you to directly set breakpoints in your code.
 Calling a function which hits a breakpoint will activate the Infiltrator REPL-mode
@@ -367,7 +640,8 @@ For example, typing <code>@locals</code> in Infiltrator-mode will print local va
 <pre><code class="julia">using Infiltrator
 
 function fermat_prime_infil(n)
-    F = 2^(2^n) + 1
+    k = 2^n 
+    F = 2^k + 1
     @infiltrate
     for d in 2:isqrt(F)
         if F % d == 0
@@ -375,24 +649,36 @@ function fermat_prime_infil(n)
         end
     end
     return true
-end;</code></pre>
+end</code></pre>
 <p>What makes Infiltrator.jl even more powerful is the <code>@exfiltrate</code> macro, which allows you to move local variables into a global storage called the <code>safehouse</code>.</p>
 <pre><code class="julia-repl">julia&gt; fermat_prime_infil(6)
 Infiltrating fermat_prime_infil(n::Int64)
-  at REPL[2]:3
+  at REPL[2]:4
 
-infil&gt; F
-1
-
-infil&gt; @exfiltrate F
-Exfiltrating 1 local variable into the safehouse.
+infil&gt; @exfiltrate k F
+Exfiltrating 2 local variables into the safehouse.
 
 infil&gt; @continue
 
 true
 
+julia&gt; safehouse.k
+64
+
 julia&gt; safehouse.F
 1</code></pre>
+<p>The diagnosis is a classic one: <a href="https://docs.julialang.org/en/v1/manual/faq/#faq-integer-arithmetic">integer overflow</a>.
+Indeed, \(2^{64}\) is larger than the maximum integer value in Julia:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> typemax(Int)
+9223372036854775807
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> 2^63-1
+9223372036854775807
+</code></pre>
+<p>And the solution is to call our function on "big" integers with an arbitrary number of bits:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> fermat_prime(big(6))
+false
+</code></pre>
 <h3 id="debugger.jl" ><a href="#debugger.jl"> Debugger.jl</a></h3><p><a href="https://github.com/JuliaDebug/Debugger.jl">Debugger.jl</a> allows us to interrupt code execution anywhere we want, even in functions we did not write.
 Using its <code>@enter</code> macro, we can enter a function call and walk through the call stack, at the cost of reduced performance.</p>
 <p>The REPL prompt changes to <code>1|debug&gt;</code>, allowing you to use <a href="https://github.com/JuliaDebug/Debugger.jl#debugger-commands">custom navigation commands</a> to step into and out of function calls, show local variables and set breakpoints.
@@ -402,53 +688,37 @@ This is useful to show local variables, as demonstrated in the following example
 <pre><code class="julia-repl">julia&gt; using Debugger
 
 julia&gt; @enter fermat_prime(6)
-In fermat_prime(n) at REPL[1]:1
+In fermat_prime(n) at REPL[7]:1
  1  function fermat_prime(n)
-&gt;2      F = 2^(2^n) + 1
- 3      for d in 2:isqrt(F)
- 4          if F % d == 0
- 5              return false
- 6          end
+&gt;2      k = 2^n
+ 3      F = 2^k + 1
+ 4      for d in 2:isqrt(F)  # integer square root
+ 5          if F % d == 0
+ 6              return false
 
 About to run: (^)(2, 6)
 1|debug&gt; n
-In fermat_prime(n) at REPL[1]:1
+In fermat_prime(n) at REPL[7]:1
  1  function fermat_prime(n)
- 2      F = 2^(2^n) + 1
-&gt;3      for d in 2:isqrt(F)
- 4          if F % d == 0
- 5              return false
- 6          end
- 7      end
+ 2      k = 2^n
+&gt;3      F = 2^k + 1
+ 4      for d in 2:isqrt(F)  # integer square root
+ 5          if F % d == 0
+ 6              return false
+ 7          end
 
-About to run: (isqrt)(1)
-1|debug&gt; n
-In fermat_prime(n) at REPL[1]:1
- 4          if F % d == 0
- 5              return false
- 6          end
- 7      end
-&gt;8      return true
- 9  end
-
-About to run: return true
-1|julia&gt; F
-1</code></pre>
-<p>For a more user-friendly debugging interface, Debugger.jl is <a href="https://www.julia-vscode.org/docs/stable/userguide/debugging/">interfaced with VSCode</a>.
-Click left of a line number in an editor pane to add a <em>breakpoint</em>, which is represented by a red circle.
-In the debugging pane of the Julia extension, click <code>Run and Debug</code> to start the debugger.
-The program will automatically halt when it hits a breakpoint.
-Using the toolbar at the top of the editor, you can then <em>continue</em>, <em>step over</em>, <em>step into</em> and <em>step out</em> of your code.
-The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.</p>
-<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.rm(&quot;MyPackage&quot;)  # hide
-<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Project.toml`
-  <span class="sgr90">[08917f33] </span><span class="sgr91">- MyPackage v0.1.0 `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage`</span>
-<span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Manifest.toml`
-  <span class="sgr90">[08917f33] </span><span class="sgr91">- MyPackage v0.1.0 `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage`</span>
-</code></pre>
-
+About to run: (^)(2, 64)
+1|julia&gt; k
+64</code></pre>
+<div class="vscode"><p><strong>VSCode</strong>: Debugger.jl also has a nice <a href="https://www.julia-vscode.org/docs/stable/userguide/debugging/">graphical interface</a>.
+ Click left of a line number in an editor pane to add a <em>breakpoint</em>, which is represented by a red circle.
+ In the debugging pane of the Julia extension, click <code>Run and Debug</code> to start the debugger.
+ The program will automatically halt when it hits a breakpoint.
+ Using the toolbar at the top of the editor, you can then <em>continue</em>, <em>step over</em>, <em>step into</em> and <em>step out</em> of your code.
+ The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.</p>
+</div>
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 24, 2023. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 26, 2023. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 

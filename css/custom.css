@@ -4,9 +4,12 @@
 
 .repl-help {
     background-color: lightgray;
-    padding: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 1px;
+    padding-bottom: 1px;
     border-radius: 10px;
-    margin-bottom: 0.8em;
+    margin-bottom: 1em;
   }
   
   .repl-help h1,h2,h3 {
@@ -22,4 +25,33 @@
 .im-badge img {
     height: 1em;
     object-fit: scale-down;
+}
+
+/* ==================================================================
+    Admonitions
+================================================================== */
+
+.tldr {
+  background-color: rgba(34, 139, 34, 0.291);
+  border-radius: 10px;
+  padding: 0.5em;
+  margin-bottom: 1em;
+}
+
+.tldr p {
+  margin-bottom: 0em;
+}
+
+.advanced {
+  background: #cb3d337a;
+  border-radius: 10px;
+  padding: 0.5em;
+  margin-bottom: 1em;
+}
+
+.vscode {
+  background-color: #9558b248;
+  border-radius: 10px;
+  padding: 0.5em;
+  margin-bottom: 1em;
 }
