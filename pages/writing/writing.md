@@ -332,15 +332,11 @@ The only remaining question is: in which environment should you work?
 In general, you can work within the environment defined by your package, and add all the dependencies you need there.
 To summarize, this is how you get started:
 
-```>dev_workflow1
+```julia
 using Revise, Pkg
-Pkg.activate(sitepath("MyPackage"))  # ignore sitepath
+Pkg.activate("./MyPackage")
 using MyPackage
 MyPackage.greet()
-```
-
-```!revert1
-Pkg.activate(folderpath("pages/writing"))  # hide
 ```
 
 \advanced{
@@ -354,18 +350,12 @@ Then, you will need to use another environment as a playground, and `]develop` (
 Note the new Pkg.jl keyword: `]add PackageName` is used to download a fixed version of a registered package, while `]develop path` links to the current state of the code in a local folder.
 To summarize, this is how you get started:
 
-```>dev_workflow2
+```julia
 using Revise, Pkg
-Pkg.activate(sitepath("MyPlayground"))  # ignore sitepath
-Pkg.develop(path=sitepath("MyPackage"))  # ignore sitepath
+Pkg.activate("./MyPlayground")
+Pkg.develop(path="./MyPackage")
 using MyPackage
 MyPackage.greet()
-```
-
-```!revert2
-# hideall
-Pkg.rm("MyPackage")
-Pkg.activate(folderpath("pages/writing"))
 ```
 
 }
