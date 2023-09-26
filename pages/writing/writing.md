@@ -332,11 +332,15 @@ The only remaining question is: in which environment should you work?
 In general, you can work within the environment defined by your package, and add all the dependencies you need there.
 To summarize, this is how you get started:
 
-```>
-using Revise
+```>dev_workflow1
+using Revise, Pkg
 Pkg.activate(sitepath("MyPackage"))  # ignore sitepath
 using MyPackage
 MyPackage.greet()
+```
+
+```!revert1
+Pkg.activate(folderpath("pages/writing"))  # hide
 ```
 
 \advanced{
@@ -350,12 +354,18 @@ Then, you will need to use another environment as a playground, and `]develop` (
 Note the new Pkg.jl keyword: `]add PackageName` is used to download a fixed version of a registered package, while `]develop path` links to the current state of the code in a local folder.
 To summarize, this is how you get started:
 
-```>
+```>dev_workflow2
 using Revise, Pkg
 Pkg.activate(sitepath("MyPlayground"))  # ignore sitepath
 Pkg.develop(path=sitepath("MyPackage"))  # ignore sitepath
 using MyPackage
 MyPackage.greet()
+```
+
+```!revert2
+# hideall
+Pkg.rm("MyPackage")
+Pkg.activate(folderpath("pages/writing"))
 ```
 
 }
@@ -399,13 +409,13 @@ Here are a few more startup packages that can make your life easier once you kno
 
 The Julia REPL comes bundled with [InteractiveUtils.jl](https://docs.julialang.org/en/v1/stdlib/InteractiveUtils/), a bunch of very useful functions for interacting with source code.
 
-```!
+```!interactiveutils
 using InteractiveUtils  # hide
 ```
 
 Here are a few examples:
 
-```>
+```>interactiveutils_examples
 supertypes(Int64)
 subtypes(Integer)
 length(methodswith(Integer))
@@ -637,6 +647,3 @@ The debugger will open a pane showing information about the code such as local v
 
 <!-- Clean up -->
 
-```!cleanup
-Pkg.rm("MyPackage")  # hide
-```
