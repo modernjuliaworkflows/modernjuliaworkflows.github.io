@@ -128,7 +128,6 @@ Pkg.jl allows you to:</p>
 <span class="sgr32"><span class="sgr1">   Installed</span></span> Example ─ v0.5.3
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Project.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.3</span>
-  <span class="sgr90">[44cfe95a] </span><span class="sgr95">↓ Pkg v1.10.0 ⇒ v1.9.2</span>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Manifest.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.3</span>
   <span class="sgr90">[b27032c2] </span><span class="sgr95">↓ LibCURL v0.6.4 ⇒ v0.6.3</span>
@@ -149,7 +148,6 @@ Pkg.jl allows you to:</p>
   <span class="sgr90">[7876af07] </span>Example v0.5.3
   <span class="sgr90">[5903a43b] </span>Infiltrator v1.6.4
   <span class="sgr90">[295af30f] </span>Revise v3.5.5
-  <span class="sgr90">[44cfe95a] </span>Pkg v1.9.2
 </code></pre>
 <p>Note that the same keywords are also available in Julia mode:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Pkg
@@ -280,7 +278,7 @@ Whenever you edit a source file and hit save, the REPL will update its state acc
 </div><p>The only remaining question is: in which environment should you work?
 In general, you can work within the environment defined by your package, and add all the dependencies you need there.
 To summarize, this is how you get started:</p>
-<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Revise
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Revise, Pkg
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.activate(sitepath(&quot;MyPackage&quot;))  # ignore sitepath
 <span class="sgr32"><span class="sgr1">  Activating</span></span> project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage`
@@ -427,53 +425,6 @@ Hello World!
  Note the new Pkg.jl keyword: <code>]add PackageName</code> is used to download a fixed version of a registered package, while <code>]develop path</code> links to the current state of the code in a local folder.
  To summarize, this is how you get started:</p>
  <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Revise, Pkg
-ERROR: ArgumentError: Package Revise not found in current path, maybe you meant `import/using .Revise`.
-- Otherwise, run `import Pkg; Pkg.add(&quot;Revise&quot;)` to install the Revise package.
-Stacktrace:
-  [1] macro expansion
-    @ ./loading.jl:1630 [inlined]
-  [2] macro expansion
-    @ ./lock.jl:267 [inlined]
-  [3] require(into::Module, mod::Symbol)
-    @ Base ./loading.jl:1611
-  [4] eval
-    @ ./boot.jl:370 [inlined]
-  [5] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
-    @ Base ./loading.jl:1903
-  [6] include_string
-    @ ./loading.jl:1887 [inlined]
-  [7] #69
-    @ ~/.julia/packages/Xranklin/kPPKO/src/context/code/eval.jl:91 [inlined]
-  [8] (::IOCapture.var&quot;#3#5&quot;{DataType, Xranklin.var&quot;#69#70&quot;{Module, String}, Task, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
-    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:119
-  [9] with_logstate(f::Function, logstate::Any)
-    @ Base.CoreLogging ./logging.jl:514
- [10] with_logger
-    @ ./logging.jl:626 [inlined]
- [11] capture(f::Xranklin.var&quot;#69#70&quot;{Module, String}; rethrow::Type, color::Bool)
-    @ IOCapture ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:116
- [12] capture
-    @ ~/.julia/packages/IOCapture/8Uj7o/src/IOCapture.jl:72 [inlined]
- [13] _attempt_eval
-    @ ~/.julia/packages/Xranklin/kPPKO/src/context/code/eval.jl:90 [inlined]
- [14] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/kPPKO/src/context/code/eval.jl:73
- [15] eval_nb_cell
-    @ ~/.julia/packages/Xranklin/kPPKO/src/context/code/eval.jl:45 [inlined]
- [16] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/kPPKO/src/context/code/notebook_code.jl:169
- [17] eval_code_cell!(lc::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/kPPKO/src/context/code/notebook_code.jl:126
- [18] eval_code_cell!
-    @ ~/.julia/packages/Xranklin/kPPKO/src/context/code/notebook_code.jl:21 [inlined]
- [19] _eval_repl_code(io::IOBuffer, ci::Xranklin.CodeInfo, lc::Xranklin.LocalContext; tohtml::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/rules/code.jl:388
- [20] _eval_repl_code
-    @ ~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/rules/code.jl:352 [inlined]
- [21] html_repl_code(ci::Xranklin.CodeInfo, lc::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/rules/code.jl:332
- [22] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/kPPKO/src/convert/markdown/rules/code.jl:257
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.activate(sitepath(&quot;MyPlayground&quot;))  # ignore sitepath
 <span class="sgr32"><span class="sgr1">  Activating</span></span> new project at `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPlayground`
@@ -481,9 +432,9 @@ Stacktrace:
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.develop(path=sitepath(&quot;MyPackage&quot;))  # ignore sitepath
 <span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPlayground/Project.toml`
-  <span class="sgr90">[05a03d8b] </span><span class="sgr92">+ MyPackage v0.1.0 `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage`</span>
+  <span class="sgr90">[10ba2822] </span><span class="sgr92">+ MyPackage v0.1.0 `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage`</span>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPlayground/Manifest.toml`
-  <span class="sgr90">[05a03d8b] </span><span class="sgr92">+ MyPackage v0.1.0 `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage`</span>
+  <span class="sgr90">[10ba2822] </span><span class="sgr92">+ MyPackage v0.1.0 `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage`</span>
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyPackage
 
@@ -492,7 +443,7 @@ Hello World!
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> 
 </code></pre>
-</div><h2 id="configuration" ><a href="#configuration"> Configuration</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use the startup file to import packages as soon as Julia starts. </p>
+ </div><h2 id="configuration" ><a href="#configuration"> Configuration</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use the startup file to import packages as soon as Julia starts. </p>
 </div><p>Julia accepts <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface">startup flags</a> to handle settings such as the number of threads available or the environment in which it launches.
 In addition, most Julia developers also have a <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file">startup file</a> which is run automatically every time the language is started.
 It is located at <code>.julia/config/startup.jl</code>.</p>
@@ -539,10 +490,10 @@ Build Info:
   Official https://julialang.org/ release
 Platform Info:
   OS: Linux (x86_64-linux-gnu)
-  CPU: 2 × Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz
+  CPU: 2 × Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
   WORD_SIZE: 64
   LIBM: libopenlibm
-  LLVM: libLLVM-14.0.6 (ORCJIT, skylake-avx512)
+  LLVM: libLLVM-14.0.6 (ORCJIT, icelake-server)
   Threads: 1 on 2 virtual cores
 Environment:
   JULIA_PRE = 
