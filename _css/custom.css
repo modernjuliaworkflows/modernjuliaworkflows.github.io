@@ -23,3 +23,49 @@
     height: 1em;
     object-fit: scale-down;
 }
+
+/* ==================================================================
+    HLJS CODE BLOCKS
+================================================================== */
+
+.hljs {
+  position: relative;
+  font-size: var(--small);
+  line-height: 1.35em;
+  border-radius: 10px;
+}
+
+.hljs-meta { font-weight: bold;}
+
+/* Use colors from theme specified in style.html */
+.hljs-meta.prompt_ {color: #7ee787;}
+.hljs-meta.help_ {color: #f2cc60;}
+.hljs-meta.shell_ {color: #ff7b72;}
+.hljs-meta.infiltrator_ {color: #ffa657;}
+.hljs-meta.debugger_ {color: #ffa657;}
+.hljs-meta.debuggereval_ {color: #ffa657;}
+
+/* Add language name to code blocks */
+.hljs::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.2rem 0.5rem 0.1rem;
+  background-color: #27303c; /* brighter than #0d1117 */
+  border-bottom-right-radius:10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Define language names shown in code blocks */
+.language-bash::before {content: "Shell";}
+.language-toml::before {content: "TOML";}
+.language-ruby::before {content: "Julia";}
+.language-julia::before {content: "Julia";}
+.language-julia-repl::before {content: "Julia REPL";}
+.julia-repl::before {content: "Julia REPL";}
+.julia-repl-pkg::before {content: "Julia REPL: Pkg mode";}
+.julia-repl-help::before {content: "Julia REPL: Help mode";}
+.julia-repl-shell::before {content: "Julia REPL: Shell mode";}
