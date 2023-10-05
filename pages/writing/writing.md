@@ -131,6 +131,9 @@ using Pkg
 Pkg.rm("Example")
 ```
 
+The blog post
+[Pkg.jl and Julia Environments for Beginners](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) will get you comfortable with the details.
+
 ### Shell mode (`;`)
 
 By pressing `;` you enter a terminal, where you can execute any bash command you want.
@@ -176,18 +179,26 @@ The available functionalities should be roughly similar to those of VSCode, at l
 You can execute a Julia script from your terminal, but in most cases that is not what you want to do.
 
 ```bash
-julia myfile.jl
+julia myfile.jl  # avoid this
 ```
 
 Julia has a rather high startup and compilation latency.
 If you only use scripts, you will pay this cost every time you run a slightly modified version of your code.
 That is why many Julia developers fire up a REPL at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way.
+Full files can be run interactively from the REPL with `include`.
+
+```julia-repl
+julia> include("myfile.jl")
+```
+
+Alternatively, `includet` from the [Revise](https://timholy.github.io/Revise.jl/stable/user_reference/#Revise.includet) package can be used to "include and track" a file.
+This will automatically update function definitions in the file in the running REPL session.
 
 \vscode{
 
 [Running code](https://www.julia-vscode.org/docs/stable/userguide/runningcode/) is made much easier by the following commands:
 
-* `Julia: Start REPL` (shortcut `Alt + J` then `Alt + O`) - this is different from opening a VSCode _terminal_ and launching Julia manually from there, because the integrated Julia REPL allows you to send code from files to the REPL directly.
+* `Julia: Restart REPL` (shortcut `Alt + J` then `Alt + R`) - this is different from opening a VSCode _terminal_ and launching Julia manually from there, because the integrated Julia REPL allows you to send code from files to the REPL directly.
 * `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - the executed code is the block containing the cursor, or the selected part if it exists.
 
 }
@@ -539,7 +550,7 @@ For example, typing `@locals` in Infiltrator-mode will print local variables:
 using Infiltrator
 
 function fermat_prime_infil(n)
-    k = 2^n 
+    k = 2^n
     F = 2^k + 1
     @infiltrate
     for d in 2:isqrt(F)
@@ -632,6 +643,8 @@ In the debugging pane of the Julia extension, click `Run and Debug` to start the
 The program will automatically halt when it hits a breakpoint.
 Using the toolbar at the top of the editor, you can then _continue_, _step over_, _step into_ and _step out_ of your code.
 The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.
+The debugger can be [sped up](https://www.julia-vscode.org/docs/dev/userguide/debugging/#Settings-to-speed-up-the-debugger) by selectively compiling modules that you will not need to step into via the `+` symbol at the bottom of the debugging pane. Start by adding `ALL_MODULES_EXCEPT_MAIN` to the compiled list and then selectively remove modules you need to be interpreted.
+
 
 }
 
