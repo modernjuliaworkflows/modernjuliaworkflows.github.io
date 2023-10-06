@@ -59,17 +59,22 @@ In particular, the Julia <a href="https://julialang.org/community/">community</a
 If you just want to chat with someone, you have a choice between the open source <a href="https://julialang.zulipchat.com/register/">Zulip</a> and the closed source <a href="https://julialang.org/slack/">Slack</a>.
 Some of the vocabulary used by community members may appear unfamiliar, but don't worry: <a href="https://github.com/JuliaCommunity/StartHere.jl">StartHere.jl</a> gives you a good overview.</p>
 <h2 id="installation" ><a href="#installation"> Installation</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use <code>juliaup</code> </p>
-</div><p>The most natural starting point is the <a href="https://julialang.org/downloads/">downloads</a> page.
-However, for additional flexibility, we recommend to use <a href="https://github.com/JuliaLang/juliaup"><code>juliaup</code></a> instead.
-You can get it from the Windows store, or from the command line on Unix systems:</p>
+</div><p>The most natural starting point to install Julia onto your system is the <a href="https://julialang.org/downloads/">Julia downloads page</a>.
+However, for additional flexibility, we recommend to use <a href="https://github.com/JuliaLang/juliaup"><code>juliaup</code></a> instead.</p>
+<ol>
+<li>Windows users can download Julia and <code>juliaup</code> together from the <a href="https://www.microsoft.com/store/apps/9NJNWW8PVKMN">Windows Store</a>.</li>
+<li>OSX or Linux users can execute the following terminal command:</li>
+</ol>
 <pre><code class="bash">curl -fsSL https://install.julialang.org | sh</code></pre>
-<p>It provides <a href="https://github.com/JuliaLang/juliaup#using-juliaup">various utilities</a> to download, update, organize and switch between Julia versions.
-As a bonus, you no longer have to manually specify the path to your executable.</p>
-<p><code>juliaup</code> relies on adaptive shortcuts called "channels", which allow you to access specific Julia versions without giving their exact number.
-For instance, the <code>release</code> channel will always point to the <a href="https://julialang.org/downloads/#current_stable_release">current stable version</a>, and the <code>lts</code> channel will always point to the <a href="https://julialang.org/downloads/#long_term_support_release">long-term support version</a>.
-Upon installation of <code>juliaup</code>, the current stable version of Julia is downloaded and selected as the default.
-This is the one you get when you run</p>
+<p>In both cases, this will make the <code>juliaup</code> and <code>julia</code> commands accessible from the terminal (or Windows Powershell).
+On Windows this will also create an application launcher.
+All users can start Julia by running</p>
 <pre><code class="bash">julia</code></pre>
+<p>Meanwhile, <code>juliaup</code> provides <a href="https://github.com/JuliaLang/juliaup#using-juliaup">various utilities</a> to download, update, organize and switch between different Julia versions.
+As a bonus, you no longer have to manually specify the path to your executable.
+This all works thanks to adaptive shortcuts called "channels", which allow you to access specific Julia versions without giving their exact number.</p>
+<p>For instance, the <code>release</code> channel will always point to the <a href="https://julialang.org/downloads/#current_stable_release">current stable version</a>, and the <code>lts</code> channel will always point to the <a href="https://julialang.org/downloads/#long_term_support_release">long-term support version</a>.
+Upon installation of <code>juliaup</code>, the current stable version of Julia is downloaded and selected as the default.</p>
 <div class="advanced"><p><strong>Advanced</strong>: To use other channels, add them to <code>juliaup</code> and put a <code>+</code> in front of the channel name when you start Julia:</p>
  <pre><code class="bash"> juliaup add lts
  julia +lts
@@ -81,7 +86,7 @@ This is the one you get when you run</p>
  If you want to catch up with the latest developments, just do</p>
  <pre><code class="bash"> juliaup update
  </code></pre>
-</div><h2 id="repl" ><a href="#repl"> REPL</a></h2><div class="tldr"><p><strong>TLDR</strong>: The REPL has 4 primary modes: Julia, package (<code>]</code>), help (<code>?</code>) and shell (<code>;</code>). </p>
+</div><h2 id="repl" ><a href="#repl"> REPL</a></h2><div class="tldr"><p><strong>TLDR</strong>: The Julia REPL has 4 primary modes: Julia, package (<code>]</code>), help (<code>?</code>) and shell (<code>;</code>). </p>
 </div><p>The Read-Eval-Print Loop (or REPL) is the most basic way to interact with Julia, check out its <a href="https://docs.julialang.org/en/v1/stdlib/REPL/">documentation</a> for details.
 You can start a REPL by typing <code>julia</code> into a terminal, or by clicking on the Julia application in your computer.
 It will allow you to play around with arbitrary Julia code:</p>
@@ -120,7 +125,7 @@ Pkg.jl allows you to:</p>
 <li><code>]add</code>, <code>]update</code> (or <code>]up</code>) and <code>]remove</code> (or <code>]rm</code>) packages;</li>
 <li>get the <code>]status</code> (or <code>]st</code>) of your current environment.</li>
 </ul>
-<p>As an illustration, we download the package Example.jl inside our current environment (which already contains some other stuff for later):</p>
+<p>As an illustration, we download the package Example.jl inside our current environment:</p>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(writing) pkg&gt;</span></span> add Example
 <span class="sgr33"><span class="sgr1">┌ Warning: </span></span>The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
 <span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.3/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382</span>
@@ -130,24 +135,13 @@ Pkg.jl allows you to:</p>
   <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.3</span>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Manifest.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.3</span>
-  <span class="sgr90">[b27032c2] </span><span class="sgr95">↓ LibCURL v0.6.4 ⇒ v0.6.3</span>
-  <span class="sgr90">[44cfe95a] </span><span class="sgr95">↓ Pkg v1.10.0 ⇒ v1.9.2</span>
-  <span class="sgr90">[deac9b47] </span><span class="sgr95">↓ LibCURL_jll v8.0.1+1 ⇒ v7.84.0+0</span>
-  <span class="sgr90">[29816b5a] </span><span class="sgr95">↓ LibSSH2_jll v1.11.0+1 ⇒ v1.10.2+0</span>
-  <span class="sgr90">[c8ffd9c3] </span><span class="sgr95">↓ MbedTLS_jll v2.28.2+1 ⇒ v2.28.2+0</span>
-  <span class="sgr90">[14a3606d] </span><span class="sgr95">↓ MozillaCACerts_jll v2023.1.10 ⇒ v2022.10.11</span>
-  <span class="sgr90">[83775a58] </span><span class="sgr95">↓ Zlib_jll v1.2.13+1 ⇒ v1.2.13+0</span>
-  <span class="sgr90">[8e850ede] </span><span class="sgr95">↓ nghttp2_jll v1.52.0+1 ⇒ v1.48.0+0</span>
-  <span class="sgr90">[3f19e933] </span><span class="sgr95">↓ p7zip_jll v17.4.0+2 ⇒ v17.4.0+0</span>
 <span class="sgr32"><span class="sgr1">Precompiling</span></span> project...
 <span class="sgr32">  ✓ </span>Example
-  1 dependency successfully precompiled in 0 seconds. 14 already precompiled.
-<span class="sgr34"><span class="sgr1">(writing) pkg&gt;</span></span> status
+  1 dependency successfully precompiled in 0 seconds
+</code></pre>
+<pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(writing) pkg&gt;</span></span> status
 <span class="sgr32"><span class="sgr1">Status</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Project.toml`
-  <span class="sgr90">[31a5f54b] </span>Debugger v0.7.8
   <span class="sgr90">[7876af07] </span>Example v0.5.3
-  <span class="sgr90">[5903a43b] </span>Infiltrator v1.6.4
-  <span class="sgr90">[295af30f] </span>Revise v3.5.5
 </code></pre>
 <p>Note that the same keywords are also available in Julia mode:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Pkg
@@ -158,11 +152,9 @@ Pkg.jl allows you to:</p>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Manifest.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr91">- Example v0.5.3</span>
 </code></pre>
-<h3 id="shell_mode_(;)" ><a href="#shell_mode_(;)"> Shell mode (<code>;</code>)</a></h3><p>By pressing <code>;</code> you enter a terminal, where you can execute any bash command you want.</p>
-<pre><code class="julia-repl"><span class="sgr31"><span class="sgr1">shell&gt;</span></span> echo &quot;hello&quot;
-&quot;hello&quot;
-
-<span class="sgr31"><span class="sgr1">shell&gt;</span></span> ls pages
+<h3 id="shell_mode_(;)" ><a href="#shell_mode_(;)"> Shell mode (<code>;</code>)</a></h3><p>By pressing <code>;</code> you enter a terminal, where you can execute any command you want.
+Here's an example for Unix systems:</p>
+<pre><code class="julia-repl"><span class="sgr31"><span class="sgr1">shell&gt;</span></span> ls pages
 further
 optimizing
 sharing
@@ -332,8 +324,8 @@ Any[Bool, Signed, Unsigned]
 exp(x::Real) @ Base.Math math.jl:1488
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> apropos(&quot;matrix exponential&quot;)
-Base.exp
 Base.:^
+Base.exp
 </code></pre>
 <p>When you ask for help on a Julia forum, you might want to include your local Julia information:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> versioninfo()
@@ -343,16 +335,16 @@ Build Info:
   Official https://julialang.org/ release
 Platform Info:
   OS: Linux (x86_64-linux-gnu)
-  CPU: 2 × Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
+  CPU: 2 × Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz
   WORD_SIZE: 64
   LIBM: libopenlibm
-  LLVM: libLLVM-14.0.6 (ORCJIT, icelake-server)
+  LLVM: libLLVM-14.0.6 (ORCJIT, skylake-avx512)
   Threads: 1 on 2 virtual cores
 Environment:
   JULIA_PRE = 
   JULIA_POST = 
+  JULIA_DEBUG = 
   JULIA_IMAGE_THREADS = 1
-  JULIA_DEBUG =
 </code></pre>
 <div class="advanced"><p><strong>Advanced</strong>: The following packages can give you even more interactive power:</p>
 <ul>
@@ -522,7 +514,7 @@ About to run: (^)(2, 64)
  The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.</p>
 </div>
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 26, 2023. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: October 06, 2023. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
