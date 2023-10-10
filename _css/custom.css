@@ -96,17 +96,18 @@
 .language-bash::before       {content: "Shell";}
 .language-toml::before       {content: "TOML";}
 .language-julia::before      {content: "Julia";}
-.language-julia-repl::before {content: "Julia REPL";}
 /* Special Franklin tags for Julia REPL modes */ 
-.julia-repl::before       {content: "Julia REPL";}
-.julia-repl-pkg::before   {content: "Julia REPL: Pkg mode";}
-.julia-repl-help::before  {content: "Julia REPL: Help mode";}
-.julia-repl-shell::before {content: "Julia REPL: Shell mode";}
+.language-julia-repl::before {content: "Julia REPL";}
+.julia-repl::before          {content: "Julia REPL";}
+.julia-repl-pkg::before      {content: "Julia REPL: Pkg mode";}
+.julia-repl-help::before     {content: "Julia REPL: Help mode";}
+.julia-repl-shell::before    {content: "Julia REPL: Shell mode";}
 /* Julia code after REPL prompts doesn't need a language tag */
-.julia-repl       .language-julia::before {content: "";}
-.julia-repl-pkg   .language-julia::before {content: "";}
-.julia-repl-help  .language-julia::before {content: "";}
-.julia-repl-shell .language-julia::before {content: "";}
+.language-julia-repl .language-julia::before {content: "";}
+.julia-repl          .language-julia::before {content: "";}
+.julia-repl-pkg      .language-julia::before {content: "";}
+.julia-repl-help     .language-julia::before {content: "";}
+.julia-repl-shell    .language-julia::before {content: "";}
 /* Julia code in doc strings printed via REPL Help mode is sometimes incorrectly 
 recognized as Ruby code. Since we don't have any Ruby code in MJW, this is a quick fix. 
 TODO: remove when not required in Xranklin.
