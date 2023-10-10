@@ -33,28 +33,46 @@ Do not insert any files like `README.md`, `.gitignore` or `LICENSE.md`, this wil
 Indeed, we can leverage [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl) to automate package creation (like `]generate` from Pkg.jl but on steroids).
 The following code gives you a basic file structure to start with:
 
-```>pkgtemplates
+```!pkgtemplates
 using PkgTemplates
-t = Template(dir=Utils.path(:site), user="myusername", interactive=false);
+dir = Utils.path(:site)  # replace with the folder of your choice
+t = Template(dir=dir, user="myusername", interactive=false);  
 t("MyAwesomePackage")
 ```
 
 Then, you simply need to push this new folder to the remote repository <https://github.com/myusername/MyAwesomePackage.jl>, and you're ready to go.
 The rest of this post will explain to you what each part of this folder does, and how to bend them to your will.
-In particular, once you're done here, you will be able to run PkgTemplates.jl with `interactive=true` and understand every option.
 
-To work on the package further, we develop it into the current environment and load it:
+To work on the package further, we develop it into the current environment and import it:
 
-```>using-awesome
+```!using-awesome
 using Pkg
-Pkg.develop(path=sitepath("MyAwesomePackage"))
+Pkg.develop(path=sitepath("MyAwesomePackage"))  # ignore sitepath
 using MyAwesomePackage
 ```
 
+## GitHub Actions
+
+The most useful aspect of PkgTemplates.jl is that it automatically generates workflows for [GitHub Actions](https://docs.github.com/en/actions/quickstart).
+These are stored as YAML files in `.github/workflows`, with a slightly convoluted syntax that you don't need to fully understand.
+For instance, the file `CI.yml` contains instructions that execute the tests of your package (see below) for each pull request, tag or push to the `main` branch.
+This is done on a GitHub server and should theoretically cost you money, but your GitHub repository is public, you get an unlimited workflow budget for free.
+
+More workflows and functionalities are available through optional [plugins](https://juliaci.github.io/PkgTemplates.jl/stable/user/#Plugins-1).
+The interactive setting `Template(..., interactive=true)` allows you to select the ones you want for a given package.  
+
+\advanced{
+
+The other default workflows are less relevant for new users, but we still mention them:
+
+* [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl) monitors your dependencies and their versions.
+* [TagBot](https://github.com/JuliaRegistries/TagBot) helps you manage package releases.
+
+}
+
 ## Testing
 
-You already know that the `src` subfolder contains your source code, but you might wonder what the `test` subfolder is for.
-Its purpose is [unit testing](https://docs.julialang.org/en/v1/stdlib/Test/): automatically checking that your code behaves the way you want it to.
+The purpose of the `test` subfolder in your package is [unit testing](https://docs.julialang.org/en/v1/stdlib/Test/): automatically checking that your code behaves the way you want it to.
 For instance, if you write your own square root function, you may want to test that it gives the correct results for positive numbers, and errors for negative numbers.
 
 ```>sqrt
@@ -65,10 +83,10 @@ using Test
 @testset "Invalid inputs" begin
     @test_throws DomainError sqrt(-1)
     @test_throws MethodError sqrt("abc")
-end
+end;
 ```
 
-These tests belong in `test/runtests.jl`, and they are executed with the `]test` command (in Pkg mode).
+These tests belong in `test/runtests.jl`, and they are executed with the `]test` command (in the REPL's Pkg mode).
 Unit testing may seem rather naive, or even superfluous, but as your code grows more complex, it becomes easier to break something without noticing.
 Testing each part separately will increase the reliability of the software you write.
 
@@ -77,11 +95,15 @@ This often happens when you need to test compatibility with another package, on 
 Or it may simply be due to testing-specific packages like the ones we will encounter below.
 For interactive testing work, use [TestEnv.jl](https://github.com/JuliaTesting/TestEnv.jl) to activate the full test environment (faster than running `]test` repeatedly).
 
-We list a few advanced testing utilities without going into detail:
+\advanced{
+
+If you want to have more control over your tests:
 
 * [ReferenceTests.jl](https://github.com/JuliaTesting/ReferenceTests.jl) to compare function outputs with reference files.
 * [ReTest.jl](https://github.com/JuliaTesting/ReTest.jl) to define tests next to the source code and control their execution.
 * [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) to leverage the testing interface of VSCode.
+
+}
 
 ## Style
 
@@ -97,12 +119,22 @@ style = "blue"
 
 Then, the package directory will be formatted in the BlueStyle whenever you call
 
-```>format
+```!format
 using JuliaFormatter
 JuliaFormatter.format(MyAwesomePackage)
 ```
 
-This functionality is even [integrated with VSCode](https://www.julia-vscode.org/docs/stable/userguide/formatter/), and you can add it to your tests.
+\vscode{
+
+The [default formatter](https://www.julia-vscode.org/docs/stable/userguide/formatter/) falls back on JuliaFormatter.jl.
+
+}
+
+\advanced{
+
+You can format code automatically in GitHub pull requests with the [`julia-format` action](https://github.com/julia-actions/julia-format).
+
+}
 
 ## Code quality
 
@@ -110,7 +142,7 @@ Of course, there is more to code quality than just formatting.
 [Aqua.jl](https://github.com/JuliaTesting/Aqua.jl) provides a set of routines that examine other aspects of your package, from unused dependencies to ambiguous methods.
 It is usually a good idea to include the following in your tests:
 
-```>aqua
+```!aqua
 using Aqua
 Aqua.test_all(MyAwesomePackage)
 ```
@@ -119,27 +151,13 @@ Meanwhile, [JET.jl](https://github.com/aviatesk/JET.jl) is a complementary tool,
 Here we focus on its [error analysis](https://aviatesk.github.io/JET.jl/stable/jetanalysis/), which can detect errors or typos without even running the code by leveraging type inference.
 You can either use it in report mode (with a nice [VSCode display](https://www.julia-vscode.org/docs/stable/userguide/linter/#Runtime-diagnostics)) or in test mode as follows:
 
-```>jet
+```!jet
 using JET
+JET.report_package(MyAwesomePackage)
 JET.test_package(MyAwesomePackage)
 ```
 
 Note that both Aqua.jl and JET.jl might pick up false positives: refer to their respective documentations for ways to make them less sensitive.
-
-## GitHub Actions
-
-The most useful aspect of PkgTemplates.jl is that it automatically generates workflows for [GitHub Actions](https://docs.github.com/en/actions/quickstart).
-These are stored as YAML files in `.github/workflows`, with a slightly convoluted syntax that you don't need to fully understand.
-For instance, the file `CI.yml` contains instructions that execute the tests of your package for each pull request, tag or push to the `main` branch.
-This is done on a GitHub server and should theoretically cost you money, but your GitHub repository is public, you get an unlimited workflow budget for free.
-
-The other default workflows are less relevant for new users, but we still mention them:
-
-* [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl) monitors your dependencies and their versions.
-* [TagBot](https://github.com/JuliaRegistries/TagBot) helps you manage package releases.
-
-More workflows and functionalities are available through optional [plugins](https://juliaci.github.io/PkgTemplates.jl/stable/user/#Plugins-1).
-The interactive setting `Template(..., interactive=true)` allows you to select the ones you want for a given package.  
 
 ## Documentation
 
@@ -170,14 +188,27 @@ However, package documentation is not limited to docstrings.
 It can also contain high-level overviews, technical explanations, examples, tutorials, etc.
 [Documenter.jl](https://github.com/JuliaDocs/Documenter.jl) allows you to design a website for all of this, based on Markdown files contained in the `docs` subfolder of your package.
 Unsurprisingly, its own [documentation](https://documenter.juliadocs.org/stable/) is excellent and will teach you a lot.
+To build the documentation locally, just run
 
-But if you want your work cut out for you, just select the [`Documenter` plugin](https://juliaci.github.io/PkgTemplates.jl/stable/user/#PkgTemplates.Documenter) from PkgTemplates.jl.
-Not only will this fill the `docs` subfolder with the right contents: it will also initialize a [GitHub Actions workflow](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch) to build and deploy your website online.
-The only thing left to do is to activate GitHub Pages and [select the `gh-pages` branch as source](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch).
-When iteratively updating documentation pages, [LiveServer.jl](https://github.com/tlienart/LiveServer.jl) provides a handy automatic reload function.
+```julia
+using Pkg
+Pkg.activate("docs")
+include("docs/make.jl")
+```
+
+then open the file `docs/build/index.html` in your favorite browser.
+An alternative is to use [LiveServer.jl](https://github.com/tlienart/LiveServer.jl) which automatically updates the website as the code changes (similar to Revise.jl).
+
+To host the documentation online, just select the [`Documenter` plugin](https://juliaci.github.io/PkgTemplates.jl/stable/user/#PkgTemplates.Documenter) from PkgTemplates.jl.
+Not only will this fill the `docs` subfolder with the right contents: it will also initialize a [GitHub Actions workflow](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch) to build and deploy your website on [GitHub pages](https://pages.github.com/).
+The only thing left to do is to [select the `gh-pages` branch as source](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch).
+
+\advanced{
 
 Assuming you are looking for an alternative to Documenter.jl, you can try out [Pollen.jl](https://github.com/lorenzoh/Pollen.jl).
-In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allows you to replay instructions entered into your terminal as an ASCII video.
+In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allows you to replay instructions entered into your terminal as an ASCII video, which is nice for tutorials.
+
+}
 
 ## Literate programming
 
@@ -238,6 +269,6 @@ In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allo
 
 <!-- Clean up -->
 
-```>cleanup
+```!cleanup
 Pkg.rm("MyAwesomePackage")  # hide
 ```

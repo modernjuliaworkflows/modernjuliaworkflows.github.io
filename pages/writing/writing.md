@@ -22,41 +22,48 @@ In this post, you will learn about tools to create, run and debug Julia code.
 
 ## Getting help
 
-> You're not alone!
+\tldr{You're not alone!}
 
 Before you write any line of code, it's good to know where to find help.
 The official [help page](https://julialang.org/about/help/) is a good place to start.
 In particular, the Julia [community](https://julialang.org/community/) is always happy to guide beginners.
 
 As a rule of thumb, the [Discourse forum](https://discourse.julialang.org/) is where you should ask your questions to make the answers discoverable for future users.
-If you just want to chat with someone, you should go to our very active [Slack](https://julialang.org/slack/) instead.
-Some of the vocabulary used by community members may appear unfamiliar, but don't worry: [StartHere.jl](https://github.com/JuliaCommunity/StartHere.jl) gives you a good head start.
+If you just want to chat with someone, you have a choice between the open source [Zulip](https://julialang.zulipchat.com/register/) and the closed source [Slack](https://julialang.org/slack/).
+Some of the vocabulary used by community members may appear unfamiliar, but don't worry: [StartHere.jl](https://github.com/JuliaCommunity/StartHere.jl) gives you a good overview.
 
 ## Installation
 
-> Use `juliaup`
+\tldr{Use `juliaup`}
 
-The most natural starting point is the [downloads](https://julialang.org/downloads/) page.
+The most natural starting point to install Julia onto your system is the [Julia downloads page](https://julialang.org/downloads/).
 However, for additional flexibility, we recommend to use [`juliaup`](https://github.com/JuliaLang/juliaup) instead.
-You can get it from the Windows store, or from the command line on Unix systems:
+
+1. Windows users can download Julia and `juliaup` together from the [Windows Store](https://www.microsoft.com/store/apps/9NJNWW8PVKMN).
+2. OSX or Linux users can execute the following terminal command:
 
 ```bash
 curl -fsSL https://install.julialang.org | sh
 ```
 
-It provides [various utilities](https://github.com/JuliaLang/juliaup#using-juliaup) to download, update, organize and switch between Julia versions.
-As a bonus, you no longer have to manually specify the path to your executable.
-
-`juliaup` relies on adaptive shortcuts called "channels", which allow you to access specific Julia versions without giving their exact number.
-For instance, the `release` channel will always point to the [current stable version](https://julialang.org/downloads/#current_stable_release), and the `lts` channel will always point to the [long-term support version](https://julialang.org/downloads/#long_term_support_release).
-Upon installation of `juliaup`, the current stable version of Julia is downloaded and selected as the default.
-This is the one you get when you run
+In both cases, this will make the `juliaup` and `julia` commands accessible from the terminal (or Windows Powershell).
+On Windows this will also create an application launcher.
+All users can start Julia by running
 
 ```bash
 julia
 ```
 
-To use other channels, add them to `juliaup` and put a `+` in fron the of the channel name when you start Julia:
+Meanwhile, `juliaup` provides [various utilities](https://github.com/JuliaLang/juliaup#using-juliaup) to download, update, organize and switch between different Julia versions.
+As a bonus, you no longer have to manually specify the path to your executable.
+This all works thanks to adaptive shortcuts called "channels", which allow you to access specific Julia versions without giving their exact number.
+
+For instance, the `release` channel will always point to the [current stable version](https://julialang.org/downloads/#current_stable_release), and the `lts` channel will always point to the [long-term support version](https://julialang.org/downloads/#long_term_support_release).
+Upon installation of `juliaup`, the current stable version of Julia is downloaded and selected as the default.
+
+\advanced{
+
+To use other channels, add them to `juliaup` and put a `+` in front of the channel name when you start Julia:
 
 ```bash
 juliaup add lts
@@ -76,9 +83,11 @@ If you want to catch up with the latest developments, just do
 juliaup update
 ```
 
+}
+
 ## REPL
 
-> The REPL has 4 primary modes: Julia, package (`]`), help (`?`) and shell (`;`).
+\tldr{The Julia REPL has 4 primary modes: Julia, package (`]`), help (`?`) and shell (`;`).}
 
 The Read-Eval-Print Loop (or REPL) is the most basic way to interact with Julia, check out its [documentation](https://docs.julialang.org/en/v1/stdlib/REPL/) for details.
 You can start a REPL by typing `julia` into a terminal, or by clicking on the Julia application in your computer.
@@ -108,14 +117,18 @@ If you don't know the exact name you are looking for, type a word surrounded by 
 By pressing `]` you access [Pkg.jl](https://github.com/JuliaLang/Pkg.jl), Julia's integrated package manager, whose [documentation](https://pkgdocs.julialang.org/v1/getting-started/) is an absolute must-read.
 Pkg.jl allows you to:
 
-* `activate` different local, shared or temporary environments;
-* `add`, `update` (or `up`) and `remove` (or `rm`) packages;
-* get the `status` (or `st`) of your current environment.
+* `]activate` different local, shared or temporary environments;
+* `]instantiate` them by downloading the necessary packages;
+* `]add`, `]update` (or `]up`) and `]remove` (or `]rm`) packages;
+* get the `]status` (or `]st`) of your current environment.
 
 As an illustration, we download the package Example.jl inside our current environment:
 
 ```]pkg-example
 add Example
+```
+
+```]pkg-example
 status
 ```
 
@@ -128,16 +141,16 @@ Pkg.rm("Example")
 
 ### Shell mode (`;`)
 
-By pressing `;` you enter a terminal, where you can execute any bash command you want.
+By pressing `;` you enter a terminal, where you can execute any command you want.
+Here's an example for Unix systems:
 
 ```;shell-example
-echo "hello"
 ls pages
 ```
 
 ## Editor
 
-> VSCode has the best Julia support.
+\tldr{VSCode is the IDE with the best Julia support.}
 
 Most computer programs are just plain text files with a specific extension (in our case `.jl`).
 So in theory, any text editor suffices to write and modify Julia code.
@@ -145,19 +158,28 @@ In practice, an Integrated Development Environment (or IDE) makes the experience
 
 The best IDE for Julia is [Visual Studio Code](https://code.visualstudio.com/), or VSCode, developed by Microsoft.
 Indeed, the [Julia VSCode extension](https://www.julia-vscode.org/) is the most feature-rich of all Julia IDE plugins.
-You can download it from the VSCode Marketplace.
-In what follows, we will somnetimes mention commands and [keyboard shortcuts](https://www.julia-vscode.org/docs/stable/userguide/keybindings/) provided by this extension.
+You can download it from the VSCode Marketplace and read its [documentation](https://www.julia-vscode.org/docs/stable/) cover to cover.
+
+\vscode{
+
+In what follows, we will sometimes mention commands and [keyboard shortcuts](https://www.julia-vscode.org/docs/stable/userguide/keybindings/) provided by this extension.
 But the only shortcut you need to remember is `Ctrl + Shift + P` (or `Cmd + Shift + P` on Mac): this opens the VSCode command palette, in which you can search for any command.
 Type "julia" in the command palette to see what you can do.
 
+}
+
+\advanced{
+
 Assuming you want to avoid the Microsoft ecosystem, [VSCodium](https://vscodium.com/) is a nearly bit-for-bit replacement for VSCode, but with an open source license and without telemetry.
-If you don't want to use VSCode at all, other options include [emacs](https://www.gnu.org/software/emacs/) and [vim](https://www.vim.org/).
+If you don't want to use VSCode at all, other options include [Emacs](https://www.gnu.org/software/emacs/) and [Vim](https://www.vim.org/).
 Check out [JuliaEditorSupport](https://github.com/JuliaEditorSupport) to see if your favorite IDE has a Julia plugin.
 The available functionalities should be roughly similar to those of VSCode, at least for the basic aspects like running code.
 
+}
+
 ## Running code
 
-> Open a REPL and run all your code there interactively
+\tldr{Open a REPL and run all your code there interactively.}
 
 You can execute a Julia script from your terminal, but in most cases that is not what you want to do.
 
@@ -165,28 +187,25 @@ You can execute a Julia script from your terminal, but in most cases that is not
 julia myfile.jl
 ```
 
-Julia has a rather high startup, load and compilation latency.
+Julia has a rather high startup and compilation latency.
 If you only use scripts, you will pay this cost every time you run a slightly modified version of your code.
 That is why many Julia developers fire up a REPL at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way.
-This is made much easier by [VSCode integration](https://www.julia-vscode.org/docs/stable/userguide/runningcode/), and here are the most important commands:
 
-* `Julia: Start REPL` (shortcut `Alt + J` then `Alt + O`) - note that this is different from (and better than) opening a VSCode _terminal_ and running Julia.
-* `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - the executed code is the block containing the cursor, or the selected part if it exists
+\vscode{
 
-Once your project grows, you will find yourself several files containing type and function definitions
-It is rather tedious to re-run `include("utils.jl")` for every small change, which is why [Revise.jl](https://github.com/timholy/Revise.jl) was created.
-This package is used by a vast majority of Julia developers to track code modifications automatically.
-If you are only writing scripts (and not full packages), all you need to do is
+[Running code](https://www.julia-vscode.org/docs/stable/userguide/runningcode/) is made much easier by the following commands:
 
-1. start your Julia session with `using Revise`
-2. replace every `include` with `includet` (for "include + track")
+* `Julia: Start REPL` (shortcut `Alt + J` then `Alt + O`) - this is different from opening a VSCode _terminal_ and launching Julia manually from there, because the integrated Julia REPL allows you to send code from files to the REPL directly.
+* `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - the executed code is the block containing the cursor, or the selected part if it exists.
+
+}
 
 When keeping the same REPL open for a long time, it's common to end up with a "polluted" workspace where the definitions of certain variables or functions have been overwritten in unexpected ways.
 This, along with other events like `struct` redefinitions, might force you to restart your REPL now and again, and that's okay.
 
 ## Notebooks
 
-> Jupyter or Pluto, depending on your reactivity needs
+\tldr{Try either Jupyter or Pluto, depending on your reactivity needs.}
 
 Notebooks are a popular alternative to IDEs when it comes to short and self-contained code, typically in data science.
 They are also a good fit for literate programming, where lines of code are interspersed with comments and explanations.
@@ -207,11 +226,17 @@ julia> using IJulia
 julia> IJulia.notebook()
 ```
 
+\vscode{
+
+Jupyter notebooks can be modified and run directly from your editor.
+
+}
+
 A pure-Julia alternative to Jupyter is given by [Pluto.jl](https://plutojl.org/).
 Unlike Jupyter notebooks, Pluto notebooks are
 
 * Reactive: when you update a cell, the other cells depending on it are updated.
-* Reproducible: they come bundled with an exhaustive list of dependencies.
+* Reproducible: they come bundled with an exhaustive list of dependencies that are installed automatically.
 
 To try them out, install the package and then run
 
@@ -223,63 +248,129 @@ julia> Pluto.run()
 
 ## Environments
 
-> Julia projects are entered with `]activate`, and their details are stored in `Project.toml` and `Manifest.toml`.
+\tldr{Julia environments are activated with `]activate path`, their details are stored in `Project.toml` and `Manifest.toml`.}
 
 As we have seen, Pkg.jl is the Julia equivalent of `pip` or `conda` for Python.
 It lets you [install packages](https://pkgdocs.julialang.org/v1/managing-packages/) and [manage environments](https://pkgdocs.julialang.org/v1/environments/) (collections of packages with specific versions).
 
-Once you `]activate` a project, the packages you `]add` will be listed in two files called `Project.toml` and `Manifest.toml`.
-Sharing a project between computers is as simple as sending a folder containing your code and both of these files.
-Using them, the user can run `]instantiate` and Julia will recreate the exact state of the environment.
+Once you activate an environment by specifying its path `]activate path`, the packages you `]add` will be listed in two files `path/Project.toml` and `path/Manifest.toml`.
 
 * `Project.toml` contains general project information (name of the package, unique id, authors) and direct dependencies with version bounds.
-* `Manifest.toml` contains the exact versions of all direct and indirect dependencies, which you can visualize with [PkgDependency.jl](https://github.com/peng1999/PkgDependency.jl).
+* `Manifest.toml` contains the exact versions of all direct and indirect dependencies
 
 If you haven't entered any local project, packages will be installed in the default environment, called `@v1.X` after the active version of Julia (note the `@` before the name).
 Packages installed that way are available no matter which local environment is active, because of "environment stacking".
-It is therefore recommended to keep the default environment very light, containing only essential development tools like Revise.jl.
+It is therefore recommended to keep the default environment very light, containing only essential development tools.
 
-Environments are also [handled by VSCode](https://www.julia-vscode.org/docs/stable/userguide/env/), if your directory contains a `Project.toml`, you will be asked whether you want to make this the default environment.
-You can modify this setting by clicking the `Julia env: ...` button at the bottom.
-Anytime you open a Julia REPL, it will launch within the environment you chose.
+\vscode{
+
+You can configure the [environment](https://www.julia-vscode.org/docs/stable/userguide/env/) in which a VSCode Julia REPL opens.
+Just click the `Julia env: ...` button at the bottom.
+Note however that the Julia version itself will always be the default one from `juliaup`.
+
+}
+
+\advanced{
+
+You can visualize the dependency graph of an environment with [PkgDependency.jl](https://github.com/peng1999/PkgDependency.jl).
+
+}
 
 ## Local packages
 
-Once your code base grows beyond a few scripts, you may want to [create a package](https://pkgdocs.julialang.org/v1/creating-packages/) of your own.
+\tldr{A package makes your code modular and reproducible.}
+
+Once your code base grows beyond a few scripts, you will want to [create a package](https://pkgdocs.julialang.org/v1/creating-packages/) of your own.
 The first advantage is that you don't need to specify the path of every file: `using MyPackage` is enough to get access to the names you choose to make public.
 Furthermore, you can specify versions for your package and its dependencies, making your code easier and safer to reuse.
-And of course, the Revise.jl niceties presented earlier still work, without even resorting to `includet`.
-As soon as you load your package, the files containing its code will be tracked automatically.
 
 To create a new package locally, the easy way is to use `]generate` (we will discuss a more sophisticated workflow involving GitHub in the next blog post).
 
 ```>generate-package
-Pkg.generate(sitepath("MyPackage"))
+Pkg.generate(sitepath("MyPackage"));  # ignore sitepath
 ```
 
 This command initializes a simple folder with a `Project.toml` and a `src` subfolder.
-The `src` subfolder contains a file `MyPackage.jl`, where a [module](https://docs.julialang.org/en/v1/manual/modules/) called `MyPackage` is defined.
-Once complete, that module should contain
+As we have seen, the `Project.toml` specifies the dependencies.
+Meanwhile, the `src` subfolder contains a file `MyPackage.jl`, where a [module](https://docs.julialang.org/en/v1/manual/modules/) called `MyPackage` is defined.
+It is the heart of your package, and will typically look like this when you're done:
 
-* the list of imported dependencies $\to$ `using MyOtherPackage`
-* the list of included scripts in the correct order $\to$ `include("utils.jl")`
-* the list of names you want to make public $\to$ `export myfunction`
+```julia
+module MyPackage
 
-To experiment with this new package, you can `]dev` it into your current environment.
-Note the different commands: `]add Example` installs a specific version of a package from the general registry, while  `]dev ./MyPackage` relies on the current state of the code in the folder you point to.
+# imported dependencies
+using OtherPackage1
+using OtherPackage2
 
-```>dev-package
-Pkg.develop(path=sitepath("MyPackage"))
+# files defining functions, types, etc.
+include("file1.jl")
+include("subfolder/file2.jl")
+
+# names you want to make public
+export myfunc
+export MyType
+
+end
 ```
 
-We can then use the one function defined in `MyPackage`:
+## Development workflow
 
-```>using-package
+\tldr{Use Revise.jl to track code changes while you play with your package in its own environment.}
+
+Once you have created a package, your daily routine will look like this:
+
+1. Open a REPL in which you import `MyPackage`
+2. Run some functions interactively, either by writing them directly in the REPL or from a Julia file that you use as a notebook
+3. Modify some files in `MyPackage`
+4. Go back to step 2
+
+For that to work well, you need code modifications to be taken into account automatically.
+That is why [Revise.jl](https://github.com/timholy/Revise.jl) exists.
+In fact, it is used by so many Julia developers that some wish it were part of the core language: you can read its [documentation](https://timholy.github.io/Revise.jl/stable/) for more details.
+If you start every REPL session by importing Revise.jl, then all the other packages you import after that will have their code tracked.
+Whenever you edit a source file and hit save, the REPL will update its state accordingly.
+
+\vscode{
+
+The Julia extension imports Revise.jl by default when it starts a REPL.
+
+}
+
+The only remaining question is: in which environment should you work?
+In general, you can work within the environment defined by your package, and add all the dependencies you need there.
+To summarize, this is how you get started:
+
+```julia
+using Revise, Pkg
+Pkg.activate("./MyPackage")
 using MyPackage
 MyPackage.greet()
 ```
 
+\advanced{
+
+There are situations where the previous method does not work:
+
+* if you are developing several packages at once and want to use them together
+* if your interactive work requires heavy dependencies that your package itself does not need (for instance plotting).
+
+Then, you will need to use another environment as a playground, and `]develop` (or `]dev`) your package(s) into it.
+Note the new Pkg.jl keyword: `]add PackageName` is used to download a fixed version of a registered package, while `]develop path` links to the current state of the code in a local folder.
+To summarize, this is how you get started:
+
+```julia
+using Revise, Pkg
+Pkg.activate("./MyPlayground")
+Pkg.develop(path="./MyPackage")
+using MyPackage
+MyPackage.greet()
+```
+
+}
+
 ## Configuration
+
+\tldr{Use the startup file to import packages as soon as Julia starts.}
 
 Julia accepts [startup flags](https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface) to handle settings such as the number of threads available or the environment in which it launches.
 In addition, most Julia developers also have a [startup file](https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file) which is run automatically every time the language is started.
@@ -295,46 +386,144 @@ catch e
 end
 ```
 
-In addition, users commonly load packages that affect the REPL experience, as well as esthetic, benchmarking or profiling utilities: [StartupCustomizer.jl](https://github.com/abraemer/StartupCustomizer.jl) can help you set them up.
+In addition, users commonly import packages that affect the REPL experience, as well as esthetic, benchmarking or profiling utilities.
+A typical example is [OhMyREPL.jl](https://github.com/KristofferC/OhMyREPL.jl) which is widely used for syntax highlighting in the REPL.
 More generally, the startup file allows you to define your own favorite helper functions and have them immediately available in every Julia session.
+[StartupCustomizer.jl](https://github.com/abraemer/StartupCustomizer.jl) can help you set up your startup file.
 
-## Esthetics
+\advanced{
 
-Now that you know your way around the Julia REPL, perhaps you want to make it a little prettier.
-Here are a few options to do so, all of can be added to your default environment `@v1.X` and startup file without fear.
+Here are a few more startup packages that can make your life easier once you know the language better:
 
-[OhMyREPL.jl](https://github.com/KristofferC/OhMyREPL.jl) is a widely used package for syntax highlighting in the REPL.
-[Term.jl](https://github.com/FedeClaudi/Term.jl) goes a bit further by offering a completely new way to display things like types and errors (see the [advanced configuration](https://fedeclaudi.github.io/Term.jl/stable/adv/adv/) to enable it by default).
+* [AbbreviatedStackTraces.jl](https://github.com/BioTurboNick/AbbreviatedStackTraces.jl) allows you to shorten error stacktraces, which can sometimes get pretty long (beware of its [interactions with VSCode](https://github.com/BioTurboNick/AbbreviatedStackTraces.jl/issues/38))
+* [Term.jl](https://github.com/FedeClaudi/Term.jl) offers a completely new way to display things like types and errors (see the [advanced configuration](https://fedeclaudi.github.io/Term.jl/stable/adv/adv/) to enable it by default).
+* [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl) provides the macro `@showprogress`, which you can use to track `for` loops in the REPL.
 
-[ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl) provides the macro `@showprogress`, which you can use to track `for` loops in the REPL.
-[ProgressLogging.jl](https://github.com/JuliaLogging/ProgressLogging.jl) has a similar macro `@progress`, but it interfaces better with VSCode and Pluto to display the progress bar.
-
-Finally, [AbbreviatedStackTraces.jl](https://github.com/BioTurboNick/AbbreviatedStackTraces.jl) allows you to shorten error stacktraces, which can sometimes get pretty long (although Julia 1.10 cleaned them up already).
-[Suppressor.jl](https://github.com/JuliaIO/Suppressor.jl) can sometimes be handy when you need to suppress warnings or other bothersome messages.
+}
 
 ## Interactivity
 
-* [InteractiveUtils.jl](https://docs.julialang.org/en/v1/stdlib/InteractiveUtils/)
+\tldr{Explore source code from within the REPL.}
+
+The Julia REPL comes bundled with [InteractiveUtils.jl](https://docs.julialang.org/en/v1/stdlib/InteractiveUtils/), a bunch of very useful functions for interacting with source code.
+
+```!interactiveutils
+using InteractiveUtils  # hide
+```
+
+Here are a few examples:
+
+```>interactiveutils_examples
+supertypes(Int64)
+subtypes(Integer)
+length(methodswith(Integer))
+@which exp(1)
+apropos("matrix exponential")
+```
+
+When you ask for help on a Julia forum, you might want to include your local Julia information:
+
+```>
+versioninfo()
+```
+
+\advanced{
+
+The following packages can give you even more interactive power:
+
 * [InteractiveCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl) to look for a precise implementation of a function.
-* [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl) to extend InteractiveUtils.jl
 * [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl) to navigate through stacktraces.
+* [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl) to extend InteractiveUtils.jl
+
+}
 
 ## Logging
 
-> Prefer logging macros to printing
+\tldr{Logging macros are more versatile than printing.}
+
+When you encounter a problem in your code or want to track progress, a common reflex is to add `print` statements everywhere.
+
+```!printing_func
+function printing_func(n)
+    for i in 1:n
+        println(2i)
+    end
+end
+```
+
+```>printing_repl
+printing_func(3)
+```
+
+A slight improvement is given by the `@show` macro, which displays the variable name:
+
+```!showing_func
+function showing_func(n)
+    for i in 1:n
+        @show 2i
+    end
+end
+```
+
+```>showing_repl
+showing_func(3)
+```
+
+But you can go even further with the macros `@debug`, `@info`, `@warn` and `@error`.
+They have several advantages over printing:
+
+* They display variable names and a custom message
+* They show the line number they were called from
+* They can be disabled and filtered according to source module and severity level
+* They work well in multithreaded code
+* They can write their output to a file
+
+```!warning_func
+function warning_func(n)
+    for i in 1:n
+        @warn "This is bad" 2i
+    end
+end
+```
+
+```>warning_repl
+warning_func(3)
+```
+
+Refer to the logging [documentation](https://docs.julialang.org/en/v1/stdlib/Logging/) for more information.
+
+\advanced{
+
+In particular, note that `@debug` messages are suppressed by default.
+You can enable them through the `JULIA_DEBUG` environment variable if you specify the source module name, typically `Main` or your package module.
+
+}
+
+Beyond the built-in logging utilities, [ProgressLogging.jl](https://github.com/JuliaLogging/ProgressLogging.jl) has a macro `@progress`, which interfaces nicely with VSCode and Pluto to display progress bars.
+And [Suppressor.jl](https://github.com/JuliaIO/Suppressor.jl) can sometimes be handy when you need to suppress warnings or other bothersome messages (use at your own risk).
+
+## Debugging
+
+\tldr{Infiltrator.jl and Debugger.jl allow you to peek inside a function while its execution is paused.}
+
+The problem with printing or logging is that you cannot interact with local variables or save them for further analysis.
+The following two packages solve this issue, and they probably belong in your default environment `@v1.X`, like Revise.jl.
+
+### Setting
 
 Assume you want to debug a function checking whether the $n$-th [Fermat number](https://en.wikipedia.org/wiki/Fermat_number) $F_n = 2^{2^n} + 1$ is prime:
 
 ```!fermat
 function fermat_prime(n)
-    F = 2^(2^n) + 1
+    k = 2^n
+    F = 2^k + 1
     for d in 2:isqrt(F)  # integer square root
         if F % d == 0
             return false
         end
     end
     return true
-end;
+end
 ```
 
 ```>fermat-test
@@ -344,63 +533,6 @@ fermat_prime(6)
 
 Unfortunately, $F_4 = 65537$ is the largest known Fermat prime, which means $F_6$ is incorrectly classified.
 Let's investigate why this happens!
-
-As a first step, the macro `@show` lets you print local variables with their name:
-
-```!fermat-show
-function fermat_prime_show(n)
-    F = 2^(2^n) + 1
-    @show n 2^n F
-    for d in 2:isqrt(F)
-        if F % d == 0
-            return false
-        end
-    end
-    return true
-end;
-```
-
-```>fermat-show-test
-fermat_prime_show(4)
-fermat_prime_show(6)
-```
-
-The diagnosis is a classic one: [integer overflow](https://docs.julialang.org/en/v1/manual/faq/#faq-integer-arithmetic).
-Indeed, $2^{64}$ is larger than the maximum integer value in Julia:
-
-```>typemax
-typemax(Int)
-```
-
-And the solution is to call our function on "big" integers with an arbitrary number of bits:
-
-```>fermat-show-test2
-fermat_prime_show(big(6))
-```
-
-While printing might suffice to debug simple problems, we can do better.
-Julia offers the logging macros `@debug`, `@info`, `@warn` and `@error`, which have several advantages over printing:
-
-* They show the line number they were called from
-* They label arguments, similar to `@show`
-* They can be disabled and filtered according to source module and severity level
-* They work well in multithreaded code
-* They can write their output to a file
-
-Refer to the logging [documentation](https://docs.julialang.org/en/v1/stdlib/Logging/) for more information.
-In particular, note that `@debug` messages are suppressed by default.
-You can enable them through the `JULIA_DEBUG` environment variable if you specify the source module name, here `Main`.
-
-```julia-repl
-julia> ENV["JULIA_DEBUG"] = Main
-```
-
-## Debugging
-
-> Infiltrator.jl and Debugger.jl allow you to peek inside a function while its execution is paused.
-
-The problem with logging is that you cannot interact with local variables or save them for further analysis.
-The following two packages solve this issue, and they probably belong in your default environment `@v1.X`, like Revise.jl.
 
 ### Infiltrator.jl
 
@@ -415,7 +547,8 @@ For example, typing `@locals` in Infiltrator-mode will print local variables:
 using Infiltrator
 
 function fermat_prime_infil(n)
-    F = 2^(2^n) + 1
+    k = 2^n 
+    F = 2^k + 1
     @infiltrate
     for d in 2:isqrt(F)
         if F % d == 0
@@ -423,7 +556,7 @@ function fermat_prime_infil(n)
         end
     end
     return true
-end;
+end
 ```
 
 What makes Infiltrator.jl even more powerful is the `@exfiltrate` macro, which allows you to move local variables into a global storage called the `safehouse`.
@@ -431,20 +564,34 @@ What makes Infiltrator.jl even more powerful is the `@exfiltrate` macro, which a
 ```julia-repl
 julia> fermat_prime_infil(6)
 Infiltrating fermat_prime_infil(n::Int64)
-  at REPL[2]:3
+  at REPL[2]:4
 
-infil> F
-1
-
-infil> @exfiltrate F
-Exfiltrating 1 local variable into the safehouse.
+infil> @exfiltrate k F
+Exfiltrating 2 local variables into the safehouse.
 
 infil> @continue
 
 true
 
+julia> safehouse.k
+64
+
 julia> safehouse.F
 1
+```
+
+The diagnosis is a classic one: [integer overflow](https://docs.julialang.org/en/v1/manual/faq/#faq-integer-arithmetic).
+Indeed, $2^{64}$ is larger than the maximum integer value in Julia:
+
+```>typemax
+typemax(Int)
+2^63-1
+```
+
+And the solution is to call our function on "big" integers with an arbitrary number of bits:
+
+```>fermat-big
+fermat_prime(big(6))
 ```
 
 ### Debugger.jl
@@ -461,49 +608,40 @@ This is useful to show local variables, as demonstrated in the following example
 julia> using Debugger
 
 julia> @enter fermat_prime(6)
-In fermat_prime(n) at REPL[1]:1
+In fermat_prime(n) at REPL[7]:1
  1  function fermat_prime(n)
->2      F = 2^(2^n) + 1
- 3      for d in 2:isqrt(F)
- 4          if F % d == 0
- 5              return false
- 6          end
+>2      k = 2^n
+ 3      F = 2^k + 1
+ 4      for d in 2:isqrt(F)  # integer square root
+ 5          if F % d == 0
+ 6              return false
 
 About to run: (^)(2, 6)
 1|debug> n
-In fermat_prime(n) at REPL[1]:1
+In fermat_prime(n) at REPL[7]:1
  1  function fermat_prime(n)
- 2      F = 2^(2^n) + 1
->3      for d in 2:isqrt(F)
- 4          if F % d == 0
- 5              return false
- 6          end
- 7      end
+ 2      k = 2^n
+>3      F = 2^k + 1
+ 4      for d in 2:isqrt(F)  # integer square root
+ 5          if F % d == 0
+ 6              return false
+ 7          end
 
-About to run: (isqrt)(1)
-1|debug> n
-In fermat_prime(n) at REPL[1]:1
- 4          if F % d == 0
- 5              return false
- 6          end
- 7      end
->8      return true
- 9  end
-
-About to run: return true
-1|julia> F
-1
+About to run: (^)(2, 64)
+1|julia> k
+64
 ```
 
-For a more user-friendly debugging interface, Debugger.jl is [interfaced with VSCode](https://www.julia-vscode.org/docs/stable/userguide/debugging/).
+\vscode{
+
+Debugger.jl also has a nice [graphical interface](https://www.julia-vscode.org/docs/stable/userguide/debugging/).
 Click left of a line number in an editor pane to add a _breakpoint_, which is represented by a red circle.
 In the debugging pane of the Julia extension, click `Run and Debug` to start the debugger.
 The program will automatically halt when it hits a breakpoint.
 Using the toolbar at the top of the editor, you can then _continue_, _step over_, _step into_ and _step out_ of your code.
 The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.
 
+}
+
 <!-- Clean up -->
 
-```>cleanup
-Pkg.rm("MyPackage")  # hide
-```

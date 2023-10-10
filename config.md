@@ -25,3 +25,20 @@ website_url   = "https://modernjuliaworkflows.github.io/"
 <!--
 Add here global latex commands to use throughout your pages.
 -->
+\newcommand{\tldr}[1]{
+  @@tldr
+  **TLDR**: !#1 
+  @@
+}
+
+\newcommand{\advanced}[1]{
+  @@advanced
+  **Advanced**: !#1
+  @@
+}
+
+\newcommand{\vscode}[1]{
+  @@vscode
+  **VSCode**: !#1
+  @@
+}
