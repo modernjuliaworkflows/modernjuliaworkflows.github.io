@@ -151,7 +151,7 @@ In practice, an Integrated Development Environment (or IDE) makes the experience
 
 The best IDE for Julia is [Visual Studio Code](https://code.visualstudio.com/), or VSCode, developed by Microsoft.
 Indeed, the [Julia VSCode extension](https://www.julia-vscode.org/) is the most feature-rich of all Julia IDE plugins.
-You can download it from the VSCode Marketplace and read its [documentation](https://www.julia-vscode.org/docs/stable/) cover to cover.
+You can download it from the VSCode Marketplace and read its [documentation](https://www.julia-vscode.org/docs/stable/).
 
 \vscode{
 
@@ -196,8 +196,8 @@ This will automatically update changes to function definitions in the file in th
 
 [Running code](https://www.julia-vscode.org/docs/stable/userguide/runningcode/) is made much easier by the following commands:
 
-* `Julia: Restart REPL` (shortcut `Alt + J` then `Alt + R`) - this is different from opening a VSCode _terminal_ and launching Julia manually from there, because the integrated Julia REPL allows you to send code from files to the REPL directly.
-* `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - the executed code is the block containing the cursor, or the selected part if it exists.
+* `Julia: Restart REPL` (shortcut `Alt + J` then `Alt + R`) - this will open or restart the integrated Julia REPL and is different from opening a VSCode _terminal_ and launching Julia manually from there.
+* `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - this will execute in the integrated Julia REPL either the code selected by the cursor or, if no selection, the code block containing the cursor.
 
 }
 
