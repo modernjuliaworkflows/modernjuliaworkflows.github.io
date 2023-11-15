@@ -134,7 +134,7 @@ Pkg.rm("Example")
 
 ### Shell mode (`;`)
 
-By pressing `;` you enter a terminal, where you can execute any bash command you want.
+By pressing `;` you enter a terminal, where you can execute any shell command you want.
 
 ```;shell-example
 echo "hello"
