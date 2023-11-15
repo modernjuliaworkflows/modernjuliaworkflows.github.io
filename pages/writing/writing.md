@@ -131,7 +131,6 @@ using Pkg
 Pkg.rm("Example")
 ```
 
-The blog post [Pkg.jl and Julia Environments for Beginners](https://jkrumbiegel.com/pages/2022-08-26-pkg-introduction/) will get you comfortable with the details.
 
 ### Shell mode (`;`)
 
