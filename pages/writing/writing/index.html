@@ -128,7 +128,7 @@ Pkg.jl allows you to:</p>
 <p>As an illustration, we download the package Example.jl inside our current environment:</p>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(writing) pkg&gt;</span></span> add Example
 <span class="sgr33"><span class="sgr1">┌ Warning: </span></span>The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
-<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.3/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382</span>
+<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.4/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382</span>
 <span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
 <span class="sgr32"><span class="sgr1">   Installed</span></span> Example ─ v0.5.3
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Project.toml`
@@ -166,7 +166,7 @@ So in theory, any text editor suffices to write and modify Julia code.
 In practice, an Integrated Development Environment (or IDE) makes the experience much more pleasant, thanks to code-related utilities and language-specific plugins.</p>
 <p>The best IDE for Julia is <a href="https://code.visualstudio.com/">Visual Studio Code</a>, or VSCode, developed by Microsoft.
 Indeed, the <a href="https://www.julia-vscode.org/">Julia VSCode extension</a> is the most feature-rich of all Julia IDE plugins.
-You can download it from the VSCode Marketplace and read its <a href="https://www.julia-vscode.org/docs/stable/">documentation</a> cover to cover.</p>
+You can download it from the VSCode Marketplace and read its <a href="https://www.julia-vscode.org/docs/stable/">documentation</a>.</p>
 <div class="vscode"><p><strong>VSCode</strong>: In what follows, we will sometimes mention commands and <a href="https://www.julia-vscode.org/docs/stable/userguide/keybindings/">keyboard shortcuts</a> provided by this extension.
  But the only shortcut you need to remember is <code>Ctrl + Shift + P</code> (or <code>Cmd + Shift + P</code> on Mac): this opens the VSCode command palette, in which you can search for any command.
  Type "julia" in the command palette to see what you can do.</p>
@@ -176,14 +176,18 @@ You can download it from the VSCode Marketplace and read its <a href="https://ww
  The available functionalities should be roughly similar to those of VSCode, at least for the basic aspects like running code.</p>
 </div><h2 id="running_code" ><a href="#running_code"> Running code</a></h2><div class="tldr"><p><strong>TLDR</strong>: Open a REPL and run all your code there interactively. </p>
 </div><p>You can execute a Julia script from your terminal, but in most cases that is not what you want to do.</p>
-<pre><code class="bash">julia myfile.jl</code></pre>
+<pre><code class="bash">julia myfile.jl  # avoid this</code></pre>
 <p>Julia has a rather high startup and compilation latency.
 If you only use scripts, you will pay this cost every time you run a slightly modified version of your code.
-That is why many Julia developers fire up a REPL at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way.</p>
+That is why many Julia developers fire up a REPL at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way.
+Full files can be run interactively from the REPL with the <code>include</code> function.</p>
+<pre><code class="julia-repl">julia&gt; include(&quot;myfile.jl&quot;)</code></pre>
+<p>Alternatively, <code>includet</code> from the <a href="https://timholy.github.io/Revise.jl/stable/user_reference/#Revise.includet">Revise.jl</a> package can be used to "include and track" a file.
+This will automatically update changes to function definitions in the file in the running REPL session.</p>
 <div class="vscode"><p><strong>VSCode</strong>: <a href="https://www.julia-vscode.org/docs/stable/userguide/runningcode/">Running code</a> is made much easier by the following commands:</p>
 <ul>
-<li><code>Julia: Start REPL</code> (shortcut <code>Alt + J</code> then <code>Alt + O</code>) - this is different from opening a VSCode <em>terminal</em> and launching Julia manually from there, because the integrated Julia REPL allows you to send code from files to the REPL directly.</li>
-<li><code>Julia: Execute Code in REPL and Move</code> (shortcut <code>Shift + Enter</code>) - the executed code is the block containing the cursor, or the selected part if it exists.</li>
+<li><code>Julia: Restart REPL</code> (shortcut <code>Alt + J</code> then <code>Alt + R</code>) - this will open or restart the integrated Julia REPL and is different from opening a VSCode <em>terminal</em> and launching Julia manually from there.</li>
+<li><code>Julia: Execute Code in REPL and Move</code> (shortcut <code>Shift + Enter</code>) - this will execute in the integrated Julia REPL either the code selected by the cursor or, if no selection, the code block containing the cursor.</li>
 </ul>
 </div><p>When keeping the same REPL open for a long time, it's common to end up with a "polluted" workspace where the definitions of certain variables or functions have been overwritten in unexpected ways.
 This, along with other events like <code>struct</code> redefinitions, might force you to restart your REPL now and again, and that's okay.</p>
@@ -318,7 +322,7 @@ More generally, the startup file allows you to define your own favorite helper f
 Any[Bool, Signed, Unsigned]
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> length(methodswith(Integer))
-787
+788
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @which exp(1)
 exp(x::Real) @ Base.Math math.jl:1488
@@ -329,22 +333,22 @@ Base.exp
 </code></pre>
 <p>When you ask for help on a Julia forum, you might want to include your local Julia information:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> versioninfo()
-Julia Version 1.9.3
-Commit bed2cd540a1 (2023-08-24 14:43 UTC)
+Julia Version 1.9.4
+Commit 8e5136fa297 (2023-11-14 08:46 UTC)
 Build Info:
   Official https://julialang.org/ release
 Platform Info:
   OS: Linux (x86_64-linux-gnu)
-  CPU: 2 × Intel(R) Xeon(R) Platinum 8171M CPU @ 2.60GHz
+  CPU: 4 × AMD EPYC 7763 64-Core Processor
   WORD_SIZE: 64
   LIBM: libopenlibm
-  LLVM: libLLVM-14.0.6 (ORCJIT, skylake-avx512)
-  Threads: 1 on 2 virtual cores
+  LLVM: libLLVM-14.0.6 (ORCJIT, znver3)
+  Threads: 1 on 4 virtual cores
 Environment:
   JULIA_PRE = 
   JULIA_POST = 
-  JULIA_DEBUG = 
   JULIA_IMAGE_THREADS = 1
+  JULIA_DEBUG =
 </code></pre>
 <div class="advanced"><p><strong>Advanced</strong>: The following packages can give you even more interactive power:</p>
 <ul>
@@ -436,7 +440,7 @@ For example, typing <code>@locals</code> in Infiltrator-mode will print local va
 <pre><code class="julia">using Infiltrator
 
 function fermat_prime_infil(n)
-    k = 2^n 
+    k = 2^n
     F = 2^k + 1
     @infiltrate
     for d in 2:isqrt(F)
@@ -511,10 +515,12 @@ About to run: (^)(2, 64)
  In the debugging pane of the Julia extension, click <code>Run and Debug</code> to start the debugger.
  The program will automatically halt when it hits a breakpoint.
  Using the toolbar at the top of the editor, you can then <em>continue</em>, <em>step over</em>, <em>step into</em> and <em>step out</em> of your code.
- The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.</p>
+ The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.
+ The debugger can be <a href="https://www.julia-vscode.org/docs/dev/userguide/debugging/#Settings-to-speed-up-the-debugger">sped up</a> by selectively compiling modules that you will not need to step into via the <code>+</code> symbol at the bottom of the debugging pane.
+ It is often easiest to start by adding <code>ALL_MODULES_EXCEPT_MAIN</code> to the compiled list, and then selectively remove the modules you need to have interpreted.</p>
 </div>
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: October 10, 2023. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: December 15, 2023. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
