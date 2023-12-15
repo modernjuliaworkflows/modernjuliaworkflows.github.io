@@ -17,4 +17,5 @@ jobs:
       - name: 🚀 Build and Deploy
         uses: tlienart/xranklin-build-action@main
         with:
-          DEPLOY_BRANCH: ${{ github.event_name != 'pull_request' && 'gh-pages' || 'gh-pages-pr' }}
+          DEPLOY: ${{ github.event_name == 'push' }}
+          DEPLOY_BRANCH: 'gh-pages'
