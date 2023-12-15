@@ -36,25 +36,30 @@ Some of the vocabulary used by community members may appear unfamiliar, but don'
 
 \tldr{Use `juliaup`}
 
-The most natural starting point is the [downloads](https://julialang.org/downloads/) page.
+The most natural starting point to install Julia onto your system is the [Julia downloads page](https://julialang.org/downloads/).
 However, for additional flexibility, we recommend to use [`juliaup`](https://github.com/JuliaLang/juliaup) instead.
-You can get it from the Windows store, or from the command line on Unix systems:
+
+1. Windows users can download Julia and `juliaup` together from the [Windows Store](https://www.microsoft.com/store/apps/9NJNWW8PVKMN).
+2. OSX or Linux users can execute the following terminal command:
 
 ```bash
 curl -fsSL https://install.julialang.org | sh
 ```
 
-It provides [various utilities](https://github.com/JuliaLang/juliaup#using-juliaup) to download, update, organize and switch between Julia versions.
-As a bonus, you no longer have to manually specify the path to your executable.
-
-`juliaup` relies on adaptive shortcuts called "channels", which allow you to access specific Julia versions without giving their exact number.
-For instance, the `release` channel will always point to the [current stable version](https://julialang.org/downloads/#current_stable_release), and the `lts` channel will always point to the [long-term support version](https://julialang.org/downloads/#long_term_support_release).
-Upon installation of `juliaup`, the current stable version of Julia is downloaded and selected as the default.
-This is the one you get when you run
+In both cases, this will make the `juliaup` and `julia` commands accessible from the terminal (or Windows Powershell).
+On Windows this will also create an application launcher.
+All users can start Julia by running
 
 ```bash
 julia
 ```
+
+Meanwhile, `juliaup` provides [various utilities](https://github.com/JuliaLang/juliaup#using-juliaup) to download, update, organize and switch between different Julia versions.
+As a bonus, you no longer have to manually specify the path to your executable.
+This all works thanks to adaptive shortcuts called "channels", which allow you to access specific Julia versions without giving their exact number.
+
+For instance, the `release` channel will always point to the [current stable version](https://julialang.org/downloads/#current_stable_release), and the `lts` channel will always point to the [long-term support version](https://julialang.org/downloads/#long_term_support_release).
+Upon installation of `juliaup`, the current stable version of Julia is downloaded and selected as the default.
 
 \advanced{
 
@@ -82,7 +87,7 @@ juliaup update
 
 ## REPL
 
-\tldr{The REPL has 4 primary modes: Julia, package (`]`), help (`?`) and shell (`;`).}
+\tldr{The Julia REPL has 4 primary modes: Julia, package (`]`), help (`?`) and shell (`;`).}
 
 The Read-Eval-Print Loop (or REPL) is the most basic way to interact with Julia, check out its [documentation](https://docs.julialang.org/en/v1/stdlib/REPL/) for details.
 You can start a REPL by typing `julia` into a terminal, or by clicking on the Julia application in your computer.
@@ -117,10 +122,13 @@ Pkg.jl allows you to:
 * `]add`, `]update` (or `]up`) and `]remove` (or `]rm`) packages;
 * get the `]status` (or `]st`) of your current environment.
 
-As an illustration, we download the package Example.jl inside our current environment (which already contains some other stuff for later):
+As an illustration, we download the package Example.jl inside our current environment:
 
 ```]pkg-example
 add Example
+```
+
+```]pkg-example
 status
 ```
 
@@ -133,10 +141,10 @@ Pkg.rm("Example")
 
 ### Shell mode (`;`)
 
-By pressing `;` you enter a terminal, where you can execute any shell command you want.
+By pressing `;` you enter a terminal, where you can execute any command you want.
+Here's an example for Unix systems:
 
 ```;shell-example
-echo "hello"
 ls pages
 ```
 
