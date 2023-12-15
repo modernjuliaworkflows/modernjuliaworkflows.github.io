@@ -131,7 +131,6 @@ using Pkg
 Pkg.rm("Example")
 ```
 
-
 ### Shell mode (`;`)
 
 By pressing `;` you enter a terminal, where you can execute any shell command you want.
@@ -189,7 +188,7 @@ Full files can be run interactively from the REPL with the `include` function.
 julia> include("myfile.jl")
 ```
 
-Alternatively, `includet` from the [Revise](https://timholy.github.io/Revise.jl/stable/user_reference/#Revise.includet) package can be used to "include and track" a file.
+Alternatively, `includet` from the [Revise.jl](https://timholy.github.io/Revise.jl/stable/user_reference/#Revise.includet) package can be used to "include and track" a file.
 This will automatically update changes to function definitions in the file in the running REPL session.
 
 \vscode{
@@ -643,8 +642,6 @@ Using the toolbar at the top of the editor, you can then _continue_, _step over_
 The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.
 The debugger can be [sped up](https://www.julia-vscode.org/docs/dev/userguide/debugging/#Settings-to-speed-up-the-debugger) by selectively compiling modules that you will not need to step into via the `+` symbol at the bottom of the debugging pane.
 It is often easiest to start by adding `ALL_MODULES_EXCEPT_MAIN` to the compiled list, and then selectively remove the modules you need to have interpreted.
-
-
 }
 
 <!-- Clean up -->
