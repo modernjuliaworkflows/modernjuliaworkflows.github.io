@@ -158,7 +158,7 @@ In practice, an Integrated Development Environment (or IDE) makes the experience
 
 The best IDE for Julia is [Visual Studio Code](https://code.visualstudio.com/), or VSCode, developed by Microsoft.
 Indeed, the [Julia VSCode extension](https://www.julia-vscode.org/) is the most feature-rich of all Julia IDE plugins.
-You can download it from the VSCode Marketplace and read its [documentation](https://www.julia-vscode.org/docs/stable/) cover to cover.
+You can download it from the VSCode Marketplace and read its [documentation](https://www.julia-vscode.org/docs/stable/).
 
 \vscode{
 
@@ -184,19 +184,27 @@ The available functionalities should be roughly similar to those of VSCode, at l
 You can execute a Julia script from your terminal, but in most cases that is not what you want to do.
 
 ```bash
-julia myfile.jl
+julia myfile.jl  # avoid this
 ```
 
 Julia has a rather high startup and compilation latency.
 If you only use scripts, you will pay this cost every time you run a slightly modified version of your code.
 That is why many Julia developers fire up a REPL at the beginning of the day and run all of their code there, chunk by chunk, in an interactive way.
+Full files can be run interactively from the REPL with the `include` function.
+
+```julia-repl
+julia> include("myfile.jl")
+```
+
+Alternatively, `includet` from the [Revise.jl](https://timholy.github.io/Revise.jl/stable/user_reference/#Revise.includet) package can be used to "include and track" a file.
+This will automatically update changes to function definitions in the file in the running REPL session.
 
 \vscode{
 
 [Running code](https://www.julia-vscode.org/docs/stable/userguide/runningcode/) is made much easier by the following commands:
 
-* `Julia: Start REPL` (shortcut `Alt + J` then `Alt + O`) - this is different from opening a VSCode _terminal_ and launching Julia manually from there, because the integrated Julia REPL allows you to send code from files to the REPL directly.
-* `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - the executed code is the block containing the cursor, or the selected part if it exists.
+* `Julia: Restart REPL` (shortcut `Alt + J` then `Alt + R`) - this will open or restart the integrated Julia REPL and is different from opening a VSCode _terminal_ and launching Julia manually from there.
+* `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - this will execute in the integrated Julia REPL either the code selected by the cursor or, if no selection, the code block containing the cursor.
 
 }
 
@@ -547,7 +555,7 @@ For example, typing `@locals` in Infiltrator-mode will print local variables:
 using Infiltrator
 
 function fermat_prime_infil(n)
-    k = 2^n 
+    k = 2^n
     F = 2^k + 1
     @infiltrate
     for d in 2:isqrt(F)
@@ -640,7 +648,8 @@ In the debugging pane of the Julia extension, click `Run and Debug` to start the
 The program will automatically halt when it hits a breakpoint.
 Using the toolbar at the top of the editor, you can then _continue_, _step over_, _step into_ and _step out_ of your code.
 The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.
-
+The debugger can be [sped up](https://www.julia-vscode.org/docs/dev/userguide/debugging/#Settings-to-speed-up-the-debugger) by selectively compiling modules that you will not need to step into via the `+` symbol at the bottom of the debugging pane.
+It is often easiest to start by adding `ALL_MODULES_EXCEPT_MAIN` to the compiled list, and then selectively remove the modules you need to have interpreted.
 }
 
 <!-- Clean up -->
