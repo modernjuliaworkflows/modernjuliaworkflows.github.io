@@ -101,7 +101,7 @@ ls ./pages
 
 ## Editor
 
-> TLDR: VSCode has the best Julia support.
+> TLDR: VSCode has the best support for Julia.
 
 Most computer programs are just plain text files with a specific extension (in our case `.jl`).
 So in theory, any text editor suffices to write and modify Julia code.
@@ -121,7 +121,7 @@ The available functionalities should be roughly similar to those of VSCode, at l
 
 ## Running code
 
-> TLDR: Open a REPL and run all your code there interactively
+> TLDR: Open a REPL and run all your code there interactively.
 
 You can execute a Julia script from your terminal, but in most cases that is not what you want to do.
 
@@ -144,7 +144,7 @@ One way to help with workspace tidiness is to take advantage of the [module syst
 
 ## Notebooks
 
-> TLDR: Jupyter or Pluto, depending on your reactivity needs
+> TLDR: Use Jupyter or Pluto depending on your reactivity needs.
 
 Notebooks are a popular alternative to IDEs when it comes to short and self-contained code, typically in data science.
 They are also a good fit for literate programming, where lines of code are interspersed by comments and explanations.
@@ -181,7 +181,7 @@ julia> Pluto.run()
 
 ## Environments
 
-> TLDR: Julia projects are made with `] activate`, and their details are stored in the `Project.toml` and `Manifest.toml`.
+> TLDR: Activate a local environment for each project with `] activate` and add development tools to the global environment.
 
 Pkg.jl and the [Pkg mode](#package-mode) built in to the [REPL](#repl) let you install packages and manage environments.
 A "package" is a structured way of reusing code between projects and the active "environment" is responsible for determining which versions of packages to load.
@@ -270,6 +270,8 @@ With this option set, anytime you [open a REPL](#running-code) the environment w
 <!-- How about other IDEs? -->
 
 ## Local packages
+
+> TLDR: If you write the same code in more than one project, put it in a package and add it as a versioned dependency.
 
 Local packages are a smart way of reusing code between projects.
 You could load common code directly with `include("path/to/file.jl")`, but a local package allows you to benefit from package niceties:
