@@ -256,7 +256,7 @@ julia> Pluto.run()
 
 ## Environments
 
-\tldr{Julia environments are activated with `]activate path`, their details are stored in `Project.toml` and `Manifest.toml`.}
+\tldr{Activate a local environment for each project with `]activate path`. Its details are stored in `Project.toml` and `Manifest.toml`.}
 
 As we have seen, Pkg.jl is the Julia equivalent of `pip` or `conda` for Python.
 It lets you [install packages](https://pkgdocs.julialang.org/v1/managing-packages/) and [manage environments](https://pkgdocs.julialang.org/v1/environments/) (collections of packages with specific versions).
