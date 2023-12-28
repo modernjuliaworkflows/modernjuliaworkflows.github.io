@@ -128,7 +128,7 @@ Pkg.jl allows you to:</p>
 <p>As an illustration, we download the package Example.jl inside our current environment:</p>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(writing) pkg&gt;</span></span> add Example
 <span class="sgr33"><span class="sgr1">┌ Warning: </span></span>The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
-<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ Pkg.REPLMode /opt/hostedtoolcache/julia/1.9.4/x64/share/julia/stdlib/v1.9/Pkg/src/REPLMode/REPLMode.jl:382</span>
+<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ Pkg.REPLMode /opt/hostedtoolcache/julia/1.10.0/x64/share/julia/stdlib/v1.10/Pkg/src/REPLMode/REPLMode.jl:382</span>
 <span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
 <span class="sgr32"><span class="sgr1">   Installed</span></span> Example ─ v0.5.3
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/pages/writing/Project.toml`
@@ -213,7 +213,7 @@ Unlike Jupyter notebooks, Pluto notebooks are</p>
 <pre><code class="julia-repl">julia&gt; using Pluto
 
 julia&gt; Pluto.run()</code></pre>
-<h2 id="environments" ><a href="#environments"> Environments</a></h2><div class="tldr"><p><strong>TLDR</strong>: Julia environments are activated with <code>]activate path</code>, their details are stored in <code>Project.toml</code> and <code>Manifest.toml</code>. </p>
+<h2 id="environments" ><a href="#environments"> Environments</a></h2><div class="tldr"><p><strong>TLDR</strong>: Activate a local environment for each project with <code>]activate path</code>. Its details are stored in <code>Project.toml</code> and <code>Manifest.toml</code>. </p>
 </div><p>As we have seen, Pkg.jl is the Julia equivalent of <code>pip</code> or <code>conda</code> for Python.
 It lets you <a href="https://pkgdocs.julialang.org/v1/managing-packages/">install packages</a> and <a href="https://pkgdocs.julialang.org/v1/environments/">manage environments</a> (collections of packages with specific versions).</p>
 <p>Once you activate an environment by specifying its path <code>]activate path</code>, the packages you <code>]add</code> will be listed in two files <code>path/Project.toml</code> and <code>path/Manifest.toml</code>.</p>
@@ -322,10 +322,10 @@ More generally, the startup file allows you to define your own favorite helper f
 Any[Bool, Signed, Unsigned]
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> length(methodswith(Integer))
-788
+704
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @which exp(1)
-exp(x::Real) @ Base.Math math.jl:1488
+exp(x::Real) @ Base.Math math.jl:1575
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> apropos(&quot;matrix exponential&quot;)
 Base.:^
@@ -333,8 +333,8 @@ Base.exp
 </code></pre>
 <p>When you ask for help on a Julia forum, you might want to include your local Julia information:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> versioninfo()
-Julia Version 1.9.4
-Commit 8e5136fa297 (2023-11-14 08:46 UTC)
+Julia Version 1.10.0
+Commit 3120989f39b (2023-12-25 18:01 UTC)
 Build Info:
   Official https://julialang.org/ release
 Platform Info:
@@ -342,12 +342,11 @@ Platform Info:
   CPU: 4 × AMD EPYC 7763 64-Core Processor
   WORD_SIZE: 64
   LIBM: libopenlibm
-  LLVM: libLLVM-14.0.6 (ORCJIT, znver3)
+  LLVM: libLLVM-15.0.7 (ORCJIT, znver3)
   Threads: 1 on 4 virtual cores
 Environment:
   JULIA_PRE = 
   JULIA_POST = 
-  JULIA_IMAGE_THREADS = 1
   JULIA_DEBUG =
 </code></pre>
 <div class="advanced"><p><strong>Advanced</strong>: The following packages can give you even more interactive power:</p>
@@ -520,7 +519,7 @@ About to run: (^)(2, 64)
  It is often easiest to start by adding <code>ALL_MODULES_EXCEPT_MAIN</code> to the compiled list, and then selectively remove the modules you need to have interpreted.</p>
 </div>
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: December 15, 2023. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: December 28, 2023. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
