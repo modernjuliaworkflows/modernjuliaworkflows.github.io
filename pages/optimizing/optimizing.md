@@ -11,10 +11,29 @@ title = "Optimizing your code"
 ## Principles
 
 All tips to writing performant Julia code can be derived from two fundamental ideas:
-1. Ensure that type of every variable can be unambiguously inferred every time each is used.
+1. Ensure that type of every variable can be concretely inferred every time each is used.
 2. Avoid unnecessary heap allocations.
 
-to understand these two ideas, we have to dig into how computers work and how the julia compiler works with computers.
+By "concretely", we mean that the type inferred by the compiler is concrete, this means that its size in memory is known at compile time.
+Types declared abstract with `abstract type` are not concrete and neither are [parametric types](https://docs.julialang.org/en/v1/manual/types/#Parametric-Types) whose parameters are not specified:
+```>isconcretetype-example
+isconcretetype(AbstractVector)
+isconcretetype(Vector) # Shorthand for `Vector{T} where T`
+isconcretetype(Vector{Real})
+isconcretetype(Vector{Int64})
+```
+
+\advanced{
+`Vector{Real}` is concrete despite `Real` being abstract because all parametric types besides tuples are [invariant](https://docs.julialang.org/en/v1/manual/types/#man-parametric-composite-types) in their parameters (as opposed to covariant or contravariant).
+Because `Vector{Real}` therefore can't be subtyped, it must have a concrete implementation which, in Julia's case, is as a vector of pointers to individually allocated `Real` objects.
+This implementation detail (a pointer to pointers) also explains part of the reason why `Vector{Real}` is slow, the other being a lack of concrete compile-time specialisation on the elements of the vector.
+}
+
+A heap allocation is an allocation that makes me sad.
+
+To understand why these are so key we must first explain how Julia and its compiler interacts with the hardware.
+
+Any object
 
 Put an explanation of heap and stack allocations here.
 
@@ -32,14 +51,14 @@ This phenomenon called "dynamic dispatch" essentially prevents further optimizat
 
 The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints time, allocation, and compilation information. Because of how Julia's JIT compiler works, you should first run a function and then time it:
 
-```julia
-f(vec) = sum(abs, vec)
+```>time-example
+sum_abs(vec) = sum(abs, vec)
 v = rand(100)
-@time f(v)
-@time f(v)
+@time sum_abs(v)
+@time sum_abs(v)
 ```
 
-Above, we can see that the first invocation of `@time` was dominated by the compilation time of `f`, while the second only involved a single allocation of 16 bytes.
+Above, we can see that the first invocation of `@time` was dominated by the compilation time of `sum_abs`, while the second only involved a single allocation of 16 bytes.
 Below, in the BenchmarkTools section we will see that this single allocation is actually a red herring.
 One consequence of a large number of heap allocations is that the [GC](https://en.wikipedia.org/wiki/Tracing_garbage_collection) (garbage collector) will need to run to clear up the program's memory so it can be reused.
 This can heavily impact performance and so `@time` also shows how much of the time (if any) was taken up by the GC.
@@ -55,17 +74,18 @@ A commonly used tool to do both of these is [BenchmarkTools.jl](https://github.c
 Similarly to `@time`, BenchmarkTools offers `@btime` which can be used in exactly the same way but will run the code multiple times and provide an average.
 Additionally, by using `$` to interpolate values, you can be sure that you are timing __only__ the execution and not the setup or construction of the code in question.
 
-```julia
-@btime f(v)
-@btime f($v)
+```>$-example
+using BenchmarkTools
+@btime sum_abs(v)
+@btime sum_abs($v)
 ```
 
-Now that we're interpolating our argument `v`, we can see that our function `f` is completely non-allocating and so its performance won't be slowed down by GC invocations.
+Now that we're interpolating our argument `v`, we can see that our function `sum_abs` is completely non-allocating and so its performance won't be slowed down by GC invocations.
 
 Note that you can also construct variables and interpolate them:
 
-```julia
-@btime f($(rand(Int64, 1000)))
+```>$-randomness-example
+@btime sum_abs($(rand(10)))
 ```
 
 However, doing so will mean that any randomness will be the same for every run!
@@ -73,8 +93,8 @@ Furthermore, constructing and interpolating multiple variables can get messy.
 As such, the best way to run a benchmark is to construct variables in a `setup` phase.
 Note that variables constructed this way should not be interpolated in as this indicates that BenchmarkTools should search for a global variable with that name.
 
-```julia
-my_matmul(A, b) = A * b
+```>setup-example
+my_matmul(A, b) = A * b;
 @btime my_matmul(A, b) setup=(
     # use semi-colons inside a setup block to start new lines
     A = rand(1000, 1000);
@@ -85,7 +105,7 @@ my_matmul(A, b) = A * b
 A setup phase means that you get a full overview of a function's performance as not only are you running the function many times, each run also has a different input.
 
 For the best visualisation of performance, the `@benchmark` macro is also provided which shows performance histograms:
-```julia
+```>benchmark-example
 @benchmark my_matmul(A, b) setup=(
     A = rand(1000, 1000);
     b = rand(1000)
