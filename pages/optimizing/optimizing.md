@@ -28,21 +28,71 @@ This phenomenon called "dynamic dispatch" essentially prevents further optimizat
 * [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/)
 
 ## Measurements
+\tldr{Use BenchmarkTools.jl's `@benchmark` with a setup phase to get the best overview of performance or `@btime` as a drop in for `@time`.}
 
-The simplest way to measure how fast a piece of code runs is to use the `@time` macro. Because of how Julia's JIT compiler works, you should first run a function and then time it:
+The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints time, allocation, and compilation information. Because of how Julia's JIT compiler works, you should first run a function and then time it:
 
-example
+```julia
+f(vec) = sum(abs, vec)
+v = rand(100)
+@time f(v)
+@time f(v)
+```
 
-Notes:
-- The macro also tells you how how many allocations and how large it was taken.
-- Relatedly, you also see how much of the time was taken up by the GC and by compilation. High GC usage can indicate some unnecessary heap allocations e.g. in a hot loop
+Above, we can see that the first invocation of `@time` was dominated by the compilation time of `f`, while the second only involved a single allocation of 16 bytes.
+Below, in the BenchmarkTools section we will see that this single allocation is actually a red herring.
+One consequence of a large number of heap allocations is that the [GC](https://en.wikipedia.org/wiki/Tracing_garbage_collection) (garbage collector) will need to run to clear up the program's memory so it can be reused.
+This can heavily impact performance and so `@time` also shows how much of the time (if any) was taken up by the GC.
 
-This method has flaws because you're only timing it once: lots of stuff goes on in the background of a computer and data may change so you ideally want a lot of samples.
-Furthermore, you may want to measure the performance over various inputs
+This method of running `@time` is quick but has flaws because your code is only timed once.
+For example, just because the GC wasn't invoked one time, doesn't mean it won't the next.
+This combined with the varying background processes running on a computer means that running the same line of code multiple times can vary in performance.
+Furthermore, while a function may run well on certain data, for a more complete picture the function should be tested on many different inputs relevant to how it will be used.
+A commonly used tool to do both of these is [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl).
+
 ### BenchmarkTools
-[BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl)
-Talk about setup phase and then mention the importance of interpolation.
-Finally, mention about how sometimes things can get optimised away before they are run.
+
+Similarly to `@time`, BenchmarkTools offers `@btime` which can be used in exactly the same way but will run the code multiple times and provide an average.
+Additionally, by using `$` to interpolate values, you can be sure that you are timing __only__ the execution and not the setup or construction of the code in question.
+
+```julia
+@btime f(v)
+@btime f($v)
+```
+
+Now that we're interpolating our argument `v`, we can see that our function `f` is completely non-allocating and so its performance won't be slowed down by GC invocations.
+
+Note that you can also construct variables and interpolate them:
+
+```julia
+@btime f($(rand(Int64, 1000)))
+```
+
+However, doing so will mean that any randomness will be the same for every run!
+Furthermore, constructing and interpolating multiple variables can get messy.
+As such, the best way to run a benchmark is to construct variables in a `setup` phase.
+Note that variables constructed this way should not be interpolated in as this indicates that BenchmarkTools should search for a global variable with that name.
+
+```julia
+my_matmul(A, b) = A * b
+@btime my_matmul(A, b) setup=(
+    # use semi-colons inside a setup block to start new lines
+    A = rand(1000, 1000);
+    b = rand(1000)
+)
+```
+
+A setup phase means that you get a full overview of a function's performance as not only are you running the function many times, each run also has a different input.
+
+For the best visualisation of performance, the `@benchmark` macro is also provided which shows performance histograms:
+```julia
+@benchmark my_matmul(A, b) setup=(
+    A = rand(1000, 1000);
+    b = rand(1000)
+)
+```
+
+Finally, it's worth noting that certain computations may be optimized away by the compiler before the benchmark takes place, resulting in suspicuously fast performance, however the [details of this](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations) are beyond the scope of this post and most users should not worry at all about this.
 
 <!-- I (Martin) have never used either of these, someone with experience can write here? -->
 * [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl)
