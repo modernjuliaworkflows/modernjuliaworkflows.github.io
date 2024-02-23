@@ -58,7 +58,7 @@ These are stored as YAML files in `.github/workflows`, with a slightly convolute
 For instance, the file `CI.yml` contains instructions that execute the tests of your package (see below) for each pull request, tag or push to the `main` branch.
 This is done on a GitHub server and should theoretically cost you money, but your GitHub repository is public, you get an unlimited workflow budget for free.
 
-A variety workflows and functionalities are available through optional [plugins](https://juliaci.github.io/PkgTemplates.jl/stable/user/#Plugins-1).
+A variety of workflows and functionalities are available through optional [plugins](https://juliaci.github.io/PkgTemplates.jl/stable/user/#Plugins-1).
 The interactive setting `Template(..., interactive=true)` allows you to select the ones you want for a given package.
 Otherwise, you will get the [default selection](https://juliaci.github.io/PkgTemplates.jl/stable/user/#Default-Plugins), which you are encouraged to look at.
 
@@ -82,10 +82,23 @@ Such tests belong in `test/runtests.jl`, and they are executed with the `]test` 
 Unit testing may seem rather naive, or even superfluous, but as your code grows more complex, it becomes easier to break something without noticing.
 Testing each part separately will increase the reliability of the software you write.
 
+\advanced{
+
+To test the arguments provided to the functions within your code (for instance their sign or value), avoid `@assert` (which can be deactivated) and use [ArgCheck.jl](https://github.com/jw3126/ArgCheck.jl) instead.
+
+}
+
 At some point, your package may require [test-specific dependencies](https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package).
 This often happens when you need to test compatibility with another package, on which you do not depend for the source code itself.
 Or it may simply be due to testing-specific packages like the ones we will encounter below.
 For interactive testing work, use [TestEnv.jl](https://github.com/JuliaTesting/TestEnv.jl) to activate the full test environment (faster than running `]test` repeatedly).
+
+\vscode{
+
+The Julia extension also has its own testing framework, which relies on sprinkling "test items" throughout the code.
+See [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) and [ReTestItems.jl](https://github.com/JuliaTesting/ReTestItems.jl) for indications on how to use them optimally.
+
+}
 
 \advanced{
 
@@ -93,8 +106,8 @@ If you want to have more control over your tests, you can try
 
 * [ReferenceTests.jl](https://github.com/JuliaTesting/ReferenceTests.jl) to compare function outputs with reference files.
 * [ReTest.jl](https://github.com/JuliaTesting/ReTest.jl) to define tests next to the source code and control their execution.
-* [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) and [ReTestItems.jl](https://github.com/JuliaTesting/ReTestItems.jl) to leverage the testing interface of VSCode.
-* [TestReadme.jl](https://github.com/thchr/TestReadme.jl) to test whatever samples are in your README
+* [TestSetExtensions.jl](https://github.com/ssfrr/TestSetExtensions.jl) to make test set outputs more readable.
+* [TestReadme.jl](https://github.com/thchr/TestReadme.jl) to test whatever code samples are in your README.
 
 }
 
@@ -130,7 +143,7 @@ The [default formatter](https://www.julia-vscode.org/docs/stable/userguide/forma
 
 \advanced{
 
-You can format code automatically in GitHub pull requests with the [`julia-format` action](https://github.com/julia-actions/julia-format).
+You can format code automatically in GitHub pull requests with the [`julia-format` action](https://github.com/julia-actions/julia-format), or add the formatting check directly to your test suite.
 
 }
 
@@ -142,7 +155,7 @@ It is usually a good idea to include the following in your tests:
 
 ```>aqua
 using Aqua, MyAwesomePackage
-Aqua.test_all(MyAwesomePackage);
+Aqua.test_all(MyAwesomePackage)
 ```
 
 Meanwhile, [JET.jl](https://github.com/aviatesk/JET.jl) is a complementary tool, similar to a static linter.
@@ -184,7 +197,9 @@ Unsurprisingly, its own [documentation](https://documenter.juliadocs.org/stable/
 To build the documentation locally, just run
 
 ```julia-repl
-julia> using Pkg; Pkg.activate("docs")
+julia> using Pkg
+
+julia> Pkg.activate("docs")
 
 julia> include("docs/make.jl")
 ```
@@ -203,10 +218,10 @@ The only thing left to do is to [select the `gh-pages` branch as source](https:/
 
 \advanced{
 
+[DocumenterCitations.jl](https://github.com/ali-ramadhan/DocumenterCitations.jl) allows you to insert citations inside the documentation website from a BibTex file.
+
 Assuming you are looking for an alternative to Documenter.jl, you can try out [Pollen.jl](https://github.com/lorenzoh/Pollen.jl).
 In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allows you to replay instructions entered into your terminal as an ASCII video, which is nice for tutorials.
-
-[DocumenterCitations.jl](https://github.com/ali-ramadhan/DocumenterCitations.jl) allows you to insert citations inside the documentation website from a BibTex file.
 
 }
 
@@ -235,12 +250,21 @@ To prevent that, the [julia-downgrade-compat](https://github.com/julia-actions/j
 
 }
 
-If your package is useful to others in the community, it may be a good idea to register it, that is, make it part of the pool of packages that can be installed with `Pkg.add(MyAwesomePackage)`.
-Note that unregistered packages can also be installed by anyone, but the command is slightly different: `Pkg.add(url="https://github.com/myuser/MyAwesomePackage")`.
+If your package is useful to others in the community, it may be a good idea to register it, that is, make it part of the pool of packages that can be installed with
+
+```julia-repl
+pkg> add MyAwesomePackage  # made possible by registration
+```
+
+Note that unregistered packages can also be installed by anyone from the GitHub URL, but this a less reproducible solution:
+
+```julia-repl
+pkg> add https://github.com/myuser/MyAwesomePackage  # not ideal
+```
 
 To register your package, check out the [general registry](https://github.com/JuliaRegistries/General) guidelines.
 The [Registrator.jl](https://github.com/JuliaRegistries/Registrator.jl) bot can help you automate the process.
-Another handy bot is [TagBot](https://github.com/JuliaRegistries/TagBot), which automatically tags new versions of your package following each release: yet another default plugin in the PkgTemplates.jl setup.
+Another handy bot, provided by default with PkgTemplates.jl, is [TagBot](https://github.com/JuliaRegistries/TagBot): it automatically tags new versions of your package following each registry release.
 If you have performed the [necessary SSH configuration](https://documenter.juliadocs.org/stable/man/hosting/#travis-ssh), TagBot will also trigger documentation website builds following each release.
 
 \advanced{
@@ -265,15 +289,18 @@ Similarly, your papers should cite the packages you use as dependencies: [PkgCit
 
 ## Interoperability
 
+To ensure compatibility with earlier Julia versions, [Compat.jl](https://github.com/JuliaLang/Compat.jl) is your best ally.
+
 Making packages play nice with one another is a key goal of the Julia ecosystem.
 Since Julia 1.9, this can be done with [package extensions](https://pkgdocs.julialang.org/v1/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions)), which override specific behaviors based on the presence of a given package in the environment.
 [PackageExtensionTools.jl](https://github.com/cjdoris/PackageExtensionTools.jl) eases the pain of setting up extensions.
-As for compatibility with earlier Julia versions, [Compat.jl](https://github.com/JuliaLang/Compat.jl) is your best ally.
 
 Furthermore, the Julia ecosystem as a whole plays nice with other programming languages too.
 [C and Fortran](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/) are natively supported.
 Python can be easily interfaced with the combination of [CondaPkg.jl](https://github.com/cjdoris/CondaPkg.jl) and [PythonCall.jl](https://github.com/cjdoris/PythonCall.jl).
 Other language compatibility packages can be found in the [JuliaInterop](https://github.com/JuliaInterop) organization, like [RCall.jl](https://github.com/JuliaInterop/RCall.jl).
+
+Part of interoperability is also flexibility and customization: the [Preferences.jl](https://github.com/JuliaPackaging/Preferences.jl) package gives a nice way to specify various options in TOML files.
 
 \advanced{
 
@@ -282,8 +309,6 @@ When writing it in the documentation is not enough, a formal testable specificat
 This problem of "interfaces" does not yet have a definitive solution in Julia, but several options have been proposed: [Interfaces.jl](https://github.com/rafaqz/Interfaces.jl), [RequiredInterfaces.jl](https://github.com/Seelengrab/RequiredInterfaces.jl) and [PropCheck.jl](https://github.com/Seelengrab/PropCheck.jl) are all worth checking out.
     
 }
-
-Part of interoperability is also flexibility and customization: the [Preferences.jl](https://github.com/JuliaPackaging/Preferences.jl) package gives a nice way to specify various options in TOML files.
 
 ## Collaboration
 
