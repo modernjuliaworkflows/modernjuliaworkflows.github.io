@@ -36,11 +36,11 @@ The following code gives you a basic file structure to start with:
 ```>pkgtemplates
 using PkgTemplates
 dir = Utils.path(:site)  # replace with the folder of your choice
-t = Template(dir=dir, user="myusername", interactive=false);  
+t = Template(dir=dir, user="myuser", interactive=false);  
 t("MyAwesomePackage")
 ```
 
-Then, you simply need to push this new folder to the remote repository <https://github.com/myusername/MyAwesomePackage.jl>, and you're ready to go.
+Then, you simply need to push this new folder to the remote repository <https://github.com/myuser/MyAwesomePackage.jl>, and you're ready to go.
 The rest of this post will explain to you what each part of this folder does, and how to bend them to your will.
 
 To work on the package further, we develop it into the current environment and import it:
@@ -191,6 +191,12 @@ julia> using LiveServer
 julia> servedocs()
 ```
 
+\advanced{
+
+[DocumenterCitations.jl](https://github.com/ali-ramadhan/DocumenterCitations.jl) allows you to insert citations inside the documentation website from a BibTex file.
+
+}
+
 To host the documentation online easily, just select the [`Documenter` plugin](https://juliaci.github.io/PkgTemplates.jl/stable/user/#PkgTemplates.Documenter) from PkgTemplates.jl before creation.
 Not only will this fill the `docs` subfolder with the right contents: it will also initialize a [GitHub Actions workflow](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch) to build and deploy your website on [GitHub pages](https://pages.github.com/).
 The only thing left to do is to [select the `gh-pages` branch as source](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch).
@@ -202,11 +208,11 @@ In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allo
 
 }
 
-## Compatibility
+## Versions and registration
 
-The Julia community has adopted [semantic versioning](https://semver.org/), which means every package must have a version, and the version number follows strict rules.
+The Julia community has adopted [semantic versioning](https://semver.org/), which means every package must have a version, and the version numbering follows strict rules.
 The main consequence is that you need to specify [compatibility bounds](https://pkgdocs.julialang.org/v1/compatibility/) for your dependencies: this happens in the `[compat]` section of your `Project.toml`.
-To initialize these bounds, you can use the `]compat` command in the Pkg mode of the REPL, or the package [PackageCompatUI.jl](https://github.com/GunnarFarneback/PackageCompatUI.jl).
+To initialize these bounds, use the `]compat` command in the Pkg mode of the REPL, or the package [PackageCompatUI.jl](https://github.com/GunnarFarneback/PackageCompatUI.jl).
 
 As your package lives on, new versions of your dependencies will be released.
 The [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl)  GitHub Action will help you monitor Julia dependencies and update your `Project.toml` accordingly.
@@ -220,14 +226,12 @@ To prevent that, the [julia-downgrade-compat](https://github.com/julia-actions/j
 
 }
 
-## Registration
-
-If your package can be useful to others in the community, it may be a good idea to register it, that is, make it part of the pool of packages that can be installed with `Pkg.add(MyAwesomePackage)`.
-Note that unregistered packages can also be installed by anyone, but the command is slightly different: `Pkg.add(url="github.com/user/MyAwesomePackage")`.
+If your package is useful to others in the community, it may be a good idea to register it, that is, make it part of the pool of packages that can be installed with `Pkg.add(MyAwesomePackage)`.
+Note that unregistered packages can also be installed by anyone, but the command is slightly different: `Pkg.add(url="https://github.com/myuser/MyAwesomePackage")`.
 
 To register your package, check out the [general registry](https://github.com/JuliaRegistries/General) guidelines.
 The [Registrator.jl](https://github.com/JuliaRegistries/Registrator.jl) bot can help you automate the process.
-Another very useful addition is [TagBot](https://github.com/JuliaRegistries/TagBot), which automatically tags new versions of your package following each release: yet another default plugin in PkgTemplates.jl.
+Another handy bot is [TagBot](https://github.com/JuliaRegistries/TagBot), which automatically tags new versions of your package following each release: yet another default plugin in the PkgTemplates.jl setup.
 If you have performed the [necessary SSH configuration](https://documenter.juliadocs.org/stable/man/hosting/#travis-ssh), TagBot will also trigger documentation website builds following each release.
 
 \advanced{
@@ -236,50 +240,49 @@ If your package is only interesting to you and a small group of collaborators, o
 
 }
 
-## Literate programming
+## Collaboration and literate programming
 
-* [Literate.jl](https://github.com/fredrikekre/Literate.jl)
-* [Weave.jl](https://github.com/JunoLab/Weave.jl)
-* [Books.jl](https://github.com/JuliaBooks/Books.jl)
-* [Quarto](https://quarto.org/)
+Once your package grows big enough, you might need to bring in some help.
+Working together on a software project has its own set of challenges, which are partially addressed by a good set of ground rules liks [SciML ColPrac](https://github.com/SciML/ColPrac).
+Of course, collaboration goes both ways: if you find a Julia package you really like, you are more than welcome to [contribute](https://julialang.org/contribute/) as well, for example by opening issues or submitting pull requests.
 
-## Extensions
-
-* [Requires.jl](https://github.com/JuliaPackaging/Requires.jl)
-* [package extensions](https://pkgdocs.julialang.org/v1/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions))
-* [PackageExtensionTools.jl](https://github.com/cjdoris/PackageExtensionTools.jl)
+Large-scale software is often hard to grasp, and the code alone may not be very enlightening.
+Whether it is for package documentation or to write papers and books, you might want to interleave code with texts, formulas, images and so on.
+In addition to the [Pluto.jl](https://github.com/fonsp/Pluto.jl) and [Jupyter](https://jupyter.org/) notebooks, take a look at [Literate.jl](https://github.com/fredrikekre/Literate.jl) to enrich your code with comments and translate it to various formats.
+[Quarto](https://quarto.org/) is another cross-language notebook system that supports Python, R and Julia, while [Books.jl](https://github.com/JuliaBooks/Books.jl) is more relevant to draft long documents.
 
 ## Reproducibility
 
-* [StableRNGs.jl](https://github.com/JuliaRandom/StableRNGs.jl)
-* [DataDeps.jl](https://github.com/oxinabox/DataDeps.jl)
-* [ArtifactUtils.jl](https://github.com/JuliaPackaging/ArtifactUtils.jl)
-* [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl)
-* containers?
+Obtaining consistent and reproducible results is an essential part of experimental science.
+[DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl) is a general toolbox for running and re-running experiments in an orderly fashion.
+We now explore a few specific issues that often arise.
 
-## Collaboration
+A first hurdle is [random number generation](https://docs.julialang.org/en/v1/stdlib/Random/), which is not guaranteed to remain stable across Julia versions.
+To ensure that the random streams remain exactly the same, you need to use [StableRNGs.jl](https://github.com/JuliaRandom/StableRNGs.jl).
+Another aspect is dataset download and management.
+The packages [DataDeps.jl](https://github.com/oxinabox/DataDeps.jl) and [ArtifactUtils.jl](https://github.com/JuliaPackaging/ArtifactUtils.jl) can help you bundle non-code elements with your package.
+A third thing to consider is proper citation and versioning.
+Giving your package a with [Zenodo](https://zenodo.org/) ensures that everyone can properly cite it in scientific publications.
+Similarly, your papers should cite the packages you use as dependencies: [PkgCite.jl](https://github.com/SebastianM-C/PkgCite.jl) will help with that.
 
-* [SciML ColPrac](https://github.com/SciML/ColPrac)
-* [contribute](https://julialang.org/contribute/)
-* [GitHub PRs](https://kshyatt.github.io/post/firstjuliapr/)
+## Interoperability
 
-## Citations
+Making packages play nice with one another is a key goal of the Julia ecosystem.
+Since Julia 1.9, this can be done with [package extensions](https://pkgdocs.julialang.org/v1/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions)), which override specific behaviors based on the presence of a given package in the environment.
+To preserve compatibility with earlier Julia versions, [PackageExtensionTools.jl](https://github.com/cjdoris/PackageExtensionTools.jl) is the way to go.
 
-* [Zenodo](https://zenodo.org/)
-* [PkgCite.jl](https://github.com/SebastianM-C/PkgCite.jl)
-* [DocumenterCitations.jl](https://github.com/ali-ramadhan/DocumenterCitations.jl)
+Furthermore, the Julia ecosystem as a whole plays nice with other programming languages too.
+[C and Fortran](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/) are natively supported.
+Python can be easily interfaced with the combination of [CondaPkg.jl](https://github.com/cjdoris/CondaPkg.jl) and [PythonCall.jl](https://github.com/cjdoris/PythonCall.jl).
+Other language compatibility packages can be found in the [JuliaInterop](https://github.com/JuliaInterop) organization, like [RCall.jl](https://github.com/JuliaInterop/RCall.jl) or [Cxx.jl](https://github.com/JuliaInterop/Cxx.jl).
 
-## Composability
+\advanced{
 
-* [Interfaces.jl](https://github.com/rafaqz/Interfaces.jl)
-* [RequiredInterfaces.jl](https://github.com/Seelengrab/RequiredInterfaces.jl)
-* [PropCheck.jl](https://github.com/Seelengrab/PropCheck.jl)
-
-## Other languages
-
-* [C and Fortran](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/)
-* [CondaPkg.jl](https://github.com/cjdoris/CondaPkg.jl) + [PythonCall.jl](https://github.com/cjdoris/PythonCall.jl)
-* [JuliaInterop](https://github.com/JuliaInterop) ([RCall.jl](https://github.com/JuliaInterop/RCall.jl), [Cxx.jl](https://github.com/JuliaInterop/Cxx.jl))
+Some package developers may need to define what kind of behavior they expect from a certain type, or what a certain method should do.
+When writing it in the documentation is not enough, a formal testable specification becomes necessary.
+This problem of "interfaces" does not yet have a definitive solution in Julia, but several options have been proposed: [Interfaces.jl](https://github.com/rafaqz/Interfaces.jl), [RequiredInterfaces.jl](https://github.com/Seelengrab/RequiredInterfaces.jl) and [PropCheck.jl](https://github.com/Seelengrab/PropCheck.jl) are all worth checking out.
+    
+}
 
 <!-- Clean up -->
 
