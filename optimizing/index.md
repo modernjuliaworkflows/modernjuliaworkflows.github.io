@@ -145,6 +145,7 @@ Finally, it's worth noting that certain computations may be optimized away by th
 
 ## Measurements
 
+* [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl)
 * [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl)
 * [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl)
 * [PkgBenchmark.jl](https://github.com/JuliaCI/PkgBenchmark.jl)
@@ -202,6 +203,7 @@ end
 
 * [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)
 * [Dictionaries.jl](https://github.com/andyferris/Dictionaries.jl)
-## Miscellaneous
+## Efficient types
 
 * [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)
+* [Dictionaries.jl](https://github.com/andyferris/Dictionaries.jl)
