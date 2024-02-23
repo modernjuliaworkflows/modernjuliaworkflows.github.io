@@ -218,7 +218,7 @@ The only thing left to do is to [select the `gh-pages` branch as source](https:/
 
 \advanced{
 
-[DocumenterCitations.jl](https://github.com/ali-ramadhan/DocumenterCitations.jl) allows you to insert citations inside the documentation website from a BibTex file.
+[DocumenterCitations.jl](https://github.com/JuliaDocs/DocumenterCitations.jl) allows you to insert citations inside the documentation website from a BibTex file.
 
 Assuming you are looking for an alternative to Documenter.jl, you can try out [Pollen.jl](https://github.com/lorenzoh/Pollen.jl).
 In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allows you to replay instructions entered into your terminal as an ASCII video, which is nice for tutorials.
