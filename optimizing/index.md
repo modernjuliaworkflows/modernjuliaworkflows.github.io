@@ -148,12 +148,19 @@ Finally, it's worth noting that certain computations may be optimized away by th
 * [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl)
 * [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl)
 * [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl)
+
+## Benchmark suites
+
 * [PkgBenchmark.jl](https://github.com/JuliaCI/PkgBenchmark.jl)
+* [BenchmarkCI.jl](https://github.com/tkf/BenchmarkCI.jl) (unmaintained)
+* [AirSpeedVelocity.jl](https://github.com/MilesCranmer/AirspeedVelocity.jl)
+* [PkgJogger.jl](https://github.com/awadell1/PkgJogger.jl)
 
 ## Profiling
 
-* [built-in](https://docs.julialang.org/en/v1/manual/profile/)
+* [built-in profiler](https://docs.julialang.org/en/v1/manual/profile/) and [allocation profiler](https://docs.julialang.org/en/v1/stdlib/Profile/#Memory-profiling)
 * [ProfileView.jl](https://github.com/timholy/ProfileView.jl) / [ProfileSVG.jl](https://github.com/kimikage/ProfileSVG.jl)
+* [PProf.jl](https://github.com/JuliaPerf/PProf.jl)
 * [profiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/profiler/)
 
 ### PProf
@@ -178,6 +185,11 @@ end
 * [JET.jl](https://github.com/aviatesk/JET.jl)
 * [linting in VSCode](https://www.julia-vscode.org/docs/stable/userguide/linter/)
 
+## Memory management
+
+* [AllocCheck.jl](https://github.com/JuliaLang/AllocCheck.jl)
+* [BangBang.jl](https://github.com/JuliaFolds2/BangBang.jl)
+
 ## Precompilation
 
 * [PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl)
@@ -190,12 +202,11 @@ end
 ## Parallelism
 
 * [distributed vs. multithreading](https://docs.julialang.org/en/v1/manual/parallel-computing/)
-* [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl)
-* [FLoops.jl](https://github.com/JuliaFolds/FLoops.jl)
+* [OhMyThreads.jl](https://github.com/JuliaFolds2/OhMyThreads.jl)
 
 ## SIMD / GPU
 
-* [LoopVectorization.jl](https://github.com/JuliaSIMD/LoopVectorization.jl)
+* [LoopVectorization.jl](https://github.com/JuliaSIMD/LoopVectorization.jl) (deprecated in 1.11)
 * [Tullio.jl](https://github.com/mcabbott/Tullio.jl)
 * [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
 
