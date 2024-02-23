@@ -36,8 +36,7 @@ Some of the vocabulary used by community members may appear unfamiliar, but don'
 
 \tldr{Use `juliaup`}
 
-The most natural starting point to install Julia onto your system is the [Julia downloads page](https://julialang.org/downloads/).
-However, for additional flexibility, we recommend to use [`juliaup`](https://github.com/JuliaLang/juliaup) instead.
+The most natural starting point to install Julia onto your system is the [Julia downloads page](https://julialang.org/downloads/), which will tell you to use [`juliaup`](https://github.com/JuliaLang/juliaup).
 
 1. Windows users can download Julia and `juliaup` together from the [Windows Store](https://www.microsoft.com/store/apps/9NJNWW8PVKMN).
 2. OSX or Linux users can execute the following terminal command:
@@ -87,7 +86,7 @@ juliaup update
 
 ## REPL
 
-\tldr{The Julia REPL has 4 primary modes: Julia, package (`]`), help (`?`) and shell (`;`).}
+\tldr{The Julia REPL has 4 modes: Julia, package (`]`), help (`?`) and shell (`;`).}
 
 The Read-Eval-Print Loop (or REPL) is the most basic way to interact with Julia, check out its [documentation](https://docs.julialang.org/en/v1/stdlib/REPL/) for details.
 You can start a REPL by typing `julia` into a terminal, or by clicking on the Julia application in your computer.
@@ -145,7 +144,7 @@ By pressing `;` you enter a terminal, where you can execute any command you want
 Here's an example for Unix systems:
 
 ```;shell-example
-ls pages
+ls ./writing
 ```
 
 ## Editor
@@ -175,6 +174,7 @@ If you don't want to use VSCode at all, other options include [Emacs](https://ww
 Check out [JuliaEditorSupport](https://github.com/JuliaEditorSupport) to see if your favorite IDE has a Julia plugin.
 The available functionalities should be roughly similar to those of VSCode, at least for the basic aspects like running code.
 
+You may also want to download the [JuliaMono](https://juliamono.netlify.app/) font for esthetically pleasant unicode handling. 
 }
 
 ## Running code
@@ -203,8 +203,8 @@ This will automatically update changes to function definitions in the file in th
 
 [Running code](https://www.julia-vscode.org/docs/stable/userguide/runningcode/) is made much easier by the following commands:
 
-* `Julia: Restart REPL` (shortcut `Alt + J` then `Alt + R`) - this will open or restart the integrated Julia REPL and is different from opening a VSCode _terminal_ and launching Julia manually from there.
-* `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - this will execute in the integrated Julia REPL either the code selected by the cursor or, if no selection, the code block containing the cursor.
+* `Julia: Restart REPL` (shortcut `Alt + J` then `Alt + R`) - this will open or restart the integrated Julia REPL. It is different from opening a plain VSCode terminal and launching Julia manually from there.
+* `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - this will execute the selected code in the integrated Julia REPL, like a notebook.
 
 }
 
@@ -289,10 +289,10 @@ You can visualize the dependency graph of an environment with [PkgDependency.jl]
 \tldr{A package makes your code modular and reproducible.}
 
 Once your code base grows beyond a few scripts, you will want to [create a package](https://pkgdocs.julialang.org/v1/creating-packages/) of your own.
-The first advantage is that you don't need to specify the path of every file: `using MyPackage` is enough to get access to the names you choose to make public.
+The first advantage is that you don't need to specify the path of every file: `using MyPackage: myfunc` is enough to get access to the names you define.
 Furthermore, you can specify versions for your package and its dependencies, making your code easier and safer to reuse.
 
-To create a new package locally, the easy way is to use `]generate` (we will discuss a more sophisticated workflow involving GitHub in the next blog post).
+To create a new package locally, the easy way is to use `]generate` (we will discuss a more sophisticated workflow in the next blog post).
 
 ```>generate-package
 Pkg.generate(sitepath("MyPackage"));  # ignore sitepath
@@ -352,7 +352,7 @@ To summarize, this is how you get started:
 using Revise, Pkg
 Pkg.activate("./MyPackage")
 using MyPackage
-MyPackage.greet()
+MyPackage.myfunc()
 ```
 
 \advanced{
@@ -371,7 +371,7 @@ using Revise, Pkg
 Pkg.activate("./MyPlayground")
 Pkg.develop(path="./MyPackage")
 using MyPackage
-MyPackage.greet()
+MyPackage.myfunc()
 ```
 
 }
@@ -405,7 +405,6 @@ Here are a few more startup packages that can make your life easier once you kno
 
 * [AbbreviatedStackTraces.jl](https://github.com/BioTurboNick/AbbreviatedStackTraces.jl) allows you to shorten error stacktraces, which can sometimes get pretty long (beware of its [interactions with VSCode](https://github.com/BioTurboNick/AbbreviatedStackTraces.jl/issues/38))
 * [Term.jl](https://github.com/FedeClaudi/Term.jl) offers a completely new way to display things like types and errors (see the [advanced configuration](https://fedeclaudi.github.io/Term.jl/stable/adv/adv/) to enable it by default).
-* [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl) provides the macro `@showprogress`, which you can use to track `for` loops in the REPL.
 
 }
 
@@ -454,7 +453,7 @@ When you encounter a problem in your code or want to track progress, a common re
 ```!printing_func
 function printing_func(n)
     for i in 1:n
-        println(2i)
+        println(i^2)
     end
 end
 ```
@@ -468,7 +467,7 @@ A slight improvement is given by the `@show` macro, which displays the variable 
 ```!showing_func
 function showing_func(n)
     for i in 1:n
-        @show 2i
+        @show i^2
     end
 end
 ```
@@ -489,7 +488,7 @@ They have several advantages over printing:
 ```!warning_func
 function warning_func(n)
     for i in 1:n
-        @warn "This is bad" 2i
+        @warn "This is bad" i^2
     end
 end
 ```
@@ -551,7 +550,7 @@ and change the prompt to `infil>`.
 Typing `?` in this mode will summarize available commands.
 For example, typing `@locals` in Infiltrator-mode will print local variables:
 
-```!infiltrator
+```julia
 using Infiltrator
 
 function fermat_prime_infil(n)
@@ -648,9 +647,9 @@ In the debugging pane of the Julia extension, click `Run and Debug` to start the
 The program will automatically halt when it hits a breakpoint.
 Using the toolbar at the top of the editor, you can then _continue_, _step over_, _step into_ and _step out_ of your code.
 The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.
+
 The debugger can be [sped up](https://www.julia-vscode.org/docs/dev/userguide/debugging/#Settings-to-speed-up-the-debugger) by selectively compiling modules that you will not need to step into via the `+` symbol at the bottom of the debugging pane.
 It is often easiest to start by adding `ALL_MODULES_EXCEPT_MAIN` to the compiled list, and then selectively remove the modules you need to have interpreted.
 }
 
 <!-- Clean up -->
-
