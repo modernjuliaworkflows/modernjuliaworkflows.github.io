@@ -29,20 +29,40 @@ Because `Vector{Real}` therefore can't be subtyped, it must have a concrete impl
 This implementation detail (a pointer to pointers) also explains part of the reason why `Vector{Real}` is slow, the other being a lack of concrete compile-time specialisation on the elements of the vector.
 }
 
-A heap allocation is an allocation that makes me sad.
-
-To understand why these are so key we must first explain how Julia and its compiler interacts with the hardware.
-
-Any object
-
-Put an explanation of heap and stack allocations here.
-
 Before running any piece of code, the Julia compiler tries to determine the most specialised method it can use to ensure that the code runs as fast as possible e.g. 1+1 faster than 1 floatingpoint+ 1.
 For each variable, including a function output, contained in a block of code, if all pieces of information necessary to determine its type are type inferrable, then so is the variable in question.
 This means that if a variable cannot be inferred, then no variables that depend on it in any way can be either.
 <!-- thanks Frames White: https://stackoverflow.com/a/58132532 -->
 While type stable function calls compile down to fast goto statements, unstable function calls compile to code that reads the list of all methods for that function and find the one that matches.
 This phenomenon called "dynamic dispatch" essentially prevents further optimizations via [inlining](https://en.wikipedia.org/wiki/Inline_expansion).
+
+A heap allocation occurs when an object is to be allocated, but how much space to allocate cannot be inferred from its type.
+Its counterpart is the [stack allocation](https://en.wikipedia.org/wiki/Stack-based_memory_allocation), which will only be performed if the object being allocated has a known size *and* its data cannot be modified after allocation i.e. the data is [immutable](https://en.wikipedia.org/wiki/Immutable_object).
+The benefit of these stringent rules is that stack allocations and deallocations are so fast that they are considered negligible by Julia's benchmarking tools (detailed below) and are not included in the total count of allocations.
+On the other hand, objects on the heap cannot be so heavily optimized by the compiler as the data and its size may change.
+In order to manage the deallocation of heap objects after their usage, Julia has a [mark-and-sweep](https://en.wikipedia.org/wiki/Tracing_garbage_collection#Copying_vs._mark-and-sweep_vs._mark-and-don't-sweep) [garbage collector](https://docs.julialang.org/en/v1/devdocs/gc/), which runs periodically during code execution to free up space so that other objects can be allocated.
+The necessity of the garbage collector combined with the lack of optimizations means that heap allocations, while incredibly useful and oftentimes necessary, should be avoided if possible.
+
+Paraphrasing the Julia manual's [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/#Measure-performance-with-[@time](@ref)-and-pay-attention-to-memory-allocation) section: the most common causes of the "unnecessary" heap allocations are type-instability and unintended temporary arrays.
+The example function below, which calculates a weighted mean and returns its positive part, subtly exhibits both of these issues:
+
+```>heap-allocations-example
+function positive_weighted_mean(values, weights)
+    result = sum(weights .* values) / sum(weights)
+    return result > 0 ? result : 0
+end
+```
+
+The unintended heap allocation comes from the elementwise product `weights .* values`, which stores its result in a temporary array which is immediately used by `sum`.
+As the result of the product isn't needed anywhere else, this is an example of an unnecessary allcoation.
+There are a number of ways to rewrite this specific line to avoid allocating an intermediate vector: both `transpose(weights) * values` and `sum(splat(*), zip(weights, values))` have similar performance.
+More important than this specific fix is more generally that both methods avoid instantiating the intermediate product vector by being more specific about exactly what the code should do.
+
+The type instability is a result of the final line `result > 0 ? result : 0`.
+What type does the function return?
+Sometimes it returns the integer `0`, whereas other times it returns `result`, which is, in most cases, a `Float64`.
+This dependence on run-time value as opposed to compile-time type results in the instability, causing an additional heap allocation which slows the function down further.
+We can fix this instability simply by replacing the final `0` with `zero(result)`, which returns the zero element of whatever type `result` happens to be.
 
 * [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/)
 
