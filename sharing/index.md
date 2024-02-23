@@ -1,6 +1,6 @@
 +++
 title = "Sharing your code"
-ignore_cache = true
+ignore_cache = false
 +++
 
 <!-- Setup -->
@@ -33,7 +33,7 @@ Do not insert any files like `README.md`, `.gitignore` or `LICENSE.md`, this wil
 Indeed, we can leverage [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl) to automate package creation (like `]generate` from Pkg.jl but on steroids).
 The following code gives you a basic file structure to start with:
 
-```!pkgtemplates
+```>pkgtemplates
 using PkgTemplates
 dir = Utils.path(:site)  # replace with the folder of your choice
 t = Template(dir=dir, user="myusername", interactive=false);  
@@ -45,7 +45,7 @@ The rest of this post will explain to you what each part of this folder does, an
 
 To work on the package further, we develop it into the current environment and import it:
 
-```!using-awesome
+```>using-awesome
 using Pkg
 Pkg.develop(path=sitepath("MyAwesomePackage"))  # ignore sitepath
 using MyAwesomePackage
@@ -59,16 +59,8 @@ For instance, the file `CI.yml` contains instructions that execute the tests of 
 This is done on a GitHub server and should theoretically cost you money, but your GitHub repository is public, you get an unlimited workflow budget for free.
 
 More workflows and functionalities are available through optional [plugins](https://juliaci.github.io/PkgTemplates.jl/stable/user/#Plugins-1).
-The interactive setting `Template(..., interactive=true)` allows you to select the ones you want for a given package.  
-
-\advanced{
-
-The other default workflows are less relevant for new users, but we still mention them:
-
-* [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl) monitors your dependencies and their versions.
-* [TagBot](https://github.com/JuliaRegistries/TagBot) helps you manage package releases.
-
-}
+The interactive setting `Template(..., interactive=true)` allows you to select the ones you want for a given package.
+Otherwise, you will get the [default selection](https://juliaci.github.io/PkgTemplates.jl/stable/user/#Default-Plugins), which you are encouraged to look at.
 
 ## Testing
 
@@ -86,7 +78,7 @@ using Test
 end;
 ```
 
-These tests belong in `test/runtests.jl`, and they are executed with the `]test` command (in the REPL's Pkg mode).
+Such tests belong in `test/runtests.jl`, and they are executed with the `]test` command (in the REPL's Pkg mode).
 Unit testing may seem rather naive, or even superfluous, but as your code grows more complex, it becomes easier to break something without noticing.
 Testing each part separately will increase the reliability of the software you write.
 
@@ -97,7 +89,7 @@ For interactive testing work, use [TestEnv.jl](https://github.com/JuliaTesting/T
 
 \advanced{
 
-If you want to have more control over your tests:
+If you want to have more control over your tests, you can try
 
 * [ReferenceTests.jl](https://github.com/JuliaTesting/ReferenceTests.jl) to compare function outputs with reference files.
 * [ReTest.jl](https://github.com/JuliaTesting/ReTest.jl) to define tests next to the source code and control their execution.
@@ -108,7 +100,7 @@ If you want to have more control over your tests:
 ## Style
 
 To make your code easy to read, it is essential to follow a consistent set of guidelines.
-The official [style guide](https://docs.julialang.org/en/v1/manual/style-guide/) is very short, so most people use third party style guides like [BlueStyle](https://github.com/invenia/BlueStyle) or [SciMLStyle](https://github.com/SciML/SciMLStyle).
+The official [style guide](https://docs.julialang.org/en/v1/manual/style-guide/) is very short, so most people use third party style guides like [BlueStyle](https://github.com/JuliaDiff/BlueStyle) or [SciMLStyle](https://github.com/SciML/SciMLStyle).
 
 [JuliaFormatter.jl](https://github.com/domluna/JuliaFormatter.jl) is an automated formatter for Julia files which can help you enforce the style guide of your choice.
 Just add a file `.JuliaFormatter.toml` at the root of your repository, containing a single line like
@@ -119,7 +111,7 @@ style = "blue"
 
 Then, the package directory will be formatted in the BlueStyle whenever you call
 
-```!format
+```>format
 using JuliaFormatter
 JuliaFormatter.format(MyAwesomePackage)
 ```
@@ -142,17 +134,17 @@ Of course, there is more to code quality than just formatting.
 [Aqua.jl](https://github.com/JuliaTesting/Aqua.jl) provides a set of routines that examine other aspects of your package, from unused dependencies to ambiguous methods.
 It is usually a good idea to include the following in your tests:
 
-```!aqua
-using Aqua
-Aqua.test_all(MyAwesomePackage)
+```>aqua
+using Aqua, MyAwesomePackage
+Aqua.test_all(MyAwesomePackage);
 ```
 
 Meanwhile, [JET.jl](https://github.com/aviatesk/JET.jl) is a complementary tool, similar to a static linter.
 Here we focus on its [error analysis](https://aviatesk.github.io/JET.jl/stable/jetanalysis/), which can detect errors or typos without even running the code by leveraging type inference.
 You can either use it in report mode (with a nice [VSCode display](https://www.julia-vscode.org/docs/stable/userguide/linter/#Runtime-diagnostics)) or in test mode as follows:
 
-```!jet
-using JET
+```>jet
+using JET, MyAwesomePackage
 JET.report_package(MyAwesomePackage)
 JET.test_package(MyAwesomePackage)
 ```
@@ -162,7 +154,8 @@ Note that both Aqua.jl and JET.jl might pick up false positives: refer to their 
 ## Documentation
 
 Even if your code does everything it is supposed to, it will be useless to others (and pretty soon to yourself) without proper documentation.
-Adding [docstrings](https://docs.julialang.org/en/v1/manual/documentation/) everywhere needs to be a second nature.
+Adding [docstrings](https://docs.julialang.org/en/v1/manual/documentation/) everywhere needs to become a second nature.
+This way, readers and users of your code can query them through the REPL help mode.
 
 ```!docstring
 """
@@ -176,12 +169,6 @@ More details if needed.
 function myfunc end;
 ```
 
-This way, readers and users of your code can query them through the REPL help mode:
-
-```?
-myfunc
-```
-
 [DocStringExtensions.jl](https://github.com/JuliaDocs/DocStringExtensions.jl) provides a few shortcuts that can speed up docstring creation by taking care of the obvious parts.
 
 However, package documentation is not limited to docstrings.
@@ -190,16 +177,21 @@ It can also contain high-level overviews, technical explanations, examples, tuto
 Unsurprisingly, its own [documentation](https://documenter.juliadocs.org/stable/) is excellent and will teach you a lot.
 To build the documentation locally, just run
 
-```julia
-using Pkg
-Pkg.activate("docs")
-include("docs/make.jl")
+```julia-repl
+julia> using Pkg; Pkg.activate("docs")
+
+julia> include("docs/make.jl")
 ```
 
-then open the file `docs/build/index.html` in your favorite browser.
-An alternative is to use [LiveServer.jl](https://github.com/tlienart/LiveServer.jl) which automatically updates the website as the code changes (similar to Revise.jl).
+Then, use [LiveServer.jl](https://github.com/tlienart/LiveServer.jl) from your package folder to visualize and automatically update the website as the code changes (similar to Revise.jl):
 
-To host the documentation online, just select the [`Documenter` plugin](https://juliaci.github.io/PkgTemplates.jl/stable/user/#PkgTemplates.Documenter) from PkgTemplates.jl.
+```julia-repl
+julia> using LiveServer
+
+julia> servedocs()
+```
+
+To host the documentation online easily, just select the [`Documenter` plugin](https://juliaci.github.io/PkgTemplates.jl/stable/user/#PkgTemplates.Documenter) from PkgTemplates.jl before creation.
 Not only will this fill the `docs` subfolder with the right contents: it will also initialize a [GitHub Actions workflow](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch) to build and deploy your website on [GitHub pages](https://pages.github.com/).
 The only thing left to do is to [select the `gh-pages` branch as source](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch).
 
@@ -210,18 +202,46 @@ In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allo
 
 }
 
+## Compatibility
+
+The Julia community has adopted [semantic versioning](https://semver.org/), which means every package must have a version, and the version number follows strict rules.
+The main consequence is that you need to specify [compatibility bounds](https://pkgdocs.julialang.org/v1/compatibility/) for your dependencies: this happens in the `[compat]` section of your `Project.toml`.
+To initialize these bounds, you can use the `]compat` command in the Pkg mode of the REPL, or the package [PackageCompatUI.jl](https://github.com/GunnarFarneback/PackageCompatUI.jl).
+
+As your package lives on, new versions of your dependencies will be released.
+The [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl)  GitHub Action will help you monitor Julia dependencies and update your `Project.toml` accordingly.
+In addition, [Dependabot](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuring-dependabot-version-updates#enabling-dependabot-version-updates) can monitor the dependencies... of your GitHub actions themselves.
+But don't worry: both are default plugins in the PkgTemplates.jl setup.
+
+\advanced{
+
+It may also happen that you incorrectly promise compatibility with an old version of a package.
+To prevent that, the [julia-downgrade-compat](https://github.com/julia-actions/julia-downgrade-compat) GitHub action tests your package with the oldest possible version of every dependency, and verifies that everything still works.
+
+}
+
+## Registration
+
+If your package can be useful to others in the community, it may be a good idea to register it, that is, make it part of the pool of packages that can be installed with `Pkg.add(MyAwesomePackage)`.
+Note that unregistered packages can also be installed by anyone, but the command is slightly different: `Pkg.add(url="github.com/user/MyAwesomePackage")`.
+
+To register your package, check out the [general registry](https://github.com/JuliaRegistries/General) guidelines.
+The [Registrator.jl](https://github.com/JuliaRegistries/Registrator.jl) bot can help you automate the process.
+Another very useful addition is [TagBot](https://github.com/JuliaRegistries/TagBot), which automatically tags new versions of your package following each release: yet another default plugin in PkgTemplates.jl.
+If you have performed the [necessary SSH configuration](https://documenter.juliadocs.org/stable/man/hosting/#travis-ssh), TagBot will also trigger documentation website builds following each release.
+
+\advanced{
+
+If your package is only interesting to you and a small group of collaborators, or if you don't want to make it public, you can still register it by setting up a local registry: see [LocalRegistry.jl](https://github.com/GunnarFarneback/LocalRegistry.jl).
+
+}
+
 ## Literate programming
 
 * [Literate.jl](https://github.com/fredrikekre/Literate.jl)
 * [Weave.jl](https://github.com/JunoLab/Weave.jl)
 * [Books.jl](https://github.com/JuliaBooks/Books.jl)
 * [Quarto](https://quarto.org/)
-
-## Compatibility
-
-* [semantic versioning](https://semver.org/)
-* [PackageCompatUI.jl](https://github.com/GunnarFarneback/PackageCompatUI.jl)
-* [SimpleUnPack.jl](https://github.com/devmotion/SimpleUnPack.jl)
 
 ## Extensions
 
@@ -236,12 +256,6 @@ In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allo
 * [ArtifactUtils.jl](https://github.com/JuliaPackaging/ArtifactUtils.jl)
 * [DrWatson.jl](https://github.com/JuliaDynamics/DrWatson.jl)
 * containers?
-
-## Publishing
-
-* [general registry](https://github.com/JuliaRegistries/General)
-* [Registrator.jl](https://github.com/JuliaRegistries/Registrator.jl)
-* [LocalRegistry.jl](https://github.com/GunnarFarneback/LocalRegistry.jl)
 
 ## Collaboration
 
