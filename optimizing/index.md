@@ -14,6 +14,7 @@ title = "Optimizing your code"
 
 ## Measurements
 
+* [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl)
 * [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl)
 * [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl)
 * [PkgBenchmark.jl](https://github.com/JuliaCI/PkgBenchmark.jl)
@@ -50,6 +51,7 @@ title = "Optimizing your code"
 * [Tullio.jl](https://github.com/mcabbott/Tullio.jl)
 * [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
 
-## Miscellaneous
+## Efficient types
 
 * [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)
+* [Dictionaries.jl](https://github.com/andyferris/Dictionaries.jl)

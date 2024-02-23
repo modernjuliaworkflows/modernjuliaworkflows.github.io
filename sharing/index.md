@@ -58,7 +58,7 @@ These are stored as YAML files in `.github/workflows`, with a slightly convolute
 For instance, the file `CI.yml` contains instructions that execute the tests of your package (see below) for each pull request, tag or push to the `main` branch.
 This is done on a GitHub server and should theoretically cost you money, but your GitHub repository is public, you get an unlimited workflow budget for free.
 
-More workflows and functionalities are available through optional [plugins](https://juliaci.github.io/PkgTemplates.jl/stable/user/#Plugins-1).
+A variety workflows and functionalities are available through optional [plugins](https://juliaci.github.io/PkgTemplates.jl/stable/user/#Plugins-1).
 The interactive setting `Template(..., interactive=true)` allows you to select the ones you want for a given package.
 Otherwise, you will get the [default selection](https://juliaci.github.io/PkgTemplates.jl/stable/user/#Default-Plugins), which you are encouraged to look at.
 
@@ -96,6 +96,11 @@ If you want to have more control over your tests, you can try
 * [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) to leverage the testing interface of VSCode.
 
 }
+
+Code coverage refers to the fraction of lines in your source code that are covered by tests.
+It is a good indicator of the exhaustiveness of your test suite, albeit not sufficient.
+[Codecov](https://about.codecov.io/) is a website that provides easy visualization of this coverage, and many Julia packages use it.
+It is available as a PkgTemplates.jl plugin, but you have to perform an [additional configuration step](https://docs.codecov.com/docs/adding-the-codecov-token) on the repo for Codecov to communicate with it.
 
 ## Style
 
@@ -156,6 +161,7 @@ Note that both Aqua.jl and JET.jl might pick up false positives: refer to their 
 Even if your code does everything it is supposed to, it will be useless to others (and pretty soon to yourself) without proper documentation.
 Adding [docstrings](https://docs.julialang.org/en/v1/manual/documentation/) everywhere needs to become a second nature.
 This way, readers and users of your code can query them through the REPL help mode.
+[DocStringExtensions.jl](https://github.com/JuliaDocs/DocStringExtensions.jl) provides a few shortcuts that can speed up docstring creation by taking care of the obvious parts.
 
 ```!docstring
 """
@@ -169,7 +175,6 @@ More details if needed.
 function myfunc end;
 ```
 
-[DocStringExtensions.jl](https://github.com/JuliaDocs/DocStringExtensions.jl) provides a few shortcuts that can speed up docstring creation by taking care of the obvious parts.
 
 However, package documentation is not limited to docstrings.
 It can also contain high-level overviews, technical explanations, examples, tutorials, etc.
@@ -191,12 +196,6 @@ julia> using LiveServer
 julia> servedocs()
 ```
 
-\advanced{
-
-[DocumenterCitations.jl](https://github.com/ali-ramadhan/DocumenterCitations.jl) allows you to insert citations inside the documentation website from a BibTex file.
-
-}
-
 To host the documentation online easily, just select the [`Documenter` plugin](https://juliaci.github.io/PkgTemplates.jl/stable/user/#PkgTemplates.Documenter) from PkgTemplates.jl before creation.
 Not only will this fill the `docs` subfolder with the right contents: it will also initialize a [GitHub Actions workflow](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch) to build and deploy your website on [GitHub pages](https://pages.github.com/).
 The only thing left to do is to [select the `gh-pages` branch as source](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch).
@@ -206,7 +205,16 @@ The only thing left to do is to [select the `gh-pages` branch as source](https:/
 Assuming you are looking for an alternative to Documenter.jl, you can try out [Pollen.jl](https://github.com/lorenzoh/Pollen.jl).
 In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allows you to replay instructions entered into your terminal as an ASCII video, which is nice for tutorials.
 
+[DocumenterCitations.jl](https://github.com/ali-ramadhan/DocumenterCitations.jl) allows you to insert citations inside the documentation website from a BibTex file.
+
 }
+
+## Literate programming
+
+Scientific software is often hard to grasp, and the code alone may not be very enlightening.
+Whether it is for package documentation or to write papers and books, you might want to interleave code with texts, formulas, images and so on.
+In addition to the [Pluto.jl](https://github.com/fonsp/Pluto.jl) and [Jupyter](https://jupyter.org/) notebooks, take a look at [Literate.jl](https://github.com/fredrikekre/Literate.jl) to enrich your code with comments and translate it to various formats.
+[Quarto](https://quarto.org/) is another cross-language notebook system that supports Python, R and Julia, while [Books.jl](https://github.com/JuliaBooks/Books.jl) is more relevant to draft long documents.
 
 ## Versions and registration
 
@@ -240,17 +248,6 @@ If your package is only interesting to you and a small group of collaborators, o
 
 }
 
-## Collaboration and literate programming
-
-Once your package grows big enough, you might need to bring in some help.
-Working together on a software project has its own set of challenges, which are partially addressed by a good set of ground rules liks [SciML ColPrac](https://github.com/SciML/ColPrac).
-Of course, collaboration goes both ways: if you find a Julia package you really like, you are more than welcome to [contribute](https://julialang.org/contribute/) as well, for example by opening issues or submitting pull requests.
-
-Large-scale software is often hard to grasp, and the code alone may not be very enlightening.
-Whether it is for package documentation or to write papers and books, you might want to interleave code with texts, formulas, images and so on.
-In addition to the [Pluto.jl](https://github.com/fonsp/Pluto.jl) and [Jupyter](https://jupyter.org/) notebooks, take a look at [Literate.jl](https://github.com/fredrikekre/Literate.jl) to enrich your code with comments and translate it to various formats.
-[Quarto](https://quarto.org/) is another cross-language notebook system that supports Python, R and Julia, while [Books.jl](https://github.com/JuliaBooks/Books.jl) is more relevant to draft long documents.
-
 ## Reproducibility
 
 Obtaining consistent and reproducible results is an essential part of experimental science.
@@ -283,6 +280,12 @@ When writing it in the documentation is not enough, a formal testable specificat
 This problem of "interfaces" does not yet have a definitive solution in Julia, but several options have been proposed: [Interfaces.jl](https://github.com/rafaqz/Interfaces.jl), [RequiredInterfaces.jl](https://github.com/Seelengrab/RequiredInterfaces.jl) and [PropCheck.jl](https://github.com/Seelengrab/PropCheck.jl) are all worth checking out.
     
 }
+
+## Collaboration
+
+Once your package grows big enough, you might need to bring in some help.
+Working together on a software project has its own set of challenges, which are partially addressed by a good set of ground rules liks [SciML ColPrac](https://github.com/SciML/ColPrac).
+Of course, collaboration goes both ways: if you find a Julia package you really like, you are more than welcome to [contribute](https://julialang.org/contribute/) as well, for example by opening issues or submitting pull requests.
 
 <!-- Clean up -->
 
