@@ -47,6 +47,9 @@ This phenomenon called "dynamic dispatch" essentially prevents further optimizat
 * [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/)
 
 ## Measurements
+
+* [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl)
+* [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl)
 \tldr{Use BenchmarkTools.jl's `@benchmark` with a setup phase to get the best overview of performance or `@btime` as a drop in for `@time`.}
 
 The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints time, allocation, and compilation information. Because of how Julia's JIT compiler works, you should first run a function and then time it:
@@ -166,6 +169,7 @@ end
 * [Tullio.jl](https://github.com/mcabbott/Tullio.jl)
 * [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
 
-## Miscellaneous
+## Efficient types
 
 * [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)
+* [Dictionaries.jl](https://github.com/andyferris/Dictionaries.jl)

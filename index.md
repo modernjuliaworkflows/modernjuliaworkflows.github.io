@@ -16,14 +16,14 @@ Our purpose is to gather the hidden tips and tricks of Julia development, and ma
 We do not cover syntax, and assume that the reader is familiar enough with the [basics of Julia](https://julialang.org/learning/).
 Instead, we focus on all the tools that can make the coding experience more pleasant and efficient.
 
-## Structure
+## Contents
 
 There are three blog posts of increasing technical difficulty, plus one page of additional resources:
 
-1. [Writing your code](/pages/writing/writing/): from zero to a basic script
-2. [Sharing your code](/pages/sharing/sharing/): from a basic script to a reliable package
-3. [Optimizing your code](/pages/optimizing/optimizing/): from a basic script to a light-speed algorithm
-4. [Going further](/pages/further/further/): other websites to help you dive deeper into the rabbit hole
+1. [Writing your code](/writing/): from zero to a basic script
+2. [Sharing your code](/sharing/): from a basic script to a reliable package
+3. [Optimizing your code](/optimizing/): from a basic script to a light-speed algorithm
+4. [Going further](/further/): other websites to help you dive deeper into the rabbit hole
 
 These are all fairly long and not meant to be read in one sitting, so take your time.
 Keep in mind that while each of these resources _can_ be useful to you, not every one of them _will_ be.
