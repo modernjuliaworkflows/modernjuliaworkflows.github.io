@@ -93,9 +93,9 @@ The rest of this post will explain to you what each part of this folder does, an
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.develop(path=sitepath(&quot;MyAwesomePackage&quot;))  # ignore sitepath
 <span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/sharing/Project.toml`
-  <span class="sgr90">[f59ed75f] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+  <span class="sgr90">[6a61010f] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/sharing/Manifest.toml`
-  <span class="sgr90">[f59ed75f] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+  <span class="sgr90">[6a61010f] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyAwesomePackage
 </code></pre>
@@ -103,7 +103,7 @@ The rest of this post will explain to you what each part of this folder does, an
 These are stored as YAML files in <code>.github/workflows</code>, with a slightly convoluted syntax that you don't need to fully understand.
 For instance, the file <code>CI.yml</code> contains instructions that execute the tests of your package (see below) for each pull request, tag or push to the <code>main</code> branch.
 This is done on a GitHub server and should theoretically cost you money, but your GitHub repository is public, you get an unlimited workflow budget for free.</p>
-<p>A variety workflows and functionalities are available through optional <a href="https://juliaci.github.io/PkgTemplates.jl/stable/user/#Plugins-1">plugins</a>.
+<p>A variety of workflows and functionalities are available through optional <a href="https://juliaci.github.io/PkgTemplates.jl/stable/user/#Plugins-1">plugins</a>.
 The interactive setting <code>Template(..., interactive=true)</code> allows you to select the ones you want for a given package.
 Otherwise, you will get the <a href="https://juliaci.github.io/PkgTemplates.jl/stable/user/#Default-Plugins">default selection</a>, which you are encouraged to look at.</p>
 <h2 id="testing" ><a href="#testing"> Testing</a></h2><p>The purpose of the <code>test</code> subfolder in your package is <a href="https://docs.julialang.org/en/v1/stdlib/Test/">unit testing</a>: automatically checking that your code behaves the way you want it to.
@@ -123,16 +123,19 @@ Invalid inputs | <span class="sgr32">   2  </span><span class="sgr36">    2  </s
 <p>Such tests belong in <code>test/runtests.jl</code>, and they are executed with the <code>]test</code> command (in the REPL's Pkg mode).
 Unit testing may seem rather naive, or even superfluous, but as your code grows more complex, it becomes easier to break something without noticing.
 Testing each part separately will increase the reliability of the software you write.</p>
-<p>At some point, your package may require <a href="https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package">test-specific dependencies</a>.
+<div class="advanced"><p><strong>Advanced</strong>: To test the arguments provided to the functions within your code (for instance their sign or value), avoid <code>@assert</code> (which can be deactivated) and use <a href="https://github.com/jw3126/ArgCheck.jl">ArgCheck.jl</a> instead.</p>
+</div><p>At some point, your package may require <a href="https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package">test-specific dependencies</a>.
 This often happens when you need to test compatibility with another package, on which you do not depend for the source code itself.
 Or it may simply be due to testing-specific packages like the ones we will encounter below.
 For interactive testing work, use <a href="https://github.com/JuliaTesting/TestEnv.jl">TestEnv.jl</a> to activate the full test environment (faster than running <code>]test</code> repeatedly).</p>
-<div class="advanced"><p><strong>Advanced</strong>: If you want to have more control over your tests, you can try</p>
+<div class="vscode"><p><strong>VSCode</strong>: The Julia extension also has its own testing framework, which relies on sprinkling "test items" throughout the code.
+ See <a href="https://github.com/julia-vscode/TestItemRunner.jl">TestItemRunner.jl</a> and <a href="https://github.com/JuliaTesting/ReTestItems.jl">ReTestItems.jl</a> for indications on how to use them optimally.</p>
+</div><div class="advanced"><p><strong>Advanced</strong>: If you want to have more control over your tests, you can try</p>
 <ul>
 <li><a href="https://github.com/JuliaTesting/ReferenceTests.jl">ReferenceTests.jl</a> to compare function outputs with reference files.</li>
 <li><a href="https://github.com/JuliaTesting/ReTest.jl">ReTest.jl</a> to define tests next to the source code and control their execution.</li>
-<li><a href="https://github.com/julia-vscode/TestItemRunner.jl">TestItemRunner.jl</a> and <a href="https://github.com/JuliaTesting/ReTestItems.jl">ReTestItems.jl</a> to leverage the testing interface of VSCode.</li>
-<li><a href="https://github.com/thchr/TestReadme.jl">TestReadme.jl</a> to test whatever samples are in your README</li>
+<li><a href="https://github.com/ssfrr/TestSetExtensions.jl">TestSetExtensions.jl</a> to make test set outputs more readable.</li>
+<li><a href="https://github.com/thchr/TestReadme.jl">TestReadme.jl</a> to test whatever code samples are in your README.</li>
 </ul>
 </div><p>Code coverage refers to the fraction of lines in your source code that are covered by tests.
 It is a good indicator of the exhaustiveness of your test suite, albeit not sufficient.
@@ -150,13 +153,13 @@ Just add a file <code>.JuliaFormatter.toml</code> at the root of your repository
 true
 </code></pre>
 <div class="vscode"><p><strong>VSCode</strong>: The <a href="https://www.julia-vscode.org/docs/stable/userguide/formatter/">default formatter</a> falls back on JuliaFormatter.jl.</p>
-</div><div class="advanced"><p><strong>Advanced</strong>: You can format code automatically in GitHub pull requests with the <a href="https://github.com/julia-actions/julia-format"><code>julia-format</code> action</a>.</p>
+</div><div class="advanced"><p><strong>Advanced</strong>: You can format code automatically in GitHub pull requests with the <a href="https://github.com/julia-actions/julia-format"><code>julia-format</code> action</a>, or add the formatting check directly to your test suite.</p>
 </div><h2 id="code_quality" ><a href="#code_quality"> Code quality</a></h2><p>Of course, there is more to code quality than just formatting.
 <a href="https://github.com/JuliaTesting/Aqua.jl">Aqua.jl</a> provides a set of routines that examine other aspects of your package, from unused dependencies to ambiguous methods.
 It is usually a good idea to include the following in your tests:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Aqua, MyAwesomePackage
 
-<span class="sgr32"><span class="sgr1">julia&gt;</span></span> Aqua.test_all(MyAwesomePackage);
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> Aqua.test_all(MyAwesomePackage)
 LoadError: Some tests did not pass: 3 passed, 1 failed, 0 errored, 0 broken.
 in expression starting at string:1
 </code></pre>
@@ -166,10 +169,10 @@ You can either use it in report mode (with a nice <a href="https://www.julia-vsc
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using JET, MyAwesomePackage
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> JET.report_package(MyAwesomePackage)
-[toplevel-info] virtualized the context of Main (took 0.012 sec)
+[toplevel-info] virtualized the context of Main (took 0.013 sec)
 [toplevel-info] entered into /home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl
-[toplevel-info]  exited from /home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl (took 0.009 sec)
-[toplevel-info] analyzed 0 top-level definitions (took 0.005 sec)
+[toplevel-info]  exited from /home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl (took 0.01 sec)
+[toplevel-info] analyzed 0 top-level definitions (took 0.006 sec)
 JET.JETToplevelResult{JET.JETAnalyzer{JET.BasicPass}, Base.Pairs{Symbol, Any, NTuple{4, Symbol}, @NamedTuple{concretization_patterns::Vector{Symbol}, analyze_from_definitions::Bool, toplevel_logger::IOContext{Base.PipeEndpoint}, ignore_missing_comparison::Bool}}}(JET.JETAnalyzer{JET.BasicPass}(JET.AnalyzerState(0x0000000000007b7d, Core.Compiler.InferenceResult[], Core.Compiler.InferenceParams(3, 4, 8, 32, 3, true, true, false, true, false), Core.Compiler.OptimizationParams(true, 100, 1000, 250, 20, 32, true, false, false), IdDict{Core.Compiler.InferenceResult, Union{JET.AnalysisResult, JET.CachedAnalysisResult}}(), JET.InferenceErrorReport[], nothing, Bool[], JET.__toplevelmod__, Dict{Int64, Symbol}(), nothing, 0), JET.AnalysisCache(IdDict{Core.MethodInstance, Core.CodeInstance}()), JET.BasicPass(), Core.Compiler.CachedMethodTable{Core.Compiler.OverlayMethodTable}(Core.Compiler.IdDict{Core.Compiler.MethodMatchKey, Union{Nothing, Core.Compiler.MethodMatchResult}}(Any[#undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef], 0, 0), Core.Compiler.OverlayMethodTable(0x0000000000007b7d, # 1 method for callable object:
  [1] iterate(::Tuple{}, ::Int64)
      @ ~/.julia/packages/JET/1ZQeA/src/analyzers/jetanalyzer.jl:184)), JET.JETAnalyzerConfig(true)), JET.VirtualProcessResult(Set([&quot;/home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl&quot;]), String[], Set(Module[Main.var&quot;##JETVirtualModule#225&quot;, Main.var&quot;##JETVirtualModule#225&quot;.MyAwesomePackage]), JET.ToplevelErrorReport[], JET.InferenceErrorReport[], Type[], Main =&gt; Main.var&quot;##JETVirtualModule#225&quot;), &quot;JETAnalyzer: \&quot;/home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl\&quot;&quot;, Base.Pairs{Symbol, Any, NTuple{4, Symbol}, @NamedTuple{concretization_patterns::Vector{Symbol}, analyze_from_definitions::Bool, toplevel_logger::IOContext{Base.PipeEndpoint}, ignore_missing_comparison::Bool}}(:concretization_patterns =&gt; [:x_], :analyze_from_definitions =&gt; true, :toplevel_logger =&gt; IOContext(Base.PipeEndpoint(RawFD(4294967295) closed, 0 bytes waiting)), :ignore_missing_comparison =&gt; true))
@@ -196,7 +199,9 @@ It can also contain high-level overviews, technical explanations, examples, tuto
 <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> allows you to design a website for all of this, based on Markdown files contained in the <code>docs</code> subfolder of your package.
 Unsurprisingly, its own <a href="https://documenter.juliadocs.org/stable/">documentation</a> is excellent and will teach you a lot.
 To build the documentation locally, just run</p>
-<pre><code class="julia-repl">julia&gt; using Pkg; Pkg.activate(&quot;docs&quot;)
+<pre><code class="julia-repl">julia&gt; using Pkg
+
+julia&gt; Pkg.activate(&quot;docs&quot;)
 
 julia&gt; include(&quot;docs/make.jl&quot;)</code></pre>
 <p>Then, use <a href="https://github.com/tlienart/LiveServer.jl">LiveServer.jl</a> from your package folder to visualize and automatically update the website as the code changes (similar to Revise.jl):</p>
@@ -206,9 +211,9 @@ julia&gt; servedocs()</code></pre>
 <p>To host the documentation online easily, just select the <a href="https://juliaci.github.io/PkgTemplates.jl/stable/user/#PkgTemplates.Documenter"><code>Documenter</code> plugin</a> from PkgTemplates.jl before creation.
 Not only will this fill the <code>docs</code> subfolder with the right contents: it will also initialize a <a href="https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch">GitHub Actions workflow</a> to build and deploy your website on <a href="https://pages.github.com/">GitHub pages</a>.
 The only thing left to do is to <a href="https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch">select the <code>gh-pages</code> branch as source</a>.</p>
-<div class="advanced"><p><strong>Advanced</strong>: Assuming you are looking for an alternative to Documenter.jl, you can try out <a href="https://github.com/lorenzoh/Pollen.jl">Pollen.jl</a>.
+<div class="advanced"><p><strong>Advanced</strong>: <a href="https://github.com/ali-ramadhan/DocumenterCitations.jl">DocumenterCitations.jl</a> allows you to insert citations inside the documentation website from a BibTex file.</p>
+<p> Assuming you are looking for an alternative to Documenter.jl, you can try out <a href="https://github.com/lorenzoh/Pollen.jl">Pollen.jl</a>.
  In another category, <a href="https://github.com/AtelierArith/Replay.jl">Replay.jl</a> allows you to replay instructions entered into your terminal as an ASCII video, which is nice for tutorials.</p>
-<p> <a href="https://github.com/ali-ramadhan/DocumenterCitations.jl">DocumenterCitations.jl</a> allows you to insert citations inside the documentation website from a BibTex file.</p>
 </div><h2 id="literate_programming" ><a href="#literate_programming"> Literate programming</a></h2><p>Scientific software is often hard to grasp, and the code alone may not be very enlightening.
 Whether it is for package documentation or to write papers and books, you might want to interleave code with texts, formulas, images and so on.
 In addition to the <a href="https://github.com/fonsp/Pluto.jl">Pluto.jl</a> and <a href="https://jupyter.org/">Jupyter</a> notebooks, take a look at <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a> to enrich your code with comments and translate it to various formats.
@@ -222,11 +227,13 @@ In addition, <a href="https://docs.github.com/en/code-security/dependabot/depend
 But don't worry: both are default plugins in the PkgTemplates.jl setup.</p>
 <div class="advanced"><p><strong>Advanced</strong>: It may also happen that you incorrectly promise compatibility with an old version of a package.
  To prevent that, the <a href="https://github.com/julia-actions/julia-downgrade-compat">julia-downgrade-compat</a> GitHub action tests your package with the oldest possible version of every dependency, and verifies that everything still works.</p>
-</div><p>If your package is useful to others in the community, it may be a good idea to register it, that is, make it part of the pool of packages that can be installed with <code>Pkg.add(MyAwesomePackage)</code>.
-Note that unregistered packages can also be installed by anyone, but the command is slightly different: <code>Pkg.add(url=&quot;https://github.com/myuser/MyAwesomePackage&quot;)</code>.</p>
+</div><p>If your package is useful to others in the community, it may be a good idea to register it, that is, make it part of the pool of packages that can be installed with</p>
+<pre><code class="julia-repl">pkg&gt; add MyAwesomePackage  # made possible by registration</code></pre>
+<p>Note that unregistered packages can also be installed by anyone from the GitHub URL, but this a less reproducible solution:</p>
+<pre><code class="julia-repl">pkg&gt; add https://github.com/myuser/MyAwesomePackage  # not ideal</code></pre>
 <p>To register your package, check out the <a href="https://github.com/JuliaRegistries/General">general registry</a> guidelines.
 The <a href="https://github.com/JuliaRegistries/Registrator.jl">Registrator.jl</a> bot can help you automate the process.
-Another handy bot is <a href="https://github.com/JuliaRegistries/TagBot">TagBot</a>, which automatically tags new versions of your package following each release: yet another default plugin in the PkgTemplates.jl setup.
+Another handy bot, provided by default with PkgTemplates.jl, is <a href="https://github.com/JuliaRegistries/TagBot">TagBot</a>: it automatically tags new versions of your package following each registry release.
 If you have performed the <a href="https://documenter.juliadocs.org/stable/man/hosting/#travis-ssh">necessary SSH configuration</a>, TagBot will also trigger documentation website builds following each release.</p>
 <div class="advanced"><p><strong>Advanced</strong>: If your package is only interesting to you and a small group of collaborators, or if you don't want to make it public, you can still register it by setting up a local registry: see <a href="https://github.com/GunnarFarneback/LocalRegistry.jl">LocalRegistry.jl</a>.</p>
 </div><h2 id="reproducibility" ><a href="#reproducibility"> Reproducibility</a></h2><p>Obtaining consistent and reproducible results is an essential part of experimental science.
@@ -239,19 +246,19 @@ The packages <a href="https://github.com/oxinabox/DataDeps.jl">DataDeps.jl</a>, 
 A third thing to consider is proper citation and versioning.
 Giving your package a with <a href="https://zenodo.org/">Zenodo</a> ensures that everyone can properly cite it in scientific publications.
 Similarly, your papers should cite the packages you use as dependencies: <a href="https://github.com/SebastianM-C/PkgCite.jl">PkgCite.jl</a> will help with that.</p>
-<h2 id="interoperability" ><a href="#interoperability"> Interoperability</a></h2><p>Making packages play nice with one another is a key goal of the Julia ecosystem.
+<h2 id="interoperability" ><a href="#interoperability"> Interoperability</a></h2><p>To ensure compatibility with earlier Julia versions, <a href="https://github.com/JuliaLang/Compat.jl">Compat.jl</a> is your best ally.</p>
+<p>Making packages play nice with one another is a key goal of the Julia ecosystem.
 Since Julia 1.9, this can be done with <a href="https://pkgdocs.julialang.org/v1/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions)">package extensions</a>, which override specific behaviors based on the presence of a given package in the environment.
-<a href="https://github.com/cjdoris/PackageExtensionTools.jl">PackageExtensionTools.jl</a> eases the pain of setting up extensions.
-As for compatibility with earlier Julia versions, <a href="https://github.com/JuliaLang/Compat.jl">Compat.jl</a> is your best ally.</p>
+<a href="https://github.com/cjdoris/PackageExtensionTools.jl">PackageExtensionTools.jl</a> eases the pain of setting up extensions.</p>
 <p>Furthermore, the Julia ecosystem as a whole plays nice with other programming languages too.
 <a href="https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/">C and Fortran</a> are natively supported.
 Python can be easily interfaced with the combination of <a href="https://github.com/cjdoris/CondaPkg.jl">CondaPkg.jl</a> and <a href="https://github.com/cjdoris/PythonCall.jl">PythonCall.jl</a>.
 Other language compatibility packages can be found in the <a href="https://github.com/JuliaInterop">JuliaInterop</a> organization, like <a href="https://github.com/JuliaInterop/RCall.jl">RCall.jl</a>.</p>
+<p>Part of interoperability is also flexibility and customization: the <a href="https://github.com/JuliaPackaging/Preferences.jl">Preferences.jl</a> package gives a nice way to specify various options in TOML files.</p>
 <div class="advanced"><p><strong>Advanced</strong>: Some package developers may need to define what kind of behavior they expect from a certain type, or what a certain method should do.
  When writing it in the documentation is not enough, a formal testable specification becomes necessary.
  This problem of "interfaces" does not yet have a definitive solution in Julia, but several options have been proposed: <a href="https://github.com/rafaqz/Interfaces.jl">Interfaces.jl</a>, <a href="https://github.com/Seelengrab/RequiredInterfaces.jl">RequiredInterfaces.jl</a> and <a href="https://github.com/Seelengrab/PropCheck.jl">PropCheck.jl</a> are all worth checking out.</p>
-</div><p>Part of interoperability is also flexibility and customization: the <a href="https://github.com/JuliaPackaging/Preferences.jl">Preferences.jl</a> package gives a nice way to specify various options in TOML files.</p>
-<h2 id="collaboration" ><a href="#collaboration"> Collaboration</a></h2><p>Once your package grows big enough, you might need to bring in some help.
+</div><h2 id="collaboration" ><a href="#collaboration"> Collaboration</a></h2><p>Once your package grows big enough, you might need to bring in some help.
 Working together on a software project has its own set of challenges, which are partially addressed by a good set of ground rules liks <a href="https://github.com/SciML/ColPrac">SciML ColPrac</a>.
 Of course, collaboration goes both ways: if you find a Julia package you really like, you are more than welcome to <a href="https://julialang.org/contribute/">contribute</a> as well, for example by opening issues or submitting pull requests.</p>
 
