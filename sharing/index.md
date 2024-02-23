@@ -155,7 +155,7 @@ It is usually a good idea to include the following in your tests:
 
 ```>aqua
 using Aqua, MyAwesomePackage
-Aqua.test_all(MyAwesomePackage);
+Aqua.test_all(MyAwesomePackage)
 ```
 
 Meanwhile, [JET.jl](https://github.com/aviatesk/JET.jl) is a complementary tool, similar to a static linter.
@@ -197,7 +197,9 @@ Unsurprisingly, its own [documentation](https://documenter.juliadocs.org/stable/
 To build the documentation locally, just run
 
 ```julia-repl
-julia> using Pkg; Pkg.activate("docs")
+julia> using Pkg
+
+julia> Pkg.activate("docs")
 
 julia> include("docs/make.jl")
 ```
@@ -257,12 +259,12 @@ pkg> add MyAwesomePackage  # made possible by registration
 Note that unregistered packages can also be installed by anyone from the GitHub URL, but this a less reproducible solution:
 
 ```julia-repl
-pkg> add https://github.com/myuser/MyAwesomePackage  # always possible but not ideal
+pkg> add https://github.com/myuser/MyAwesomePackage  # not ideal
 ```
 
 To register your package, check out the [general registry](https://github.com/JuliaRegistries/General) guidelines.
 The [Registrator.jl](https://github.com/JuliaRegistries/Registrator.jl) bot can help you automate the process.
-Another handy bot is [TagBot](https://github.com/JuliaRegistries/TagBot), which automatically tags new versions of your package following each release: yet another default plugin in the PkgTemplates.jl setup.
+Another handy bot, provided by default with PkgTemplates.jl, is [TagBot](https://github.com/JuliaRegistries/TagBot): it automatically tags new versions of your package following each registry release.
 If you have performed the [necessary SSH configuration](https://documenter.juliadocs.org/stable/man/hosting/#travis-ssh), TagBot will also trigger documentation website builds following each release.
 
 \advanced{
