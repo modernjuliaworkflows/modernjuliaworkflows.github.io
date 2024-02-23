@@ -48,24 +48,34 @@
 
 
 <div class="franklin-content" >
-  <h1 id="optimizing_your_code" ><a href="#optimizing_your_code"> Optimizing your code</a></h1><div class="toc"><ol><li><a href="#principles">Principles</a></li><li><a href="#measurements">Measurements</a></li><li><a href="#profiling">Profiling</a></li><li><a href="#type_stability">Type stability</a></li><li><a href="#precompilation">Precompilation</a></li><li><a href="#parallelism">Parallelism</a></li><li><a href="#simd_/_gpu">SIMD / GPU</a></li><li><a href="#efficient_types">Efficient types</a></li></ol></div><h2 id="principles" ><a href="#principles"> Principles</a></h2><ul>
+  <h1 id="optimizing_your_code" ><a href="#optimizing_your_code"> Optimizing your code</a></h1><div class="toc"><ol><li><a href="#principles">Principles</a></li><li><a href="#measurements">Measurements</a></li><li><a href="#benchmark_suites">Benchmark suites</a></li><li><a href="#profiling">Profiling</a></li><li><a href="#type_stability">Type stability</a></li><li><a href="#memory_management">Memory management</a></li><li><a href="#precompilation">Precompilation</a></li><li><a href="#parallelism">Parallelism</a></li><li><a href="#simd_/_gpu">SIMD / GPU</a></li><li><a href="#efficient_types">Efficient types</a></li></ol></div><h2 id="principles" ><a href="#principles"> Principles</a></h2><ul>
 <li><a href="https://docs.julialang.org/en/v1/manual/performance-tips/">performance tips</a></li>
 </ul>
 <h2 id="measurements" ><a href="#measurements"> Measurements</a></h2><ul>
 <li><a href="https://github.com/timholy/ProgressMeter.jl">ProgressMeter.jl</a></li>
 <li><a href="https://github.com/JuliaCI/BenchmarkTools.jl">BenchmarkTools.jl</a></li>
 <li><a href="https://github.com/KristofferC/TimerOutputs.jl">TimerOutputs.jl</a></li>
+</ul>
+<h2 id="benchmark_suites" ><a href="#benchmark_suites"> Benchmark suites</a></h2><ul>
 <li><a href="https://github.com/JuliaCI/PkgBenchmark.jl">PkgBenchmark.jl</a></li>
+<li><a href="https://github.com/tkf/BenchmarkCI.jl">BenchmarkCI.jl</a> (unmaintained)</li>
+<li><a href="https://github.com/MilesCranmer/AirspeedVelocity.jl">AirSpeedVelocity.jl</a></li>
+<li><a href="https://github.com/awadell1/PkgJogger.jl">PkgJogger.jl</a></li>
 </ul>
 <h2 id="profiling" ><a href="#profiling"> Profiling</a></h2><ul>
-<li><a href="https://docs.julialang.org/en/v1/manual/profile/">built-in</a></li>
+<li><a href="https://docs.julialang.org/en/v1/manual/profile/">built-in profiler</a> and <a href="https://docs.julialang.org/en/v1/stdlib/Profile/#Memory-profiling">allocation profiler</a></li>
 <li><a href="https://github.com/timholy/ProfileView.jl">ProfileView.jl</a> / <a href="https://github.com/kimikage/ProfileSVG.jl">ProfileSVG.jl</a></li>
+<li><a href="https://github.com/JuliaPerf/PProf.jl">PProf.jl</a></li>
 <li><a href="https://www.julia-vscode.org/docs/stable/userguide/profiler/">profiling in VSCode</a></li>
 </ul>
 <h2 id="type_stability" ><a href="#type_stability"> Type stability</a></h2><ul>
 <li><a href="https://github.com/JuliaDebug/Cthulhu.jl">Cthulhu.jl</a></li>
 <li><a href="https://github.com/aviatesk/JET.jl">JET.jl</a></li>
 <li><a href="https://www.julia-vscode.org/docs/stable/userguide/linter/">linting in VSCode</a></li>
+</ul>
+<h2 id="memory_management" ><a href="#memory_management"> Memory management</a></h2><ul>
+<li><a href="https://github.com/JuliaLang/AllocCheck.jl">AllocCheck.jl</a></li>
+<li><a href="https://github.com/JuliaFolds2/BangBang.jl">BangBang.jl</a></li>
 </ul>
 <h2 id="precompilation" ><a href="#precompilation"> Precompilation</a></h2><ul>
 <li><a href="https://github.com/JuliaLang/PrecompileTools.jl">PrecompileTools.jl</a></li>
@@ -76,11 +86,10 @@
 </ul>
 <h2 id="parallelism" ><a href="#parallelism"> Parallelism</a></h2><ul>
 <li><a href="https://docs.julialang.org/en/v1/manual/parallel-computing/">distributed vs. multithreading</a></li>
-<li><a href="https://github.com/tkf/ThreadsX.jl">ThreadsX.jl</a></li>
-<li><a href="https://github.com/JuliaFolds/FLoops.jl">FLoops.jl</a></li>
+<li><a href="https://github.com/JuliaFolds2/OhMyThreads.jl">OhMyThreads.jl</a></li>
 </ul>
 <h2 id="simd_/_gpu" ><a href="#simd_/_gpu"> SIMD / GPU</a></h2><ul>
-<li><a href="https://github.com/JuliaSIMD/LoopVectorization.jl">LoopVectorization.jl</a></li>
+<li><a href="https://github.com/JuliaSIMD/LoopVectorization.jl">LoopVectorization.jl</a> (deprecated in 1.11)</li>
 <li><a href="https://github.com/mcabbott/Tullio.jl">Tullio.jl</a></li>
 <li><a href="https://github.com/JuliaGPU/KernelAbstractions.jl">KernelAbstractions.jl</a></li>
 </ul>
