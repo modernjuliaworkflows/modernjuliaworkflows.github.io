@@ -1,6 +1,6 @@
 +++
 title = "Sharing your code"
-ignore_cache = false
+ignore_cache = true
 +++
 
 <!-- Setup -->
