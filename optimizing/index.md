@@ -141,6 +141,11 @@ For the best visualisation of performance, the `@benchmark` macro is also provid
 Finally, it's worth noting that certain computations may be optimized away by the compiler before the benchmark takes place, resulting in suspicuously fast performance, however the [details of this](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations) are beyond the scope of this post and most users should not worry at all about this.
 
 <!-- I (Martin) have never used either of these, someone with experience can write here? -->
+* [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/)
+
+## Measurements
+
+* [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl)
 * [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl)
 * [PkgBenchmark.jl](https://github.com/JuliaCI/PkgBenchmark.jl)
 
@@ -177,6 +182,7 @@ end
 * [PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl)
 * [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl)
 <!-- * [StaticCompiler.jl](https://github.com/tshort/StaticCompiler.jl)  I don't think this belongs here-->
+* [StaticCompiler.jl](https://github.com/tshort/StaticCompiler.jl)
 * [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl)
 * [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
 
@@ -196,3 +202,6 @@ end
 
 * [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)
 * [Dictionaries.jl](https://github.com/andyferris/Dictionaries.jl)
+## Miscellaneous
+
+* [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)
