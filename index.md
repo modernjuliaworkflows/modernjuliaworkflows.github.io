@@ -16,7 +16,7 @@ Our purpose is to gather the hidden tips and tricks of Julia development, and ma
 We do not cover syntax, and assume that the reader is familiar enough with the [basics of Julia](https://julialang.org/learning/).
 Instead, we focus on all the tools that can make the coding experience more pleasant and efficient.
 
-## Structure
+## Contents
 
 There are three blog posts of increasing technical difficulty, plus one page of additional resources:
 
