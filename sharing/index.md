@@ -93,7 +93,8 @@ If you want to have more control over your tests, you can try
 
 * [ReferenceTests.jl](https://github.com/JuliaTesting/ReferenceTests.jl) to compare function outputs with reference files.
 * [ReTest.jl](https://github.com/JuliaTesting/ReTest.jl) to define tests next to the source code and control their execution.
-* [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) to leverage the testing interface of VSCode.
+* [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) and [ReTestItems.jl](https://github.com/JuliaTesting/ReTestItems.jl) to leverage the testing interface of VSCode.
+* [TestReadme.jl](https://github.com/thchr/TestReadme.jl) to test whatever samples are in your README
 
 }
 
@@ -257,7 +258,7 @@ We now explore a few specific issues that often arise.
 A first hurdle is [random number generation](https://docs.julialang.org/en/v1/stdlib/Random/), which is not guaranteed to remain stable across Julia versions.
 To ensure that the random streams remain exactly the same, you need to use [StableRNGs.jl](https://github.com/JuliaRandom/StableRNGs.jl).
 Another aspect is dataset download and management.
-The packages [DataDeps.jl](https://github.com/oxinabox/DataDeps.jl) and [ArtifactUtils.jl](https://github.com/JuliaPackaging/ArtifactUtils.jl) can help you bundle non-code elements with your package.
+The packages [DataDeps.jl](https://github.com/oxinabox/DataDeps.jl), [DataToolkit.jl](https://github.com/tecosaur/DataToolkit.jl) and [ArtifactUtils.jl](https://github.com/JuliaPackaging/ArtifactUtils.jl) can help you bundle non-code elements with your package.
 A third thing to consider is proper citation and versioning.
 Giving your package a with [Zenodo](https://zenodo.org/) ensures that everyone can properly cite it in scientific publications.
 Similarly, your papers should cite the packages you use as dependencies: [PkgCite.jl](https://github.com/SebastianM-C/PkgCite.jl) will help with that.
@@ -266,12 +267,13 @@ Similarly, your papers should cite the packages you use as dependencies: [PkgCit
 
 Making packages play nice with one another is a key goal of the Julia ecosystem.
 Since Julia 1.9, this can be done with [package extensions](https://pkgdocs.julialang.org/v1/creating-packages/#Conditional-loading-of-code-in-packages-(Extensions)), which override specific behaviors based on the presence of a given package in the environment.
-To preserve compatibility with earlier Julia versions, [PackageExtensionTools.jl](https://github.com/cjdoris/PackageExtensionTools.jl) is the way to go.
+[PackageExtensionTools.jl](https://github.com/cjdoris/PackageExtensionTools.jl) eases the pain of setting up extensions.
+As for compatibility with earlier Julia versions, [Compat.jl](https://github.com/JuliaLang/Compat.jl) is your best ally.
 
 Furthermore, the Julia ecosystem as a whole plays nice with other programming languages too.
 [C and Fortran](https://docs.julialang.org/en/v1/manual/calling-c-and-fortran-code/) are natively supported.
 Python can be easily interfaced with the combination of [CondaPkg.jl](https://github.com/cjdoris/CondaPkg.jl) and [PythonCall.jl](https://github.com/cjdoris/PythonCall.jl).
-Other language compatibility packages can be found in the [JuliaInterop](https://github.com/JuliaInterop) organization, like [RCall.jl](https://github.com/JuliaInterop/RCall.jl) or [Cxx.jl](https://github.com/JuliaInterop/Cxx.jl).
+Other language compatibility packages can be found in the [JuliaInterop](https://github.com/JuliaInterop) organization, like [RCall.jl](https://github.com/JuliaInterop/RCall.jl).
 
 \advanced{
 
@@ -280,6 +282,8 @@ When writing it in the documentation is not enough, a formal testable specificat
 This problem of "interfaces" does not yet have a definitive solution in Julia, but several options have been proposed: [Interfaces.jl](https://github.com/rafaqz/Interfaces.jl), [RequiredInterfaces.jl](https://github.com/Seelengrab/RequiredInterfaces.jl) and [PropCheck.jl](https://github.com/Seelengrab/PropCheck.jl) are all worth checking out.
     
 }
+
+Part of interoperability is also flexibility and customization: the [Preferences.jl](https://github.com/JuliaPackaging/Preferences.jl) package gives a nice way to specify various options in TOML files.
 
 ## Collaboration
 
