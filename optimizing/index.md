@@ -56,7 +56,7 @@ end
 The unintended heap allocation comes from the elementwise product `weights .* values`, which stores its result in a temporary array which is immediately used by `sum`.
 As the result of the product isn't needed anywhere else, this is an example of an unnecessary allcoation.
 There are a number of ways to rewrite this specific line to avoid allocating an intermediate vector: both `transpose(weights) * values` and `sum(splat(*), zip(weights, values))` have similar performance.
-More important than this specific fix is more generally that both methods avoid instantiating the intermediate product vector by being more specific about exactly what the code should do.
+More important than this specific fix is more generally that the more precise you are about what exactly the code should do, the better performance you are able to achieve.
 
 The type instability is a result of the final line `result > 0 ? result : 0`.
 What type does the function return?
@@ -64,7 +64,10 @@ Sometimes it returns the integer `0`, whereas other times it returns `result`, w
 This dependence on run-time value as opposed to compile-time type results in the instability, causing an additional heap allocation which slows the function down further.
 We can fix this instability simply by replacing the final `0` with `zero(result)`, which returns the zero element of whatever type `result` happens to be.
 
-* [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/)
+Optimal implementation of algorithms in Julia comes down to these two concepts.
+For example, one of the manual's [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/) is to [__Avoid untyped global variables__](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables).
+Why? Because the type of a global variable could change, so it causes type instability wherever it is used without being passed to a function as an argument.
+Why might you want to [preallocate outputs](https://docs.julialang.org/en/v1/manual/performance-tips/#Pre-allocating-outputs) and [fuse vectorized opterations](https://docs.julialang.org/en/v1/manual/performance-tips/#More-dots:-Fuse-vectorized-operations)? To minimise heap allocations.
 
 ## Measurements
 
