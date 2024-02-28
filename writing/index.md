@@ -97,8 +97,10 @@ a, b = 1, 2;
 a + b
 ```
 
-This is the standard (Julian) mode of the REPL, but there are three other modes you need to know.
-Each mode is entered by typing a specific character after the `julia>` prompt, and can be exited by hitting backspace after the `julia>` prompt.
+This is the standard (Julia) mode of the REPL, but there are three other modes you need to know.
+Each mode is entered by typing a specific character after the `julia>` prompt.
+Once you're in a non-Julia mode, you stay there for every command you run.
+To exit it, hit backspace after the prompt and you'll get the `julia>` prompt back.
 
 ### Help mode (`?`)
 
@@ -137,6 +139,8 @@ Note that the same keywords are also available in Julia mode:
 using Pkg
 Pkg.rm("Example")
 ```
+
+The package mode itself also has a help mode, accessed with `?`, in case you're lost among all these new keywords.
 
 ### Shell mode (`;`)
 
@@ -261,7 +265,11 @@ julia> Pluto.run()
 As we have seen, Pkg.jl is the Julia equivalent of `pip` or `conda` for Python.
 It lets you [install packages](https://pkgdocs.julialang.org/v1/managing-packages/) and [manage environments](https://pkgdocs.julialang.org/v1/environments/) (collections of packages with specific versions).
 
-Once you activate an environment by specifying its path `]activate path`, the packages you `]add` will be listed in two files `path/Project.toml` and `path/Manifest.toml`.
+You can activate an environment from the Pkg REPL by specifying its path `]activate somepath`.
+Typically, you would do `]activate .` to activate the environment in the current directory.
+Another option is to directly start Julia inside an environment, with the command line option `julia --project=somepath`.
+
+Once in an environment, the packages you `]add` will be listed in two files `somepath/Project.toml` and `somepath/Manifest.toml`:
 
 * `Project.toml` contains general project information (name of the package, unique id, authors) and direct dependencies with version bounds.
 * `Manifest.toml` contains the exact versions of all direct and indirect dependencies
