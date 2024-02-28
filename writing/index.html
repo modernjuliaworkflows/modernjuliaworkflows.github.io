@@ -94,8 +94,10 @@ It will allow you to play around with arbitrary Julia code:</p>
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> a + b
 3
 </code></pre>
-<p>This is the standard (Julian) mode of the REPL, but there are three other modes you need to know.
-Each mode is entered by typing a specific character after the <code>julia&gt;</code> prompt, and can be exited by hitting backspace after the <code>julia&gt;</code> prompt.</p>
+<p>This is the standard (Julia) mode of the REPL, but there are three other modes you need to know.
+Each mode is entered by typing a specific character after the <code>julia&gt;</code> prompt.
+Once you're in a non-Julia mode, you stay there for every command you run.
+To exit it, hit backspace after the prompt and you'll get the <code>julia&gt;</code> prompt back.</p>
 <h3 id="help_mode_(?)" ><a href="#help_mode_(?)"> Help mode (<code>?</code>)</a></h3><p>By pressing <code>?</code> you can obtain information and metadata about Julia objects (functions, types, etc.) or unicode symbols.
 The query fetches the docstring of the object, which explains how to use it.</p>
 <pre><code class="julia-repl"><span class="sgr33"><span class="sgr1">help?&gt;</span></span> println
@@ -151,6 +153,7 @@ Pkg.jl allows you to:</p>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/writing/Manifest.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr91">- Example v0.5.3</span>
 </code></pre>
+<p>The package mode itself also has a help mode, accessed with <code>?</code>, in case you're lost among all these new keywords.</p>
 <h3 id="shell_mode_(;)" ><a href="#shell_mode_(;)"> Shell mode (<code>;</code>)</a></h3><p>By pressing <code>;</code> you enter a terminal, where you can execute any command you want.
 Here's an example for Unix systems:</p>
 <pre><code class="julia-repl"><span class="sgr31"><span class="sgr1">shell&gt;</span></span> ls ./writing
@@ -215,7 +218,10 @@ julia&gt; Pluto.run()</code></pre>
 <h2 id="environments" ><a href="#environments"> Environments</a></h2><div class="tldr"><p><strong>TLDR</strong>: Activate a local environment for each project with <code>]activate path</code>. Its details are stored in <code>Project.toml</code> and <code>Manifest.toml</code>. </p>
 </div><p>As we have seen, Pkg.jl is the Julia equivalent of <code>pip</code> or <code>conda</code> for Python.
 It lets you <a href="https://pkgdocs.julialang.org/v1/managing-packages/">install packages</a> and <a href="https://pkgdocs.julialang.org/v1/environments/">manage environments</a> (collections of packages with specific versions).</p>
-<p>Once you activate an environment by specifying its path <code>]activate path</code>, the packages you <code>]add</code> will be listed in two files <code>path/Project.toml</code> and <code>path/Manifest.toml</code>.</p>
+<p>You can activate an environment from the Pkg REPL by specifying its path <code>]activate somepath</code>.
+Typically, you would do <code>]activate .</code> to activate the environment in the current directory.
+Another option is to directly start Julia inside an environment, with the command line option <code>julia --project=somepath</code>.</p>
+<p>Once in an environment, the packages you <code>]add</code> will be listed in two files <code>somepath/Project.toml</code> and <code>somepath/Manifest.toml</code>:</p>
 <ul>
 <li><code>Project.toml</code> contains general project information (name of the package, unique id, authors) and direct dependencies with version bounds.</li>
 <li><code>Manifest.toml</code> contains the exact versions of all direct and indirect dependencies</li>
@@ -320,7 +326,7 @@ More generally, the startup file allows you to define your own favorite helper f
 Any[Bool, Signed, Unsigned]
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> length(methodswith(Integer))
-736
+737
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @which exp(1)
 exp(x::Real) @ Base.Math math.jl:1575
@@ -517,7 +523,7 @@ About to run: (^)(2, 64)
  It is often easiest to start by adding <code>ALL_MODULES_EXCEPT_MAIN</code> to the compiled list, and then selectively remove the modules you need to have interpreted.</p>
 </div>
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: February 23, 2024. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: February 28, 2024. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
