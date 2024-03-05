@@ -284,7 +284,7 @@ To ensure that the random streams remain exactly the same, you need to use [Stab
 Another aspect is dataset download and management.
 The packages [DataDeps.jl](https://github.com/oxinabox/DataDeps.jl), [DataToolkit.jl](https://github.com/tecosaur/DataToolkit.jl) and [ArtifactUtils.jl](https://github.com/JuliaPackaging/ArtifactUtils.jl) can help you bundle non-code elements with your package.
 A third thing to consider is proper citation and versioning.
-Giving your package a with [Zenodo](https://zenodo.org/) ensures that everyone can properly cite it in scientific publications.
+Giving your package a DOI with [Zenodo](https://zenodo.org/) ensures that everyone can properly cite it in scientific publications.
 Similarly, your papers should cite the packages you use as dependencies: [PkgCite.jl](https://github.com/SebastianM-C/PkgCite.jl) will help with that.
 
 ## Interoperability
