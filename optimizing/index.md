@@ -20,7 +20,38 @@ If some information about a variable's type isn't available to the compiler, for
 An (heap) allocation occurs whenever a variable is allocated whose type doesn't contain enough information to know exactly how much space is required to store all of its data.
 An example of this is `Vector{Int}`, which doesn't contain information about how many elements the vector has.
 In order to manage the deallocation of objects after their usage, Julia has a [mark-and-sweep](https://en.wikipedia.org/wiki/Tracing_garbage_collection#Copying_vs._mark-and-sweep_vs._mark-and-don't-sweep) [garbage collector](https://docs.julialang.org/en/v1/devdocs/gc/), which runs periodically during code execution to free up space so that other objects can be allocated.
-Execution of code is stopped while the garbage collector runs, so minimising its usage by avoiding heap allocations unless necessary is important.
+Execution of code is stopped while the garbage collector runs, so minimising its usage is important.
+
+In the example below, we break both fundamental principles.
+
+```>break-rules-example
+x = rand(100)
+function return_2(y)
+    a = x + y
+    b = x - y
+    c = a ./ b
+    return 2
+end
+y = rand(100)
+@time return_2(y)
+```
+
+While `y` is correctly passed as an argument to `return_2`, `x` isn't, and because it is an [untyped global variable](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables), its type must be inferred each time the function is run.
+This could be solved by redefining `return_2` to accept both `x` and `y` as arguments.
+
+Moreover, even though the variables `a`, `b`, and `c` are unused, because the function is type-unstable and the objects involved in their calculation are heap allocated, they cannot be "optimised away" by the compiler.
+Worse still, even if the user only cares about the value of `c` the variables `a` and `b` are still heap allocated.
+Notably, this _cannot_ be improved by writing the function as
+
+```julia
+function return_2(y)
+    c = (x + y) ./ (x - y)
+    return 2
+end
+```
+
+because Julia allocates intermediate values.
+The way to avoid intermediate allocations is to reuse memory as much as possible either by preallocating memory for the intermediate values manually or with a tool such as [PreallocationTools.jl](https://github.com/SciML/PreallocationTools.jl), or by performing the vector operations in-place with `@.`.
 
 <!-- Let's look at an illustrative example that breaks both of these rules.
 To break the first, we define a global variable which we later use many times [without passing it to a function](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables) or annotating its type [at the point of usage](https://docs.julialang.org/en/v1/manual/performance-tips/#Annotate-values-taken-from-untyped-locations).
