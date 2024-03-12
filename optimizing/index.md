@@ -10,31 +10,80 @@ title = "Optimizing your code"
 
 ## Principles
 
-All tips to writing performant Julia code can be derived from two fundamental ideas:
-1. Ensure that type of every variable can be concretely inferred every time each is used.
+All [tips](https://docs.julialang.org/en/v1/manual/performance-tips/) to writing performant Julia code can be derived from two fundamental ideas:
+1. Ensure that the compiler can derive the type of every variable.
 2. Avoid unnecessary heap allocations.
 
-By "concretely", we mean that the type inferred by the compiler is concrete, this means that its size in memory is known at compile time.
-Types declared abstract with `abstract type` are not concrete and neither are [parametric types](https://docs.julialang.org/en/v1/manual/types/#Parametric-Types) whose parameters are not specified:
-```>isconcretetype-example
-isconcretetype(AbstractVector)
-isconcretetype(Vector) # Shorthand for `Vector{T} where T`
-isconcretetype(Vector{Real})
-isconcretetype(Vector{Int64})
+The compiler's job is to optimize and translate Julia code it into runnable [machine code](https://en.wikipedia.org/wiki/Machine_code).
+If some information about a variable's type isn't available to the compiler, for example because the [return type of a function is value-dependent](https://docs.julialang.org/en/v1/manual/performance-tips/#Write-%22type-stable%22-functions), then it cannot safely perform its most powerful optimizations as it cannot satisfy assumptions required for the optimizations to be performed.
+
+An (heap) allocation occurs whenever a variable is allocated whose type doesn't contain enough information to know exactly how much space is required to store all of its data.
+An example of this is `Vector{Int}`, which doesn't contain information about how many elements the vector has.
+In order to manage the deallocation of objects after their usage, Julia has a [mark-and-sweep](https://en.wikipedia.org/wiki/Tracing_garbage_collection#Copying_vs._mark-and-sweep_vs._mark-and-don't-sweep) [garbage collector](https://docs.julialang.org/en/v1/devdocs/gc/), which runs periodically during code execution to free up space so that other objects can be allocated.
+Execution of code is stopped while the garbage collector runs, so minimising its usage by avoiding heap allocations unless necessary is important.
+
+<!-- Let's look at an illustrative example that breaks both of these rules.
+To break the first, we define a global variable which we later use many times [without passing it to a function](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables) or annotating its type [at the point of usage](https://docs.julialang.org/en/v1/manual/performance-tips/#Annotate-values-taken-from-untyped-locations).
+Hence its type must be determined at runtime every time it is used. -->
+
+<!-- For the second, we perform vector operations without fusing them with `@.` or performing them inplace with `@views` such that new memory is allocated for every intermediate result.
+
+```>break-rules-example
+X = rand(500, 500)
+function do_work(y)
+    ans = zeros(500, 10)
+    for i in 1:10
+        ans[:, i] = X*X #.+ transpose(y)*y .+ X*y
+    end
+    return ans
+end
+do_work(rand(500))
 ```
 
-\advanced{
-`Vector{Real}` is concrete despite `Real` being abstract because all parametric types besides tuples are [invariant](https://docs.julialang.org/en/v1/manual/types/#man-parametric-composite-types) in their parameters (as opposed to covariant or contravariant).
-Because `Vector{Real}` therefore can't be subtyped, it must have a concrete implementation which, in Julia's case, is as a vector of pointers to individually allocated `Real` objects.
-This implementation detail (a pointer to pointers) also explains part of the reason why `Vector{Real}` is slow, the other being a lack of concrete compile-time specialisation on the elements of the vector.
-}
+Secondly, Julia has a [garbage collector](https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)) whose job is to determine which variables no longer need to be stored in memory and free this memory so it can be reused.
+Variables whose type determines how much memory they require to be stored can be allocated and freed almost for free, but variables without this property must be managed by the garbage collector and stored on the ["heap"](https://en.wikipedia.org/wiki/Memory_management).
+In our example, our `AwfulNumber` will allocate 100, vectors of length 100,000 every time the user _dares_ to multiply it with another number.
 
-Before running any piece of code, the Julia compiler tries to determine the most specialised method it can use to ensure that the code runs as fast as possible e.g. 1+1 faster than 1 floatingpoint+ 1.
-For each variable, including a function output, contained in a block of code, if all pieces of information necessary to determine its type are type inferrable, then so is the variable in question.
-This means that if a variable cannot be inferred, then no variables that depend on it in any way can be either.
-<!-- thanks Frames White: https://stackoverflow.com/a/58132532 -->
-While type stable function calls compile down to fast goto statements, unstable function calls compile to code that reads the list of all methods for that function and find the one that matches.
-This phenomenon called "dynamic dispatch" essentially prevents further optimizations via [inlining](https://en.wikipedia.org/wiki/Inline_expansion).
+Combining these two fundamental ideas together, and then entirely ignoring them, we define our own number type whose multiplication method allocates lots of memory many times, and then refuse to tell the compiler whether our variable has our awful type or not:
+
+```>awful-number-example
+struct AwfulNumber <: Number
+    n::Int
+end
+
+import Base.*
+
+function *(x::Number, y::AwfulNumber)
+    for _ in 1:100
+        _ = rand(100_000)
+    end
+    return x * y.n
+end
+
+# num::Union{Int, AwfulNumber} = AwfulNumber(2)
+num = AwfulNumber(2)
+@time 2*AwfulNumber(2)
+@time 2*num
+@time 2*3
+```
+
+In the following example, we can see that untyped global variables cause slowdowns precisely because their type can't be inferred.
+To accurately measure runtime we use [`@btime`](#measurements).
+
+```>instability-example
+function f(x, y)
+    return x^2 + 2*x*y + y^2
+end
+
+x_untyped, y_untyped = 5, 2
+x_typed::Int, y_typed::Int = 5, 2
+
+@time f(x_untyped, y_untyped)
+@time f(x_typed, y_typed)
+```
+
+If a global variable is left untyped, then the user could reassign it to a different type at any time, and so the compiler can never optimize code using its current type.
+This is just one way that type instability can appear in Julia code, and this topic, as well as tools to find and fix it, is further explored in a [later section](#type-stability).
 
 A heap allocation occurs when an object is to be allocated, but how much space to allocate cannot be inferred from its type.
 Its counterpart is the [stack allocation](https://en.wikipedia.org/wiki/Stack-based_memory_allocation), which will only be performed if the object being allocated has a known size *and* its data cannot be modified after allocation i.e. the data is [immutable](https://en.wikipedia.org/wiki/Immutable_object).
@@ -43,7 +92,7 @@ On the other hand, objects on the heap cannot be so heavily optimized by the com
 In order to manage the deallocation of heap objects after their usage, Julia has a [mark-and-sweep](https://en.wikipedia.org/wiki/Tracing_garbage_collection#Copying_vs._mark-and-sweep_vs._mark-and-don't-sweep) [garbage collector](https://docs.julialang.org/en/v1/devdocs/gc/), which runs periodically during code execution to free up space so that other objects can be allocated.
 The necessity of the garbage collector combined with the lack of optimizations means that heap allocations, while incredibly useful and oftentimes necessary, should be avoided if possible.
 
-Paraphrasing the Julia manual's [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/#Measure-performance-with-[@time](@ref)-and-pay-attention-to-memory-allocation) section: the most common causes of the "unnecessary" heap allocations are type-instability and unintended temporary arrays.
+Paraphrasing the Julia manual's [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/) section: the most common causes of the "unnecessary" heap allocations are type-instability and unintended temporary arrays.
 The example function below, which calculates a weighted mean and returns its positive part, subtly exhibits both of these issues:
 
 ```>heap-allocations-example
@@ -62,17 +111,15 @@ The type instability is a result of the final line `result > 0 ? result : 0`.
 What type does the function return?
 Sometimes it returns the integer `0`, whereas other times it returns `result`, which is, in most cases, a `Float64`.
 This dependence on run-time value as opposed to compile-time type results in the instability, causing an additional heap allocation which slows the function down further.
-We can fix this instability simply by replacing the final `0` with `zero(result)`, which returns the zero element of whatever type `result` happens to be.
+We can fix this instability simply by replacing the final `0` with `zero(result)`, which returns the zero element of whatever type `result` happens to be. -->
 
-Optimal implementation of algorithms in Julia comes down to these two concepts.
-For example, one of the manual's [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/) is to [__Avoid untyped global variables__](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables).
+Any specific performance tip, either those found in the [manual](https://docs.julialang.org/en/v1/manual/performance-tips/) or elsewhere, will ultimately come down to these two fundamental ideas.
+For example, it's recommended to [__Avoid untyped global variables__](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables).
 Why? Because the type of a global variable could change, so it causes type instability wherever it is used without being passed to a function as an argument.
 Why might you want to [preallocate outputs](https://docs.julialang.org/en/v1/manual/performance-tips/#Pre-allocating-outputs) and [fuse vectorized opterations](https://docs.julialang.org/en/v1/manual/performance-tips/#More-dots:-Fuse-vectorized-operations)? To minimise heap allocations.
 
 ## Measurements
 
-* [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl)
-* [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl)
 \tldr{Use BenchmarkTools.jl's `@benchmark` with a setup phase to get the best overview of performance or `@btime` as a drop in for `@time`.}
 
 The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints time, allocation, and compilation information. Because of how Julia's JIT compiler works, you should first run a function and then time it:
@@ -110,38 +157,35 @@ Now that we're interpolating our argument `v`, we can see that our function `sum
 
 Note that you can also construct variables and interpolate them:
 
-```>$-randomness-example
+<!-- ```>$-randomness-example
 @btime sum_abs($(rand(10)))
-```
+``` -->
 
 However, doing so will mean that any randomness will be the same for every run!
 Furthermore, constructing and interpolating multiple variables can get messy.
 As such, the best way to run a benchmark is to construct variables in a `setup` phase.
 Note that variables constructed this way should not be interpolated in as this indicates that BenchmarkTools should search for a global variable with that name.
 
-```>setup-example
+<!-- ```>setup-example
 my_matmul(A, b) = A * b;
 @btime my_matmul(A, b) setup=(
     # use semi-colons inside a setup block to start new lines
     A = rand(1000, 1000);
     b = rand(1000)
 )
-```
+``` -->
 
 A setup phase means that you get a full overview of a function's performance as not only are you running the function many times, each run also has a different input.
 
 For the best visualisation of performance, the `@benchmark` macro is also provided which shows performance histograms:
-```>benchmark-example
+<!-- ```>benchmark-example
 @benchmark my_matmul(A, b) setup=(
     A = rand(1000, 1000);
     b = rand(1000)
 )
-```
+``` -->
 
 Finally, it's worth noting that certain computations may be optimized away by the compiler before the benchmark takes place, resulting in suspicuously fast performance, however the [details of this](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations) are beyond the scope of this post and most users should not worry at all about this.
-
-<!-- I (Martin) have never used either of these, someone with experience can write here? -->
-* [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/)
 
 ## Measurements
 
@@ -180,6 +224,29 @@ end
 ```
 
 ## Type stability
+
+For a section of code to be considered type stable, the type inferred by the compiler must be "concrete", which means that the size of memory that needs to be allocated to store its value is known at compile time.
+Types declared abstract with `abstract type` are not concrete and neither are [parametric types](https://docs.julialang.org/en/v1/manual/types/#Parametric-Types) whose parameters are not specified:
+```>isconcretetype-example
+isconcretetype(AbstractVector)
+isconcretetype(Vector) # Shorthand for `Vector{T} where T`
+isconcretetype(Vector{Real})
+isconcretetype(Vector{Int64})
+```
+
+\advanced{
+`Vector{Real}` is concrete despite `Real` being abstract because all parametric types besides tuples are [invariant](https://docs.julialang.org/en/v1/manual/types/#man-parametric-composite-types) in their parameters (as opposed to covariant or contravariant).
+Because `Vector{Real}` therefore can't be subtyped, it must have a concrete implementation which, in Julia's case, is as a vector of pointers to individually allocated `Real` objects.
+This implementation detail (a pointer to pointers) also explains part of the reason why `Vector{Real}` is slow, the other being a lack of concrete compile-time specialisation on the elements of the vector.
+}
+
+Before running any piece of code, the Julia compiler tries to determine the most specialised method it can use to ensure that the code runs as fast as possible e.g. `1+1` faster than 1 floatingpoint+ 1.
+For each variable, including a function output, contained in a block of code, if all pieces of information necessary to determine its type are type inferrable, then so is the variable in question.
+This means that if a variable cannot be inferred, then no variables that depend on it in any way can be either.
+
+<!-- thanks Frames White: https://stackoverflow.com/a/58132532 -->
+While type stable function calls compile down to fast `GOTO` statements, unstable function calls compile to code that reads the list of all methods for that function and find the one that matches.
+This phenomenon called "dynamic dispatch" essentially prevents further optimizations via [inlining](https://en.wikipedia.org/wiki/Inline_expansion).
 
 * [Cthulhu.jl](https://github.com/JuliaDebug/Cthulhu.jl)
 * [JET.jl](https://github.com/aviatesk/JET.jl)
