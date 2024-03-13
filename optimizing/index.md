@@ -227,10 +227,25 @@ Finally, if you know a section is slow and you'll need to wait for it to be done
 
 ## Benchmark suites
 
-* [PkgBenchmark.jl](https://github.com/JuliaCI/PkgBenchmark.jl)
-* [BenchmarkCI.jl](https://github.com/tkf/BenchmarkCI.jl) (unmaintained)
-* [AirSpeedVelocity.jl](https://github.com/MilesCranmer/AirspeedVelocity.jl)
-* [PkgJogger.jl](https://github.com/awadell1/PkgJogger.jl)
+While we previously discussed the importance of documenting breaking changes in packages using [semantic versioning](/sharing/index.md#versions-and-registration), regressions in performance can also be vital to track.
+
+Package benchmarks are typically stored in `MyPackage/benchmark/benchmarks.jl` and the file typically defines a 
+  1. Load BenchmarkTools
+  2. Initialise a `const` `BenchmarkGroup()` called `SUITE` by convention.
+  3. Use `@benchmarkable` to define named benchmarks as key value pairs of `SUITE`
+
+```julia
+using BenchmarkTools
+
+const SUITE = BenchmarkGroup()
+
+#TODO Insert example of a suite of benchmarks
+```
+
+<!-- TODO: Elaborate -->
+To run this suite manually use * [PkgBenchmark.jl](https://github.com/JuliaCI/PkgBenchmark.jl)
+
+However, catching regressions is much easier when it is automated which is what tools like [AirSpeedVelocity.jl](https://github.com/MilesCranmer/AirspeedVelocity.jl) and [PkgJogger.jl](https://github.com/awadell1/PkgJogger.jl) aim to help with.
 
 ## Profiling
 
