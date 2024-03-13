@@ -218,11 +218,12 @@ For the best visualisation of performance, the `@benchmark` macro is also provid
 
 Finally, it's worth noting that certain computations may be optimized away by the compiler before the benchmark takes place, resulting in suspicuously fast performance, however the [details of this](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations) are beyond the scope of this post and most users should not worry at all about this.
 
-## Measurements
+### Other tools
 
-* [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl)
-* [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl)
-* [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl)
+The setup above is great for individual lines of code, but get insight into which parts of a larger program are bottlenecks it is recommended to use a [profiler](#profiling) or a lightweight tool like [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl).
+TimerOutputs allows you to label and time different sections of your code and summarise their performance by label.
+
+Finally, if you know a section is slow and you'll need to wait for it to be done, you can use [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl) to visualise how long it will take.
 
 ## Benchmark suites
 
