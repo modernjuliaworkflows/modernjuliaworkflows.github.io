@@ -93,9 +93,9 @@ The rest of this post will explain to you what each part of this folder does, an
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.develop(path=sitepath(&quot;MyAwesomePackage&quot;))  # ignore sitepath
 <span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/sharing/Project.toml`
-  <span class="sgr90">[86f6784c] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+  <span class="sgr90">[1a194997] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/sharing/Manifest.toml`
-  <span class="sgr90">[86f6784c] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+  <span class="sgr90">[1a194997] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyAwesomePackage
 </code></pre>
@@ -181,6 +181,8 @@ JET.JETToplevelResult{JET.JETAnalyzer{JET.BasicPass}, Base.Pairs{Symbol, Any, NT
 Test Passed
 </code></pre>
 <p>Note that both Aqua.jl and JET.jl might pick up false positives: refer to their respective documentations for ways to make them less sensitive.</p>
+<p>Finally, <a href="https://github.com/ericphanson/ExplicitImports.jl">ExplicitImports.jl</a> can help you get rid of generic imports to specify where each of the names in your package comes from.
+This is a good practice and makes your code more robust to name conflicts between dependencies.</p>
 <h2 id="documentation" ><a href="#documentation"> Documentation</a></h2><p>Even if your code does everything it is supposed to, it will be useless to others (and pretty soon to yourself) without proper documentation.
 Adding <a href="https://docs.julialang.org/en/v1/manual/documentation/">docstrings</a> everywhere needs to become a second nature.
 This way, readers and users of your code can query them through the REPL help mode.
@@ -267,7 +269,7 @@ Working together on a software project has its own set of challenges, which are 
 Of course, collaboration goes both ways: if you find a Julia package you really like, you are more than welcome to <a href="https://julialang.org/contribute/">contribute</a> as well, for example by opening issues or submitting pull requests.</p>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: March 15, 2024. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: March 20, 2024. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
