@@ -170,6 +170,9 @@ JET.test_package(MyAwesomePackage)
 
 Note that both Aqua.jl and JET.jl might pick up false positives: refer to their respective documentations for ways to make them less sensitive.
 
+Finally, [ExplicitImports.jl](https://github.com/ericphanson/ExplicitImports.jl) can help you get rid of generic imports to specify where each of the names in your package comes from.
+This is a good practice and makes your code more robust to name conflicts between dependencies.
+
 ## Documentation
 
 Even if your code does everything it is supposed to, it will be useless to others (and pretty soon to yourself) without proper documentation.

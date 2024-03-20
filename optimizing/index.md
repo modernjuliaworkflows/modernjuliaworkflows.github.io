@@ -16,6 +16,7 @@ title = "Optimizing your code"
 
 * [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl)
 * [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl)
+* [Chairmarks.jl](https://github.com/LilithHafner/Chairmarks.jl)
 * [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl)
 
 ## Benchmark suites
