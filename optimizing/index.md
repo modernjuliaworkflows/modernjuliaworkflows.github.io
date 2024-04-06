@@ -11,13 +11,13 @@ title = "Optimizing your code"
 ## Principles
 
 All [tips](https://docs.julialang.org/en/v1/manual/performance-tips/) to writing performant Julia code can be derived from two fundamental ideas:
-1. Ensure that the compiler can derive the type of every variable.
-2. Avoid unnecessary heap allocations.
+1. Ensure that the compiler can derive the type of every variable so optimizations be performed.
+2. Avoid unnecessary heap allocations which slow the code down.
 
 The compiler's job is to optimize and translate Julia code it into runnable [machine code](https://en.wikipedia.org/wiki/Machine_code).
 If some information about a variable's type isn't available to the compiler, for example because the [return type of a function is value-dependent](https://docs.julialang.org/en/v1/manual/performance-tips/#Write-%22type-stable%22-functions), then it cannot safely perform its most powerful optimizations as it cannot satisfy assumptions required for the optimizations to be performed.
 
-An (heap) allocation occurs whenever a variable is allocated whose type doesn't contain enough information to know exactly how much space is required to store all of its data.
+A "heap" allocation occurs whenever a variable is allocated whose type doesn't contain enough information to know exactly how much space is required to store all of its data.
 An example of this is `Vector{Int}`, which doesn't contain information about how many elements the vector has.
 In order to manage the deallocation of objects after their usage, Julia has a [mark-and-sweep](https://en.wikipedia.org/wiki/Tracing_garbage_collection#Copying_vs._mark-and-sweep_vs._mark-and-don't-sweep) [garbage collector](https://docs.julialang.org/en/v1/devdocs/gc/), which runs periodically during code execution to free up space so that other objects can be allocated.
 Execution of code is stopped while the garbage collector runs, so minimising its usage is important.
@@ -26,32 +26,65 @@ In the example below, we break both fundamental principles.
 
 ```>break-rules-example
 x = rand(100)
-function return_2(y)
+function bad_function(y)
     a = x + y
     b = x - y
     c = a ./ b
-    return 2
-end
+end;
 y = rand(100)
-@time return_2(y)
+bad_function(y) # run once to compile the function
+using BenchmarkTools
+@btime bad_function(y)
 ```
 
-While `y` is correctly passed as an argument to `return_2`, `x` isn't, and because it is an [untyped global variable](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables), its type must be inferred each time the function is run.
-This could be solved by redefining `return_2` to accept both `x` and `y` as arguments.
+While `y` is correctly passed as an argument to `bad_function`, `x` isn't, and because it is an [untyped global variable](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables), its type must be inferred each time the function is run, which results in an allocation.
+This could be solved by redefining `bad_function` to accept both `x` and `y` as arguments.
+```>remove-untyped-global
+function better_function(x, y)
+    a = x + y
+    b = x - y
+    c = a ./ b
+    return c # technically superfluous return, but highly recommended for clarity
+end;
+@btime better_function(x, y)
+```
 
-Moreover, even though the variables `a`, `b`, and `c` are unused, because the function is type-unstable and the objects involved in their calculation are heap allocated, they cannot be "optimised away" by the compiler.
-Worse still, even if the user only cares about the value of `c` the variables `a` and `b` are still heap allocated.
-Notably, this _cannot_ be improved by writing the function as
+Moreover, even if the user only cares about the value of `c` the variables `a` and `b` are still heap allocated.
+Notably, this _cannot_ simply be improved by writing the function as
 
-```julia
-function return_2(y)
+```>no_better
+function no_better_function(x, y)
     c = (x + y) ./ (x - y)
-    return 2
-end
+    return c
+end;
 ```
 
-because Julia allocates intermediate values.
-The way to avoid intermediate allocations is to reuse memory as much as possible either by preallocating memory for the intermediate values manually or with a tool such as [PreallocationTools.jl](https://github.com/SciML/PreallocationTools.jl), or by performing the vector operations in-place with `@.`.
+because Julia allocates intermediate values in the same line.
+The way to avoid intermediate allocations is to reuse memory as much as possible.
+Typically, the simplest way to do this is to "fuse" operations through broadcasting with `@.`
+
+```>fuse-operations
+function best_function(x, y)
+    c = @. (x + y) ./ (x - y)
+    return c
+end;
+```
+Finally, a common design pattern in Julia packages to achieve convenience and offer the best performance to end users is to write a non-allocating, in-place version of a function which performs all of the computation, and an allocating version which simply preallocates memory, and calls into the in-place function:
+
+```>timings
+function best_function!(c, x, y)
+     @. c = (x + y) ./ (x - y)
+    return nothing
+end;
+function best_function(x, y)
+    c = zeros(size(x))
+    best_function!(c, x, y)
+    return c
+end
+@btime best_function(x, y)
+c = zeros(100)
+@btime best_function!(c, x, y)
+```
 
 <!-- Let's look at an illustrative example that breaks both of these rules.
 To break the first, we define a global variable which we later use many times [without passing it to a function](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables) or annotating its type [at the point of usage](https://docs.julialang.org/en/v1/manual/performance-tips/#Annotate-values-taken-from-untyped-locations).
@@ -153,13 +186,14 @@ Why might you want to [preallocate outputs](https://docs.julialang.org/en/v1/man
 
 \tldr{Use BenchmarkTools.jl's `@benchmark` with a setup phase to get the best overview of performance or `@btime` as a drop in for `@time`.}
 
-The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints time, allocation, and compilation information. Because of how Julia's JIT compiler works, you should first run a function and then time it:
+The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints time, allocation, and compilation information.
+Because code needs to be compiled before it can be run, you should first run a function without timing it so it can be compiled, and _then_ time it:
 
 ```>time-example
 sum_abs(vec) = sum(abs, vec)
 v = rand(100)
-@time sum_abs(v)
-@time sum_abs(v)
+@time sum(abs,v)
+@time sum(abs,v)
 ```
 
 Above, we can see that the first invocation of `@time` was dominated by the compilation time of `sum_abs`, while the second only involved a single allocation of 16 bytes.
@@ -243,7 +277,7 @@ const SUITE = BenchmarkGroup()
 ```
 
 <!-- TODO: Elaborate -->
-To run this suite manually use * [PkgBenchmark.jl](https://github.com/JuliaCI/PkgBenchmark.jl)
+To run this suite manually use [PkgBenchmark.jl](https://github.com/JuliaCI/PkgBenchmark.jl)
 
 However, catching regressions is much easier when it is automated which is what tools like [AirSpeedVelocity.jl](https://github.com/MilesCranmer/AirspeedVelocity.jl) and [PkgJogger.jl](https://github.com/awadell1/PkgJogger.jl) aim to help with.
 
@@ -315,8 +349,30 @@ This phenomenon called "dynamic dispatch" essentially prevents further optimizat
 
 ## Parallelism
 
-* [distributed vs. multithreading](https://docs.julialang.org/en/v1/manual/parallel-computing/)
-* [OhMyThreads.jl](https://github.com/JuliaFolds2/OhMyThreads.jl)
+Julia provides [built-in support](https://docs.julialang.org/en/v1/manual/parallel-computing/) for asynchronous, distributed, and multi-threaded computing.
+Notably, Julia's task scheduling is depth-first, which is typically [better for high-performance computing](https://www.youtube.com/watch?v=YdiZa0Y3F3c), and was the culmination of an [Intel research project](https://www.intel.com/content/www/us/en/developer/articles/technical/new-threading-capabilities-in-julia-v1-3.html) implemented in Julia.
+
+The number of threads that Julia runs with can be set through a command line flag:
+```bash
+julia --threads=4
+```
+
+\vscode{
+    The default number of threads can be edited by adding `"julia.NumThreads": 4,` to your settings.json. This will be applied to the integrated terminal.
+}
+
+Once Julia is running, you can check if this was successful by running
+```>
+Threads.nthreads()
+```
+
+For asynchronous computing, use Julia's built-in interface to [`Task`s](https://docs.julialang.org/en/v1/manual/asynchronous-programming/#Basic-Task-operations) and [`Channel`s](https://docs.julialang.org/en/v1/manual/asynchronous-programming/#Communicating-with-Channels).
+For distributed memory-parallel computing, Julia ships with the [`Distributed`](https://github.com/JuliaLang/Distributed.jl) standard library.
+For multi-threaded computing, there are a number of options available, both in the standard library and through external packages.
+
+* [Base.Threads](https://docs.julialang.org/en/v1/base/multi-threading/)
+* [OhMyThreads.jl](https://github.com/JuliaFolds2/OhMyThreads.jl) for something else, and comes with a [translation guide](https://juliafolds2.github.io/OhMyThreads.jl/stable/translation/) between Threads.jl and this one
+* [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl) for parallelised base functions
 
 ## SIMD / GPU
 
@@ -324,10 +380,6 @@ This phenomenon called "dynamic dispatch" essentially prevents further optimizat
 * [Tullio.jl](https://github.com/mcabbott/Tullio.jl)
 * [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
 
-## Efficient types
-
-* [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)
-* [Dictionaries.jl](https://github.com/andyferris/Dictionaries.jl)
 ## Efficient types
 
 * [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)
