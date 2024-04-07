@@ -382,5 +382,44 @@ For multi-threaded computing, there are a number of options available, both in t
 
 ## Efficient types
 
-* [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)
-* [Dictionaries.jl](https://github.com/andyferris/Dictionaries.jl)
+Using an efficient data structure is a tried and true way of improving the performance.
+While users can write their own efficient implementations through officially documented [interfaces](https://docs.julialang.org/en/v1/manual/interfaces/), a number of packages containing common use cases are more tightly integrated into the Julia ecosystem.
+
+### StaticArrays
+
+Using [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl), you can construct arrays that contain not only their type information, but also their size.
+With `MArray`, `MMatrix`, and `MVector`, data is mutable as in normal arrays.
+However, the corresponding `SArray`, `SMatrix` and `SVector` types are immutable, so the object does not need to be garbage collected as it can be stack-allocated.
+Additionally, through multiple dispatch, statically sized arrays can have specialised, efficient methods for certain algorithms such as [QR-factorisation](https://juliaarrays.github.io/StaticArrays.jl/stable/pages/api/#LinearAlgebra.qr-Tuple{StaticArray{Tuple{N,%20M},%20T,%202}%20where%20{N,%20M,%20T}}).
+
+`SArray`s, as stack-allocated objects like tuples, cannot be mutated, but should instead be replaced entirely, but doing so comes at almost no extra cost compared to directly editing the data of a mutable object.
+
+```>
+using StaticArrays
+x = [1, 2, 3]
+x .= x .+ 1
+
+sx = SA[1, 2, 3] # SA constructs an SArray
+sx = sx .+ 1 # Note the = is not broadcasted
+```
+
+\advanced{
+    You can make your own array types with nice interfaces easily by inheriting from `FieldArray`/`FieldMatrix`/`FieldVector`.
+```>
+struct CustomVector <: FieldVector{2, Float64}
+    a::Float64
+    b::Float64
+end
+result = CustomVector(2.0, 3.0) ./ CustomVector(5.0, 6.0)
+result.a```
+}
+
+### Other data structures
+
+All but the most obscure data structures can be found in the packages from the [JuliaCollections](https://github.com/JuliaCollections) organisation, along with useful packages for [iteration](https://github.com/JuliaCollections/IterTools.jl) and [memoization](https://github.com/JuliaCollections/Memoize.jl).
+
+The largest package amanged by the organization is [DataStructures.jl](https://github.com/JuliaCollections/DataStructures.jl) which, to name a few, contains the [`Stack` and `Queue`](https://juliacollections.github.io/DataStructures.jl/stable/stack_and_queue/) structures, the rarer [`Trie`](https://juliacollections.github.io/DataStructures.jl/stable/trie/), [`RedBlackTree`](https://juliacollections.github.io/DataStructures.jl/stable/red_black_tree/), and [`DiBitVector`](https://juliacollections.github.io/DataStructures.jl/stable/dibit_vector/), as well as [various](https://juliacollections.github.io/DataStructures.jl/stable/robin_dict/) [hashmap](https://juliacollections.github.io/DataStructures.jl/stable/swiss_dict/) [variations](https://juliacollections.github.io/DataStructures.jl/stable/sorted_containers/#).
+
+As an alternative to the builtin `Base.Dict`, [`Dictionaries.jl`](https://github.com/andyferris/Dictionaries.jl) implements a number of different types of hashmap, each with their own strengths and weaknesses.
+For example, as stated in the README, the flagship `Dictionary` preserves the order of inserted elements and iterates faster partly due to this ordering.
+Its drawback is that insertion and deletion are slower than `Base.Dict`
