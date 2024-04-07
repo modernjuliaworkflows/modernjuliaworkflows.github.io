@@ -381,6 +381,7 @@ For multi-threaded computing, there are a number of options available, both in t
 * [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
 
 ## Efficient types
+\tldr{Be aware that [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl) exist and learn how they work}
 
 Using an efficient data structure is a tried and true way of improving the performance.
 While users can write their own efficient implementations through officially documented [interfaces](https://docs.julialang.org/en/v1/manual/interfaces/), a number of packages containing common use cases are more tightly integrated into the Julia ecosystem.
@@ -394,13 +395,23 @@ Additionally, through multiple dispatch, statically sized arrays can have specia
 
 `SArray`s, as stack-allocated objects like tuples, cannot be mutated, but should instead be replaced entirely, but doing so comes at almost no extra cost compared to directly editing the data of a mutable object.
 
-```>
+```>staticarrays-example
 using StaticArrays
 x = [1, 2, 3]
 x .= x .+ 1
 
 sx = SA[1, 2, 3] # SA constructs an SArray
 sx = sx .+ 1 # Note the = is not broadcasted
+```
+
+For a more familiar in-place update syntax for immutable data structures like `SArrays`s, you can use [Accessors.jl](https://github.com/JuliaObjects/Accessors.jl):
+
+```>accessors-example
+using Accessors
+@set sx[1] = 3 # Returns a copy of data, does not update the variable
+sx
+@reset sx[1] = 4 # Replaces the original data with an updated copy
+sx
 ```
 
 \advanced{
@@ -411,7 +422,8 @@ struct CustomVector <: FieldVector{2, Float64}
     b::Float64
 end
 result = CustomVector(2.0, 3.0) ./ CustomVector(5.0, 6.0)
-result.a```
+result.a
+```
 }
 
 ### Other data structures
@@ -422,4 +434,4 @@ The largest package amanged by the organization is [DataStructures.jl](https://g
 
 As an alternative to the builtin `Base.Dict`, [`Dictionaries.jl`](https://github.com/andyferris/Dictionaries.jl) implements a number of different types of hashmap, each with their own strengths and weaknesses.
 For example, as stated in the README, the flagship `Dictionary` preserves the order of inserted elements and iterates faster partly due to this ordering.
-Its drawback is that insertion and deletion are slower than `Base.Dict`
+Its drawback is that insertion and deletion are slower than `Base.Dict`.
