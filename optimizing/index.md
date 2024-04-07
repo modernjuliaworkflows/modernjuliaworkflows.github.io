@@ -15,7 +15,7 @@ All [tips](https://docs.julialang.org/en/v1/manual/performance-tips/) to writing
 2. Avoid unnecessary heap allocations which slow the code down.
 
 The compiler's job is to optimize and translate Julia code it into runnable [machine code](https://en.wikipedia.org/wiki/Machine_code).
-If some information about a variable's type isn't available to the compiler, for example because the [return type of a function is value-dependent](https://docs.julialang.org/en/v1/manual/performance-tips/#Write-%22type-stable%22-functions), then it cannot safely perform its most powerful optimizations as it cannot satisfy assumptions required for the optimizations to be performed.
+If some information about a variable's type isn't available to the compiler, for example because the [return type of a function is value-dependent](https://docs.julialang.org/en/v1/manual/performance-tips/#Write-%22type-stable%22-functions), then it cannot safely perform its most powerful optimizations as it cannot satisfy assumptions required for the optimizations to be performed. For more information see [below](#type_stability).
 
 A "heap" allocation occurs whenever a variable is allocated whose type doesn't contain enough information to know exactly how much space is required to store all of its data.
 An example of this is `Vector{Int}`, which doesn't contain information about how many elements the vector has.
@@ -184,7 +184,7 @@ Why might you want to [preallocate outputs](https://docs.julialang.org/en/v1/man
 
 ## Measurements
 
-\tldr{Use BenchmarkTools.jl's `@benchmark` with a setup phase to get the best overview of performance or `@btime` as a drop in for `@time`.}
+\tldr{Use BenchmarkTools.jl's `@benchmark` with a setup phase to get the best overview of performance or `@btime` as a drop in for `@time`. Use Chairmarks.jl as a faster alternative.}
 
 The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints time, allocation, and compilation information.
 Because code needs to be compiled before it can be run, you should first run a function without timing it so it can be compiled, and _then_ time it:
@@ -251,6 +251,9 @@ For the best visualisation of performance, the `@benchmark` macro is also provid
 ``` -->
 
 Finally, it's worth noting that certain computations may be optimized away by the compiler before the benchmark takes place, resulting in suspicuously fast performance, however the [details of this](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations) are beyond the scope of this post and most users should not worry at all about this.
+
+### Chairmarks.jl
+This package offers an alternative to BenchmarkTools.jl, promising _significantly_ faster benchmarking at the cost of
 
 ### Other tools
 
@@ -335,7 +338,55 @@ This phenomenon called "dynamic dispatch" essentially prevents further optimizat
 
 ## Memory management
 
-* [AllocCheck.jl](https://github.com/JuliaLang/AllocCheck.jl)
+After ensuring type stability, one should try to reduce the number of heap allocations a program makes in order to spend less time in garbage collection cycles.
+While this can be done using the timing macros above (`@time`, `@btime`, `@b`), this can also be done as part of your writing or CI workflow using [AllocCheck.jl](https://github.com/JuliaLang/AllocCheck.jl), a package by the official JuliaLang organisation.
+
+By annotating a function you are writing with `@check_allocs`, if the function is run and the compiler detects that it might allocate, it will throw an error which can be inspected in a try-catch block to see exactly where this occurred.
+
+<!-- This currently segfaults Julia, see https://github.com/JuliaLang/AllocCheck.jl/issues/67 -->
+<!-- ```>alloc-writing-workflow
+using AllocCheck
+@check_allocs my_add(x, y) = x .+ y
+my_add(SA[1, 2, 3], SA[4, 5, 6])
+try
+    my_add([1, 2, 3], [4, 5, 6])
+catch e
+    e.errors[1]
+end
+``` -->
+
+Alternatively, to ensure that non-allocating functions never regress in future versions without you knowing, you can write a test set to check allocations by providing the function and a concrete type-signature.
+```julia
+@testset "non-allocating" begin
+    @test isempty(AllocCheck.check_allocs(my_func, (Float64, Float64)))
+end
+```
+
+A common pattern in Julia code is `push!`ing to a vector, which can be made more efficient by using a `collector` from [BangBang.jl](https://github.com/JuliaFolds/BangBang.jl), which aims to allow users to interact with immutable and mutable data structures using the same syntax.
+
+```julia
+# Inefficient
+result = Int64[]
+for i in 1:10
+    push!(result, i)
+end
+result
+
+# Weird flex but ok
+result = SVector{0, Int64}
+for i in 1:10
+    push!!(result, i)
+end
+result
+
+# Efficient
+result = collector()
+for i in 1:10
+    push!!(result, i)
+end
+finish!(result)
+```
+
 * [BangBang.jl](https://github.com/JuliaFolds2/BangBang.jl)
 
 ## Precompilation
