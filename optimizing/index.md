@@ -387,14 +387,10 @@ end
 finish!(result)
 ```
 
-* [BangBang.jl](https://github.com/JuliaFolds2/BangBang.jl)
-
 ## Precompilation
 
 * [PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl)
 * [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl)
-<!-- * [StaticCompiler.jl](https://github.com/tshort/StaticCompiler.jl)  I don't think this belongs here-->
-* [StaticCompiler.jl](https://github.com/tshort/StaticCompiler.jl)
 * [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl)
 * [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
 
