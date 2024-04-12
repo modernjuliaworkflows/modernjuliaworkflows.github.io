@@ -308,6 +308,7 @@ end
 ```
 
 ## Type stability
+\tldr{Use JET.jl to automatically detect type instabilities in your code, and `@code_typed`/`@code_warntype` and Cthulhu.jl to do so manually.}
 
 For a section of code to be considered type stable, the type inferred by the compiler must be "concrete", which means that the size of memory that needs to be allocated to store its value is known at compile time.
 Types declared abstract with `abstract type` are not concrete and neither are [parametric types](https://docs.julialang.org/en/v1/manual/types/#Parametric-Types) whose parameters are not specified:
@@ -332,9 +333,44 @@ This means that if a variable cannot be inferred, then no variables that depend 
 While type stable function calls compile down to fast `GOTO` statements, unstable function calls compile to code that reads the list of all methods for that function and find the one that matches.
 This phenomenon called "dynamic dispatch" essentially prevents further optimizations via [inlining](https://en.wikipedia.org/wiki/Inline_expansion).
 
-* [Cthulhu.jl](https://github.com/JuliaDebug/Cthulhu.jl)
-* [JET.jl](https://github.com/aviatesk/JET.jl)
-* [linting in VSCode](https://www.julia-vscode.org/docs/stable/userguide/linter/)
+### Detecting instabilities
+Fixing type instabilities is usually a straightforward affair once one is found, but finding the source of the instability is not always easy.
+The simplest way to detect an instability is with the builtin macros `@code_typed` and `@code_warntype`:
+
+```!interactiveutils
+using InteractiveUtils  # hide
+```
+
+```>
+#TODO: Find a different example
+unstable_ReLU(x) = x > 0 ? x : 0;
+@code_typed unstable_ReLU(-1) # Stable
+@code_warntype unstable_ReLU(2.0) # Unstable!
+```
+
+The function `unstable_ReLU` is not type stable when called with a float argument.
+In the output of `@code_typed`, we see in the last line that the return type is `Int64`.
+However, in `@code_warntype` the return type, shown as the type of `Body`, is `Union{Float64, Int64}`, which is not concrete and is therefore flagged to the user.
+
+The problem with this method is that, while an instability detected by the macros will be present inside the called function, it may not be the _actual_ cause of the instability, and one may need to make repeated calls to the macros to determine the underlying culprit.
+This is where tools like [Cthulhu.jl](https://github.com/JuliaDebug/Cthulhu.jl) and [JET.jl](https://github.com/aviatesk/JET.jl) can help.
+
+Cthulhu.jl exposes the `@descend` macro which can be used to interactively "step through" lines of the corresponding typed code with the arrow keys and "descend" into a particular line with `Enter`, where any instabilities can be highlighted by pressing the "w" key.
+This is akin to repeatedly calling `@code_warntype` deeper and deeper into your functions, slowly succumbing to the madness...
+The official [README](https://github.com/JuliaDebug/Cthulhu.jl) provides more information on the controls and options as well as a [video example](https://www.youtube.com/watch?v=pvduxLowpPY).
+
+The best way to avoid instabilities is not to be automatically flagged when one is detected.
+This is among the functionality provided by [JET.jl](https://github.com/aviatesk/JET.jl).
+We previously spoke about JET in the [Sharing](../sharing/#code_quality) article in the context of [error analysis](https://aviatesk.github.io/JET.jl/stable/jetanalysis/#jetanalysis), but JET also provides [optimization analysis](https://aviatesk.github.io/JET.jl/stable/optanalysis/) aimed primarily at finding type instabilities.
+
+While [test integrations](https://aviatesk.github.io/JET.jl/stable/optanalysis/#optanalysis-test-integration) are also provided, the interactive entry point of JET is the `@report_opt` macro.
+
+```>JET_opt
+using JET
+@report_opt unstable_ReLU(1.0)
+```
+
+\vscode{This can be run periodically on your codebase and show any problems detected. [linting in VSCode](https://www.julia-vscode.org/docs/stable/userguide/linter/)}
 
 ## Memory management
 
