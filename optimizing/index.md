@@ -10,7 +10,7 @@ title = "Optimizing your code"
 
 ## Principles
 
-All [tips](https://docs.julialang.org/en/v1/manual/performance-tips/) to writing performant Julia code can be derived from two fundamental ideas:
+All tips to writing performant Julia code can be derived from two fundamental ideas:
 1. Ensure that the compiler can derive the type of every variable so optimizations be performed.
 2. Avoid unnecessary heap allocations which slow the code down.
 
@@ -192,8 +192,8 @@ Because code needs to be compiled before it can be run, you should first run a f
 ```>time-example
 sum_abs(vec) = sum(abs, vec)
 v = rand(100)
-@time sum(abs,v)
-@time sum(abs,v)
+@time sum_abs(v) # Inaccurate, >99% note compilation time
+@time sum_abs(v) # Accurate
 ```
 
 Above, we can see that the first invocation of `@time` was dominated by the compilation time of `sum_abs`, while the second only involved a single allocation of 16 bytes.
@@ -253,12 +253,13 @@ For the best visualisation of performance, the `@benchmark` macro is also provid
 Finally, it's worth noting that certain computations may be optimized away by the compiler before the benchmark takes place, resulting in suspicuously fast performance, however the [details of this](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations) are beyond the scope of this post and most users should not worry at all about this.
 
 ### Chairmarks.jl
-This package offers an alternative to BenchmarkTools.jl, promising _significantly_ faster benchmarking at the cost of
+This package offers an alternative to BenchmarkTools.jl, promising _significantly_ faster benchmarking while attempting to maintain high accuracy, while using an alternative syntax.
+
 
 ### Other tools
 
 The setup above is great for individual lines of code, but get insight into which parts of a larger program are bottlenecks it is recommended to use a [profiler](#profiling) or a lightweight tool like [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl).
-TimerOutputs allows you to label and time different sections of your code and summarise their performance by label.
+This package allows you to label different sections of your code, then time them and view the performance summarised by label.
 
 Finally, if you know a section is slow and you'll need to wait for it to be done, you can use [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl) to visualise how long it will take.
 
@@ -285,6 +286,60 @@ To run this suite manually use [PkgBenchmark.jl](https://github.com/JuliaCI/PkgB
 However, catching regressions is much easier when it is automated which is what tools like [AirSpeedVelocity.jl](https://github.com/MilesCranmer/AirspeedVelocity.jl) and [PkgJogger.jl](https://github.com/awadell1/PkgJogger.jl) aim to help with.
 
 ## Profiling
+\tldr{
+    The built-in [Profile](https://docs.julialang.org/en/v1/stdlib/Profile/#lib-profiling) module and its [`Allocs`](https://docs.julialang.org/en/v1/stdlib/Profile/#Memory-profiling) submodule can help you find performance bottlenecks.
+    Visualise the results interactively with [PProf.jl](https://github.com/JuliaPerf/PProf.jl) or [ProfileView.jl](https://github.com/timholy/ProfileView.jl), or with [ProfileSVG.jl](https://github.com/kimikage/ProfileSVG.jl) if you program in Jupyter/Pluto notebooks.
+}
+
+Whereas a benchmark measures the overall performance of some code, a profiler breaks this data down function by function.
+This allows the user to identify sections of code responsible for performance bottlenecks, and shows precisely which functions take up most of the running time.
+As with benchmarks, there are a number of ways to both collect and visualise this performance data.
+Julia features a built-in [sampling profiler](https://en.wikipedia.org/wiki/Profiling_(computer_programming)#Statistical_profilers), a tool that periodically captures a snapshot of what the program is doing.
+
+Let's define a few inefficient functions and then use the built-in `Profile` module, along with [PProf.jl](https://github.com/JuliaPerf/PProf.jl) to identify the lines causing trouble.
+
+```julia profile-functions
+relu(x) = x > 0 ? x : 0
+
+function do_work(xs)
+    ans = []
+    for x in xs
+        push!(ans, relu(x))
+    end
+    return ans
+end
+```
+
+When running `@profile`, the data collected is saved to a global buffer.
+You should clear this buffer with `Profile.clear()` each time you want to perform a new performance analysis.
+
+Note that if your code is fast, you may need to run it multiple times in a loop.
+This is because it may run fast enough that the code is never actually sampled.
+This is an issue for code faster than 1 ms on Unix systems and 10 ms on Windows, but these values can be changed by running `Profile.init(delay=0.01)`, where `delay` is measured in seconds.
+<!-- Given that the sample rate is a global variable and the number of runs is a local one, it makes more sense to adjust the local property i.e. increase the number of runs when needed as opposed to changing the sample delay every time you run a sample. -->
+
+```julia profile-example
+using Profile
+using PProf
+
+xs = rand(1_000_000) .- 0.5;
+
+begin
+    Profile.clear()
+    @profile do_work(xs)
+    pprof() # Or replace with some other profile visualisation
+end
+```
+
+*Inspects call stack*
+
+*Notices bulge*
+
+"OwO what's this?"
+
+### Allocation profiling
+
+The Profile module also contains `Allocs`, a submodule
 
 * [built-in profiler](https://docs.julialang.org/en/v1/manual/profile/) and [allocation profiler](https://docs.julialang.org/en/v1/stdlib/Profile/#Memory-profiling)
 * [ProfileView.jl](https://github.com/timholy/ProfileView.jl) / [ProfileSVG.jl](https://github.com/kimikage/ProfileSVG.jl)
