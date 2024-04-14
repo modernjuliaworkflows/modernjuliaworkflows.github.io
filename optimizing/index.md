@@ -288,7 +288,7 @@ However, catching regressions is much easier when it is automated which is what 
 ## Profiling
 \tldr{
     The built-in [Profile](https://docs.julialang.org/en/v1/stdlib/Profile/#lib-profiling) module and its [`Allocs`](https://docs.julialang.org/en/v1/stdlib/Profile/#Memory-profiling) submodule can help you find performance bottlenecks.
-    Visualise the results interactively with [PProf.jl](https://github.com/JuliaPerf/PProf.jl) or [ProfileView.jl](https://github.com/timholy/ProfileView.jl), or with [ProfileSVG.jl](https://github.com/kimikage/ProfileSVG.jl) if you program in Jupyter/Pluto notebooks.
+    Visualise the results interactively with [PProf.jl](https://github.com/JuliaPerf/PProf.jl), or with [ProfileSVG.jl](https://github.com/kimikage/ProfileSVG.jl) if you program in Jupyter/Pluto notebooks.
 }
 
 Whereas a benchmark measures the overall performance of some code, a profiler breaks this data down function by function.
@@ -296,71 +296,88 @@ This allows the user to identify sections of code responsible for performance bo
 As with benchmarks, there are a number of ways to both collect and visualise this performance data.
 Julia features a built-in [sampling profiler](https://en.wikipedia.org/wiki/Profiling_(computer_programming)#Statistical_profilers), a tool that periodically captures a snapshot of what the program is doing.
 
-Let's define a few inefficient functions and then use the built-in `Profile` module, along with [PProf.jl](https://github.com/JuliaPerf/PProf.jl) to identify the lines causing trouble.
+Let's define a few inefficient functions and then use a few different tools to identify the lines causing trouble.
 
 ```julia profile-functions
-relu(x) = x > 0 ? x : 0
+slow_relu(x) = x > 0 ? x : 0 # Don't define ReLU like this.
 
 function do_work(xs)
     ans = []
     for x in xs
-        push!(ans, relu(x))
+        push!(ans, slow_relu(x))
     end
     return ans
 end
 ```
 
-When running `@profile`, the data collected is saved to a global buffer.
-You should clear this buffer with `Profile.clear()` each time you want to perform a new performance analysis.
+\vscode{
+    Calling `@profview do_work(xs)` will open an interactive flame graph of the profiled stackframes in a split screen. Note that, due to function name overlap, importing ProfileView in a VSCode session causes namespace conflicts which can be resolved by writing `ProfileView.@profview`.
+}
 
-Note that if your code is fast, you may need to run it multiple times in a loop.
-This is because it may run fast enough that the code is never actually sampled.
-This is an issue for code faster than 1 ms on Unix systems and 10 ms on Windows, but these values can be changed by running `Profile.init(delay=0.01)`, where `delay` is measured in seconds.
-<!-- Given that the sample rate is a global variable and the number of runs is a local one, it makes more sense to adjust the local property i.e. increase the number of runs when needed as opposed to changing the sample delay every time you run a sample. -->
+The tools [ProfileView.jl](https://github.com/timholy/ProfileView.jl) and [PProf.jl](https://github.com/JuliaPerf/PProf.jl) both allow users to produce and interact with CPU flamegraphs, in which functions that were more frequently sampled take up a wider space in the chart.
+ProfileView.jl is simpler to use, but PProf is more featureful and is based on `pprof`, an external tool maintained by employees at Google which can be used to profile more than just Julia code.
+The code example below demonstrates the usage differences between the packages:
 
-```julia profile-example
-using Profile
+```julia profileview-example
+xs = rand(100_000) .- 0.5;
+
+do_work(xs) # Run once to precompile
+
+# ProfileView.jl
+using ProfileView
+@profview do_work(xs)
+```
+
+ProfileView exports `@profileview` which combines the collection and visualisation step in one, opening the flamegraph in a separate window.
+
+```julia pprof-example
+# PProf.jl
+using Profile #stdlib
 using PProf
-
-xs = rand(1_000_000) .- 0.5;
-
-begin
+begin 
     Profile.clear()
     @profile do_work(xs)
-    pprof() # Or replace with some other profile visualisation
+    pprof()
 end
 ```
 
-*Inspects call stack*
+On the other hand PProf.jl requires slightly more effort to use.
+When running `@profile`, the CPU data collected is saved to a global buffer which must be cleared with `Profile.clear()` each time you want to perform a new performance analysis.
+Next, the call to `pprof` produces a file called `profile.pb.gz` and provides a link to open it in a locally hosted web server.
+Upon opening this server in a browser, the user is presented with a call graph, which visualises how often functions call eachother.
+A more traditional flamegraph view can be selected from the options menu.
+Users of PProf should put `*.pb.gz` in their .gitignore file to avoid cluttering their codebase.
 
-*Notices bulge*
+To integrate profile visualisations into notebook environments like Jupyter and Pluto, use [ProfileSVG.jl](https://github.com/kimikage/ProfileSVG.jl), whose outputs can be embedded into a notebook.
 
-"OwO what's this?"
+Note that no matter which tool you use, if your code is fast, you may need to run it multiple times in a loop.
+This is because it may run quickly enough that the code is never actually sampled.
+This is an issue for code faster than 1 ms on Unix systems and 10 ms on Windows, but these values can be changed (globally) by running `Profile.init(delay=0.01)`, where `delay` is measured in seconds.
+Given that the sample rate is a global variable and the number of runs is a local one, it makes more sense to adjust the number of runs when required as opposed to changing the sample delay every time you run a sample.
 
 ### Allocation profiling
 
-The Profile module also contains `Allocs`, a submodule
+The Profile module also contains `Allocs`, a submodule that can be used to track down the source of allocations.
+Currently, [PProf.jl](https://github.com/JuliaPerf/PProf.jl) is the only tool that can visualise this data.
 
-* [built-in profiler](https://docs.julialang.org/en/v1/manual/profile/) and [allocation profiler](https://docs.julialang.org/en/v1/stdlib/Profile/#Memory-profiling)
-* [ProfileView.jl](https://github.com/timholy/ProfileView.jl) / [ProfileSVG.jl](https://github.com/kimikage/ProfileSVG.jl)
-* [PProf.jl](https://github.com/JuliaPerf/PProf.jl)
-* [profiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/profiler/)
-
-### PProf
-[PProf](https://github.com/JuliaPerf/PProf.jl)
-
-This code has changed my life for the better, by far the best way to profile allocations along with using Cthulhu
 ```julia
 using PProf
 using Profile
 begin
     Profile.Allocs.clear()
-    f(arg1, arg2)
-    Profile.Allocs.@profile sample_rate=1 f(arg1, arg2)
+    do_work(xs) # Run once to precompile
+    Profile.Allocs.@profile sample_rate=1 do_work(xs)
     PProf.Allocs.pprof(from_c=false)
 end
-
 ```
+
+The `sample_rate` determines the proportion of allocations that are sampled by the profiler, much like how `delay` controls how often CPU profiler probes the program to see what's going on.
+A lower sample rate like 0.1 or 0.01 should be used when the code allocates "a lot", on the order of a million times, otherwise, a sample rate of 1 won't slow down data collection _too_ much.
+`from_c = false` tells PProf to not display stackframes from Julia's internals that are written in C.
+For more information see [this talk](https://www.youtube.com/watch?v=BFvpwC8hEWQ) at JuliaCon 2022.
+
+A [known issue](https://github.com/JuliaLang/julia/issues/43688) with the allocation profiler is that it is not able to determine the type of every object allocated, instead `Profile.Allocs.UnknownType` is shown instead.
+Inspecting the call graph can help identify which types are responsible for the allocations.
 
 ## Type stability
 \tldr{Use JET.jl to automatically detect type instabilities in your code, and `@code_typed`/`@code_warntype` and Cthulhu.jl to do so manually.}
@@ -425,12 +442,12 @@ using JET
 @report_opt unstable_ReLU(1.0)
 ```
 
-\vscode{This can be run periodically on your codebase and show any problems detected. [linting in VSCode](https://www.julia-vscode.org/docs/stable/userguide/linter/)}
+\vscode{The Julia extension features a [static linter](https://www.julia-vscode.org/docs/stable/userguide/linter/), and runtime diagnostics with JET can be automated to run periodically on your codebase and show any problems detected.}
 
 ## Memory management
 
 After ensuring type stability, one should try to reduce the number of heap allocations a program makes in order to spend less time in garbage collection cycles.
-While this can be done using the timing macros above (`@time`, `@btime`, `@b`), this can also be done as part of your writing or CI workflow using [AllocCheck.jl](https://github.com/JuliaLang/AllocCheck.jl), a package by the official JuliaLang organisation.
+While this can be done with [benchmarks](#measurements) or [profiling](#profiling) as described above, this can also be done as part of your writing or CI workflow using [AllocCheck.jl](https://github.com/JuliaLang/AllocCheck.jl), a package by the official JuliaLang organisation.
 
 By annotating a function you are writing with `@check_allocs`, if the function is run and the compiler detects that it might allocate, it will throw an error which can be inspected in a try-catch block to see exactly where this occurred.
 
@@ -453,6 +470,8 @@ Alternatively, to ensure that non-allocating functions never regress in future v
 end
 ```
 
+
+<!-- 
 A common pattern in Julia code is `push!`ing to a vector, which can be made more efficient by using a `collector` from [BangBang.jl](https://github.com/JuliaFolds/BangBang.jl), which aims to allow users to interact with immutable and mutable data structures using the same syntax.
 
 ```julia
@@ -477,6 +496,7 @@ for i in 1:10
 end
 finish!(result)
 ```
+-->
 
 ## Precompilation
 
@@ -485,13 +505,37 @@ finish!(result)
 * [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl)
 * [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
 
-## Parallelism
+## Concurrent programming
+\tldr{
+    If you're running Julia processes on multiple machines, use the [Distributed](https://docs.julialang.org/en/v1/manual/distributed-computing/) standard library or `MPI` or `Elemental`.
+    For multi-threaded computation, it is recommended to use [Transducers.jl](https://github.com/JuliaFolds/Transducers.jl)-based extensions like [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl), or work directly with Tasks and Workers for more manual control.}
 
-Julia provides [built-in support](https://docs.julialang.org/en/v1/manual/parallel-computing/) for asynchronous, distributed, and multi-threaded computing.
-Notably, Julia's task scheduling is depth-first, which is typically [better for high-performance computing](https://www.youtube.com/watch?v=YdiZa0Y3F3c), and was the culmination of an [Intel research project](https://www.intel.com/content/www/us/en/developer/articles/technical/new-threading-capabilities-in-julia-v1-3.html) implemented in Julia.
+A computer program does things.
+- Executed concurrently, the program does these things "out of order".
+- Executed in parallel, the program does multiple things at once.
+- Executed asychronously, the program does things while waiting for something else to happen.
+
+Parallel execution is one form of concurrency, and asynchronous programming is one way to achieve concurrency.
+
+Julia's model of concurrency is based on [coroutines](https://wikipedia.org/wiki/Coroutine), referred to as tasks, which are scheduled to be run on threads.
+For multi-threading, these tasks are scheduled to run simultaneously, and with asynchronous programming, tasks can also communicate with each other.
+The documentation contains an overview of the [types of parallelism](https://docs.julialang.org/en/v1/manual/parallel-computing/) supported, as well as pages covering its native implementations of [asynchronous](https://docs.julialang.org/en/v1/manual/asynchronous-programming/), [multi-threaded](https://docs.julialang.org/en/v1/manual/multi-threading/), and [distributed](https://docs.julialang.org/en/v1/manual/distributed-computing/) computing.
+
+\advanced{
+    Notably, Julia's task scheduling is depth-first, which is typically [better for high-performance computing](https://www.youtube.com/watch?v=YdiZa0Y3F3c), and was the culmination of an [Intel research project](https://www.intel.com/content/www/us/en/developer/articles/technical/new-threading-capabilities-in-julia-v1-3.html) implemented in Julia.
+}
+
+### Asynchronous computing
+
+Julia's asynchronous programming is implemented as [green threading](https://en.wikipedia.org/wiki/Green_thread) like in [Go](https://go.dev/tour/concurrency/1), which is semantically different to async/await found in [Python](https://docs.python.org/3/library/asyncio.html), [Javascript](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises), and [Rust](https://doc.rust-lang.org/std/keyword.async.html).
+The upshot of this is that writing asynchronous programs is semantically similar to writing multi-threaded code.
+
+While the macro `@async` exists in Julia, its usage is [strongly discouraged](https://docs.julialang.org/en/v1/base/parallel/#Base.@async) for performance reasons.
+
+### Multi-threading
 
 The number of threads that Julia runs with can be set through a command line flag:
-```bash
+```bash threads-flag
 julia --threads=4
 ```
 
@@ -499,18 +543,23 @@ julia --threads=4
     The default number of threads can be edited by adding `"julia.NumThreads": 4,` to your settings.json. This will be applied to the integrated terminal.
 }
 
-Once Julia is running, you can check if this was successful by running
-```>
-Threads.nthreads()
-```
+Once Julia is running, you can check if this was successful by running `Threads.nthreads()`.
 
-For asynchronous computing, use Julia's built-in interface to [`Task`s](https://docs.julialang.org/en/v1/manual/asynchronous-programming/#Basic-Task-operations) and [`Channel`s](https://docs.julialang.org/en/v1/manual/asynchronous-programming/#Communicating-with-Channels).
-For distributed memory-parallel computing, Julia ships with the [`Distributed`](https://github.com/JuliaLang/Distributed.jl) standard library.
-For multi-threaded computing, there are a number of options available, both in the standard library and through external packages.
+
 
 * [Base.Threads](https://docs.julialang.org/en/v1/base/multi-threading/)
 * [OhMyThreads.jl](https://github.com/JuliaFolds2/OhMyThreads.jl) for something else, and comes with a [translation guide](https://juliafolds2.github.io/OhMyThreads.jl/stable/translation/) between Threads.jl and this one
 * [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl) for parallelised base functions
+
+For another great overview of this topic, see this [post](https://lwn.net/Articles/875367/) on LWN.net.
+
+
+### Distributed computing
+
+Julia ships with `Distributed`, an implementation of distributed computing based on one-sided communication
+
+Julia's distributed computing model is explained [in the docs](https://docs.julialang.org/en/v1/manual/distributed-computing/).
+This is so far above the pay grade of this blog.
 
 ## SIMD / GPU
 
