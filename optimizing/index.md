@@ -614,7 +614,41 @@ The upshot of this is that writing asynchronous programs is semantically similar
 
 ### Distributed computing
 
-Julia ships with `Distributed`, an implementation of distributed computing based on one-sided communication
+AM I DOING MORE HARM THAN GOOD FOR EXPLAINING DISTRIBUTED LIKE THIS? SHOULD PEOPLE FOLLOW THIS OR NOT?
+
+Julia's model of distributed computing explained [in the docs](https://docs.julialang.org/en/v1/manual/distributed-computing/) is similar to its model of multi-threading.
+The complications and caveats to this that we highlight come from the fact that data is not shared between worker processes.
+
+Additional worker processes can be added with `addprocs`.
+These can run on local threads or remote machines (via [SSH](https://en.wikipedia.org/wiki/Secure_Shell)).
+
+In the Base Distributed library, there exist equivalents for `@threads` and `@spawn`: `@distributed` and `@spawnat`.
+We can use `@distributed` to parallelise a for loop.
+We use Base SharedArrays to automate the sharing and recombining of our result array.
+
+```julia @distributed-forloop
+using Distributed
+using SharedArrays
+addprocs(3)
+results = SharedArray{Int}(4)
+@distributed for i in 1:4
+    results[i] = i^2
+end
+```
+
+Alternatively, `@spawn` can be used _inside_ an iteration procedure to run the expression following on any available thread.
+In order to get Julia to "block" i.e. to wait for these tasks to be finished before proceeding with execution beyond the loop, it must be annotated with `@sync`.
+```julia @spawn-forloop
+results = zeros(Int, 4)
+@sync for i in 1:4
+    Threads.@spawn results[i] = i^2
+end
+```
+
+
+
+
+Julia ships with `Distributed`, an implementation of distributed computing based on one-sided communication where the host process.
 
 Julia's distributed computing model is explained [in the docs](https://docs.julialang.org/en/v1/manual/distributed-computing/).
 This is so far above the pay grade of this blog.
