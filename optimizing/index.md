@@ -11,7 +11,7 @@ title = "Optimizing your code"
 ## Principles
 
 All tips to writing performant Julia code can be derived from two fundamental ideas:
-1. Ensure that the compiler can derive the type of every variable so optimizations be performed.
+1. Ensure that the compiler can infer the type of every variable so optimizations be performed.
 2. Avoid unnecessary heap allocations which slow the code down.
 
 The compiler's job is to optimize and translate Julia code it into runnable [machine code](https://en.wikipedia.org/wiki/Machine_code).
@@ -505,20 +505,28 @@ finish!(result)
 * [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl)
 * [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
 
-## Concurrent programming
+## Concurrency and Parallelism
 \tldr{
     If you're running Julia processes on multiple machines, use the [Distributed](https://docs.julialang.org/en/v1/manual/distributed-computing/) standard library or `MPI` or `Elemental`.
     For multi-threaded computation, it is recommended to use [Transducers.jl](https://github.com/JuliaFolds/Transducers.jl)-based extensions like [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl), or work directly with Tasks and Workers for more manual control.}
 
-A computer program does things.
-- Executed concurrently, the program does these things "out of order".
-- Executed in parallel, the program does multiple things at once.
-- Executed asychronously, the program does things while waiting for something else to happen.
+Modern computing hardware is typically capable of parallel processing, where multiple separate computations are completed at once.
+The ability to manage a non-sequential order of execution, such as parallel execution, is called _concurrency_.
 
-Parallel execution is one form of concurrency, and asynchronous programming is one way to achieve concurrency.
+Parallel execution can be broken down into distributed (or multi-core) and multi-threaded execution.
+Each processing core, or _process_, runs a separate instance of Julia and has access to separate memory, meaning that variables defined on one process may have different values or not be defined at all on other processes.
+Each process may also be able to run threads in parallel.
+These threads _do_ have access to the same variables.
+In Julia, processes launched beyond the first are referred to as _workers_, as they are typically told what to do by the first process.
 
-Julia's model of concurrency is based on [coroutines](https://wikipedia.org/wiki/Coroutine), referred to as tasks, which are scheduled to be run on threads.
-For multi-threading, these tasks are scheduled to run simultaneously, and with asynchronous programming, tasks can also communicate with each other.
+The advantage of shared memory is that there is very little overhead for moving a task from one thread to another, or breaking up a task such as a loop into smaller chunks to run simultanously on separate threads.
+The disadvantage is that, for example, if a variable's value is overwritten by one thread after being read by a second thread, the current computation done by the second thread won't use the updated value of this variable.
+This is an example of a [race condition](https://en.wikipedia.org/wiki/Race_condition), and code that guarantees that these won't occur is called [thread safe](https://en.wikipedia.org/wiki/Thread_safety).
+
+The relative merits of shared memory mean that multi-threading is better at shorter computations, particularly where race conditions are easy to reason about such as in parallelising long loops of smaller computations.
+On the other hand, moving data to and from workers takes a non-trivial amount of time, and so distributed computing is better for longer computations that don't need to share memory such as independent numerical simulations.
+
+Julia's model of concurrency is based on [coroutines](https://wikipedia.org/wiki/Coroutine), referred to as tasks, which are scheduled to be run on threads, controlled by processes.
 The documentation contains an overview of the [types of parallelism](https://docs.julialang.org/en/v1/manual/parallel-computing/) supported, as well as pages covering its native implementations of [asynchronous](https://docs.julialang.org/en/v1/manual/asynchronous-programming/), [multi-threaded](https://docs.julialang.org/en/v1/manual/multi-threading/), and [distributed](https://docs.julialang.org/en/v1/manual/distributed-computing/) computing.
 
 \advanced{
@@ -531,6 +539,10 @@ Julia's asynchronous programming is implemented as [green threading](https://en.
 The upshot of this is that writing asynchronous programs is semantically similar to writing multi-threaded code.
 
 While the macro `@async` exists in Julia, its usage is [strongly discouraged](https://docs.julialang.org/en/v1/base/parallel/#Base.@async) for performance reasons.
+What is now recommended is to work with `Task`s and `Channel`s directly:
+
+```julia async-tasks-channels
+```
 
 ### Multi-threading
 
@@ -553,6 +565,9 @@ Once Julia is running, you can check if this was successful by running `Threads.
 
 For another great overview of this topic, see this [post](https://lwn.net/Articles/875367/) on LWN.net.
 
+Thread vs Worker vs Process
+
+A process is an instance of Julia, a worker is a process that is used for parallel operations, a thread is
 
 ### Distributed computing
 
