@@ -414,7 +414,7 @@ using InteractiveUtils  # hide
 ```
 
 ```>
-#TODO: Find a different example
+#TODO: Find a different example, see the JET part, No errors detected
 unstable_ReLU(x) = x > 0 ? x : 0;
 @code_typed unstable_ReLU(-1) # Stable
 @code_warntype unstable_ReLU(2.0) # Unstable!
@@ -439,8 +439,9 @@ While [test integrations](https://aviatesk.github.io/JET.jl/stable/optanalysis/#
 
 ```>JET_opt
 using JET
-@report_opt unstable_ReLU(1.0)
+@report_opt unstable_ReLU(1.0) #TODO: Find a different example.
 ```
+
 
 \vscode{The Julia extension features a [static linter](https://www.julia-vscode.org/docs/stable/userguide/linter/), and runtime diagnostics with JET can be automated to run periodically on your codebase and show any problems detected.}
 
@@ -507,8 +508,10 @@ finish!(result)
 
 ## Concurrency and Parallelism
 \tldr{
-    If you're running Julia processes on multiple machines, use the [Distributed](https://docs.julialang.org/en/v1/manual/distributed-computing/) standard library or `MPI` or `Elemental`.
-    For multi-threaded computation, it is recommended to use [Transducers.jl](https://github.com/JuliaFolds/Transducers.jl)-based extensions like [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl), or work directly with Tasks and Workers for more manual control.}
+    If you're running Julia processes on multiple machines, use the [Distributed](https://docs.julialang.org/en/v1/manual/distributed-computing/) standard library, [MPI.jl](https://github.com/JuliaParallel/MPI.jl) or [Elemental.jl](https://github.com/JuliaParallel/Elemental.jl).
+    For multi-threaded computation, it is recommended to use [Transducers.jl](https://github.com/JuliaFolds/Transducers.jl)-based extensions like [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl), or work directly with Tasks and Workers for more manual control.
+    If both are available, see below for which one to use and when.
+}
 
 Modern computing hardware is typically capable of parallel processing, where multiple separate computations are completed at once.
 The ability to manage a non-sequential order of execution, such as parallel execution, is called _concurrency_.
@@ -529,45 +532,85 @@ On the other hand, moving data to and from workers takes a non-trivial amount of
 Julia's model of concurrency is based on [coroutines](https://wikipedia.org/wiki/Coroutine), referred to as tasks, which are scheduled to be run on threads, controlled by processes.
 The documentation contains an overview of the [types of parallelism](https://docs.julialang.org/en/v1/manual/parallel-computing/) supported, as well as pages covering its native implementations of [asynchronous](https://docs.julialang.org/en/v1/manual/asynchronous-programming/), [multi-threaded](https://docs.julialang.org/en/v1/manual/multi-threading/), and [distributed](https://docs.julialang.org/en/v1/manual/distributed-computing/) computing.
 
-\advanced{
-    Notably, Julia's task scheduling is depth-first, which is typically [better for high-performance computing](https://www.youtube.com/watch?v=YdiZa0Y3F3c), and was the culmination of an [Intel research project](https://www.intel.com/content/www/us/en/developer/articles/technical/new-threading-capabilities-in-julia-v1-3.html) implemented in Julia.
-}
-
-### Asynchronous computing
-
-Julia's asynchronous programming is implemented as [green threading](https://en.wikipedia.org/wiki/Green_thread) like in [Go](https://go.dev/tour/concurrency/1), which is semantically different to async/await found in [Python](https://docs.python.org/3/library/asyncio.html), [Javascript](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises), and [Rust](https://doc.rust-lang.org/std/keyword.async.html).
-The upshot of this is that writing asynchronous programs is semantically similar to writing multi-threaded code.
-
-While the macro `@async` exists in Julia, its usage is [strongly discouraged](https://docs.julialang.org/en/v1/base/parallel/#Base.@async) for performance reasons.
-What is now recommended is to work with `Task`s and `Channel`s directly:
-
-```julia async-tasks-channels
-```
-
 ### Multi-threading
 
-The number of threads that Julia runs with can be set through a command line flag:
+The number of threads that Julia runs with can be set through one of the following equivalent command line flags, providing an integer or `auto`:
 ```bash threads-flag
-julia --threads=4
+julia --threads 4
+julia -t auto
 ```
+
+Once Julia is running, you can check if this was successful by running `Threads.nthreads()`.
 
 \vscode{
     The default number of threads can be edited by adding `"julia.NumThreads": 4,` to your settings.json. This will be applied to the integrated terminal.
 }
 
-Once Julia is running, you can check if this was successful by running `Threads.nthreads()`.
+\advanced{
+    Linear algebra code calls the low-level libraries [BLAS](https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms) and [LAPACK](https://en.wikipedia.org/wiki/LAPACK).
+    These libraries manage their own pool of threads, so single-threaded Julia processes can still make use of multiple threads, and multi-threaded Julia processes that call these libraries may run into performance issues due to the limited number of threads available in a single core.
+    In this case, once LinearAlgebra is loaded, BLAS can be set to use only one thread by calling `BLAS.set_num_threads(1)`.
+    For more information see the [Julia manual](https://docs.julialang.org/en/v1/manual/performance-tips/#man-multithreading-linear-algebra).
+}
 
+The simplest way to use multi-threading is to parallelise a for loop with `Threads.@threads`. 
+```julia @threads-forloop
+results = zeros(Int, 4)
+Threads.@threads for i in 1:4
+    results[i] = i^2
+end
+```
 
+Alternatively, `@spawn` can be used _inside_ an iteration procedure to run the expression following on any available thread.
+In order to get Julia to "block" i.e. to wait for these tasks to be finished before proceeding with execution beyond the loop, it must be annotated with `@sync`.
+```julia @spawn-forloop
+results = zeros(Int, 4)
+@sync for i in 1:4
+    Threads.@spawn results[i] = i^2
+end
+```
 
-* [Base.Threads](https://docs.julialang.org/en/v1/base/multi-threading/)
-* [OhMyThreads.jl](https://github.com/JuliaFolds2/OhMyThreads.jl) for something else, and comes with a [translation guide](https://juliafolds2.github.io/OhMyThreads.jl/stable/translation/) between Threads.jl and this one
-* [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl) for parallelised base functions
+`@spawn` can also be used to parallelise a `map`, but rather than returning the result of the called function, the macro instead returns a `Task` object, the results of which must be `fetch`ed.
+Similarly to `@sync`, `fetch` asks the `Task` for the results of the function call and blocks Julia from proceeding until this is available.
+```> @spawn-map
+tasks = map(i -> Threads.@spawn(i^2), 1:4)
+results = fetch.(tasks)
+```
 
-For another great overview of this topic, see this [post](https://lwn.net/Articles/875367/) on LWN.net.
+The final macro you may come across (particularly in older code) is `@async`, which functions similarly to `@spawn`: the two differ only in how tasks are scheduled.
+When `@async` creates a `Task`, it also declares that they can only be executed on the first thread they are assigned to.
+This means that if one thread finishes all of its tasks quickly, it has to idle until all other threads are also finished.
+On the contrary, `@spawn`'s tasks are scheduled _dynamically_, and tasks can even switch thread mid execution if the scheduler deems it faster.
+Dynamic scheduling is the default for `@threads` since Julia 1.8, and while `@async` and `@threads :static` are still options, their use is [strongly discouraged](https://docs.julialang.org/en/v1/base/parallel/#Base.@async) unless the static scheduling functionality is required.
 
-Thread vs Worker vs Process
+\advanced{
+    For maximum performance, `@threads` should be used over `@spawn`/`@sync` because, as stated in the [documentation](https://docs.julialang.org/en/v1/base/multi-threading/#Base.Threads.@threads) of `@threads`, "each task processes contiguous regions of the iteration space".
+}
 
-A process is an instance of Julia, a worker is a process that is used for parallel operations, a thread is
+#### Multi-threading ecosystem
+
+[Transducer.jl](https://github.com/JuliaFolds2/Transducers.jl) is a package which allows for composition of higher-order functions like `map` and `reduce` in a memory-efficient way.
+The provided functions e.g. `Map` are automatically parallelised, as are their compositions, leading to simple to write, yet very efficient parallel code.
+The package also unifies the API of working with multi-threaded and distributed code.
+
+A number of packages use Transducers under the hood to make writing parallel programs easy.
+This includes the parallelised Base functions of [Folds.jl](https://github.com/JuliaFolds2/Folds.jl) and [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl).
+
+Maintained by the same organisation, [OhMyThreads.jl](https://github.com/JuliaFolds2/OhMyThreads.jl) is an easy-to-use alternative to Base Threads.
+Like Folds and ThreadsX, it provides multi-threaded (notably, not distributed) Base functions as well as its own macro-based API.
+For those already familiar with Base Threads, a [translation guide](https://juliafolds2.github.io/OhMyThreads.jl/stable/translation/) can help get started with OhMyThreads.
+
+<!-- \advanced{
+    Sometimes, multi-threaded applications themselves spawn threads. In this case, Julia's task scheduling is depth-first, which is typically [better for high-performance computing](https://www.youtube.com/watch?v=YdiZa0Y3F3c), and was the culmination of an [Intel research project](https://www.intel.com/content/www/us/en/developer/articles/technical/new-threading-capabilities-in-julia-v1-3.html) implemented in Julia.
+} -->
+
+<!-- \advanced{
+    Those familiar with concurrent programming in other languages may note that Julia's asynchronous programming is implemented as [green threading](https://en.wikipedia.org/wiki/Green_thread) like in [Go](https://go.dev/tour/concurrency/1).
+    This is is semantically different to async/await found in [Python](https://docs.python.org/3/library/asyncio.html), [Javascript](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Asynchronous/Promises), and [Rust](https://doc.rust-lang.org/std/keyword.async.html).
+The upshot of this is that writing asynchronous programs is semantically similar to writing multi-threaded code.
+} -->
+
+<!-- For another great overview of this topic, see this [post](https://lwn.net/Articles/875367/) on LWN.net. -->
 
 ### Distributed computing
 
