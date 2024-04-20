@@ -532,12 +532,13 @@ On the other hand, moving data to and from workers takes a non-trivial amount of
 
 ### Concurrency in Julia
 
-Julia has a relatively unified model of concurrency across both threaded and distributed computing based on [coroutines](https://wikipedia.org/wiki/Coroutine).
+Julia has a relatively unified model of concurrency across both threaded and distributed computing.
 From the multi-threading side, there's an immutable `Task` object and a mutable `Channel` object.
 A `Task` is a function call that can be executed some time in the future once it is scheduled.
 The different macros and functions dealing with functions all create `Task`s, and differ in
-1. When the task is run, (immediately vs. just-in-time)
-2. Which thread the task can run on (the one it's initially assigned to vs. any available thread)
+1. When the task is executed, (immediately vs. just-in-time)
+2. Whether Julia should wait for the computation to finish before moving on (blocking vs. non-blocking)
+3. Which thread the task can run on (the one it's initially assigned to vs. any available thread)
 
 From the distributed side, the equivalent of a `Task` is a `Future`.
 The two objects function similarly, but you have to additionally reason about moving data/functions over to the Julia process that's going to do the work.
@@ -631,7 +632,7 @@ The upshot of this is that writing asynchronous programs is semantically similar
 As explained earlier, Julia's [model of distributed computing](https://docs.julialang.org/en/v1/manual/distributed-computing/) is similar to its model of multi-threading.
 The complications and caveats to this that we highlight come from the fact that data is not shared between worker processes.
 
-Additional worker processes can be added with `addprocs`.
+Additional worker processes can be added with `addprocs`, the number of which can be queried with `nworkers`.
 These can run on local threads or remote machines (via [SSH](https://en.wikipedia.org/wiki/Secure_Shell)).
 
 In the Base Distributed library, there exist _syntactic_ equivalents for `@threads` and `@spawn`: `@distributed` and `@spawnat`, respectively.
@@ -653,7 +654,6 @@ end
 ```
 
 While syntactically similar to `@threads`, `@distributed`, like `@spawn`, does not block execution, so we must `@sync` so Julia waits for all processes to finish computation before moving on.
-Alternatively, you can `fetch` the result when required, which.
 
 One feature `@distributed` has over `@threads` is the possibility to specify a reduction function (an [associative binary operator](https://en.wikipedia.org/wiki/Associative_property)) which combines the results of each worker.
 In this case `@sync` is implied, as the reduction cannot happen unless all of the workers have finished.
@@ -668,22 +668,19 @@ using Distributed  # hide
 end
 ```
 
-Alternatively, `@spawnat` can be used like `@spawn` .
-In order to get Julia to "block" i.e. to wait for these tasks to be finished before proceeding with execution beyond the loop, it must be annotated with `@sync`.
+Alternatively, `@spawnat` can be used like `@spawn`, but the user must specify which process should execute the expression, or mark it as `:any`.
 ```julia @spawn-forloop
-results = zeros(Int, 4)
-@sync for i in 1:4
-    Threads.@spawn results[i] = i^2
+for i in 1:4
+    @spawnat :any results[i] = i^2
 end
 ```
 
+Finally (for this blog), the convenience macro `pmap` can be used to easily parallelise a map, both in a distributed and multi-threaded way by specifying how large:
+```julia
+results = pmap(f, 1:100; distributed=true, batch_size=25, on_error=ex->0)
+```
 
-
-
-Julia ships with `Distributed`, an implementation of distributed computing based on one-sided communication where the host process.
-
-Julia's distributed computing model is explained [in the docs](https://docs.julialang.org/en/v1/manual/distributed-computing/).
-This is so far above the pay grade of this blog.
+#TODO: MPI.jl and Elemental.jl
 
 ## SIMD / GPU
 
