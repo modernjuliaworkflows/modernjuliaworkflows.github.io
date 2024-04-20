@@ -679,14 +679,55 @@ Finally (for this blog), the convenience macro `pmap` can be used to easily para
 results = pmap(f, 1:100; distributed=true, batch_size=25, on_error=ex->0)
 ```
 
-#### Multi-core ecosystem
+#### Distributed computing ecosystem
 
 [MPI.jl](https://github.com/JuliaParallel/MPI.jl) implements the [Message Passing Interface standard](https://en.wikipedia.org/wiki/Message_Passing_Interface), which is heavily used in high-performance computing beyond Julia.
 The C library that MPI.jl wraps is _highly_ optimized, so Julia code that needs to be scaled up to a large number of cores, such as an HPC cluster, will typically run faster with MPI than Distributed.
 
 [Elemental.jl](https://github.com/JuliaParallel/Elemental.jl) is a package for distributed dense and sparse linear algebra which wraps the [Elemental](https://github.com/LLNL/Elemental) library written in C++, itself using MPI under the hood.
 
-## SIMD / GPU
+## SIMD and GPU programming
+
+__Single instruction, multiple data__, abbreviated as __SIMD__, is a form of data-level parallelism.
+Distinct from the task-level parallelism of the previous section, data parallelism has no need for concurrent scheduling because the processing units can _only_ perform the same instruction at the same time, differing only in their inputs.
+
+On CPUs, the SIMD paradigm is implemented by building wide floating point registers into the CPU that can store small, fixed-size arrays of floating-point values.
+Accompanying this, the CPU vendor extends the [x86 architecture](https://en.wikipedia.org/wiki/X86) to perform arithmetic on the entire array at in a single operation.
+While SIMD instructions can provide a large speed-up, they are limited to the width of the vector registers.
+In the example below, the first summation can be performed in two register loads (`ldr`) and an addition (`fadd`), while the latter requires an additional two loads and an addition despite only being one element longer.
+
+```julia
+a = SA[1f0, 2f0, 3f0, 4f0]
+b = SA[1f0, 2f0, 3f0, 4f0, 5f0]
+```
+
+```julia
+@code_native a + a
+```
+```arm-asm
+# Abridged output:
+ldr     q0, [x0]
+ldr     q1, [x1]
+fadd.4s v0, v0, v1
+str     q0, [x8]
+ret
+```
+
+```julia
+@code_native b + b
+```
+```arm-asm
+ldr     s0, [x0, #16]
+ldr     s1, [x1, #16]
+fadd    s0, s0, s1
+ldr     q1, [x0]
+ldr     q2, [x1]
+fadd.4s v1, v1, v2
+str     q1, [x8]
+str     s0, [x8, #16]
+ret
+```
+
 
 * [LoopVectorization.jl](https://github.com/JuliaSIMD/LoopVectorization.jl) (deprecated in 1.11)
 * [Tullio.jl](https://github.com/mcabbott/Tullio.jl)
