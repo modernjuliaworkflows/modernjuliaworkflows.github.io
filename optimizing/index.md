@@ -508,9 +508,8 @@ finish!(result)
 
 ## Concurrency and Parallelism
 \tldr{
-    If you're running Julia processes on multiple machines, use the [Distributed](https://docs.julialang.org/en/v1/manual/distributed-computing/) standard library, [MPI.jl](https://github.com/JuliaParallel/MPI.jl) or [Elemental.jl](https://github.com/JuliaParallel/Elemental.jl).
-    For multi-threaded computation, it is recommended to use [Transducers.jl](https://github.com/JuliaFolds/Transducers.jl)-based extensions like [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl), or work directly with Tasks and Workers for more manual control.
-    If both are available, see below for which one to use and when.
+    For multi-threaded computation, we recommend using the `@threads` macro or [Transducers.jl](https://github.com/JuliaFolds/Transducers.jl)-based extensions like [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl).
+    If you have multiple cores or machines, use the [Distributed](https://docs.julialang.org/en/v1/manual/distributed-computing/) standard library, [MPI.jl](https://github.com/JuliaParallel/MPI.jl) or [Elemental.jl](https://github.com/JuliaParallel/Elemental.jl).
 }
 
 ### What is concurrency?
