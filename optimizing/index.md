@@ -652,7 +652,7 @@ results = SharedArray{Int}(4)
 end
 ```
 
-While syntactically similar to `@threads`, `@distributed`, like `@spawn`, does not block execution, so we must `@sync` so Julia waits for all processes to finish computation before moving on.
+While syntactically similar to `@threads`, `@distributed` does not block execution, so we must `@sync` so Julia waits for all processes to finish computation before moving on.
 
 One feature `@distributed` has over `@threads` is the possibility to specify a reduction function (an [associative binary operator](https://en.wikipedia.org/wiki/Associative_property)) which combines the results of each worker.
 In this case `@sync` is implied, as the reduction cannot happen unless all of the workers have finished.
@@ -679,7 +679,12 @@ Finally (for this blog), the convenience macro `pmap` can be used to easily para
 results = pmap(f, 1:100; distributed=true, batch_size=25, on_error=ex->0)
 ```
 
-#TODO: MPI.jl and Elemental.jl
+#### Multi-core ecosystem
+
+[MPI.jl](https://github.com/JuliaParallel/MPI.jl) implements the [Message Passing Interface standard](https://en.wikipedia.org/wiki/Message_Passing_Interface), which is heavily used in high-performance computing beyond Julia.
+The C library that MPI.jl wraps is _highly_ optimized, so Julia code that needs to be scaled up to a large number of cores, such as an HPC cluster, will typically run faster with MPI than Distributed.
+
+[Elemental.jl](https://github.com/JuliaParallel/Elemental.jl) is a package for distributed dense and sparse linear algebra which wraps the [Elemental](https://github.com/LLNL/Elemental) library written in C++, itself using MPI under the hood.
 
 ## SIMD / GPU
 
