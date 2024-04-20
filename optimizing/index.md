@@ -465,7 +465,7 @@ end
 ``` -->
 
 Alternatively, to ensure that non-allocating functions never regress in future versions without you knowing, you can write a test set to check allocations by providing the function and a concrete type-signature.
-```julia
+```julia AllocCheck
 @testset "non-allocating" begin
     @test isempty(AllocCheck.check_allocs(my_func, (Float64, Float64)))
 end
@@ -513,6 +513,7 @@ finish!(result)
     If both are available, see below for which one to use and when.
 }
 
+### What is concurrency?
 Modern computing hardware is typically capable of parallel processing, where multiple separate computations are completed at once.
 The ability to manage a non-sequential order of execution, such as parallel execution, is called _concurrency_.
 
@@ -529,10 +530,22 @@ This is an example of a [race condition](https://en.wikipedia.org/wiki/Race_cond
 The relative merits of shared memory mean that multi-threading is better at shorter computations, particularly where race conditions are easy to reason about such as in parallelising long loops of smaller computations.
 On the other hand, moving data to and from workers takes a non-trivial amount of time, and so distributed computing is better for longer computations that don't need to share memory such as independent numerical simulations.
 
-Julia's model of concurrency is based on [coroutines](https://wikipedia.org/wiki/Coroutine), referred to as tasks, which are scheduled to be run on threads, controlled by processes.
-The documentation contains an overview of the [types of parallelism](https://docs.julialang.org/en/v1/manual/parallel-computing/) supported, as well as pages covering its native implementations of [asynchronous](https://docs.julialang.org/en/v1/manual/asynchronous-programming/), [multi-threaded](https://docs.julialang.org/en/v1/manual/multi-threading/), and [distributed](https://docs.julialang.org/en/v1/manual/distributed-computing/) computing.
+### Concurrency in Julia
 
-### Multi-threading
+Julia has a relatively unified model of concurrency across both threaded and distributed computing based on [coroutines](https://wikipedia.org/wiki/Coroutine).
+From the multi-threading side, there's an immutable `Task` object and a mutable `Channel` object.
+A `Task` is a function call that can be executed some time in the future once it is scheduled.
+The different macros and functions dealing with functions all create `Task`s, and differ in
+1. When the task is run, (immediately vs. just-in-time)
+2. Which thread the task can run on (the one it's initially assigned to vs. any available thread)
+
+From the distributed side, the equivalent of a `Task` is a `Future`.
+The two objects function similarly, but you have to additionally reason about moving data/functions over to the Julia process that's going to do the work.
+
+A `Channel`, and its distributed equivalent `RemoteChannel`, is a first-in-first-out queue to `put!` and `take!` results from concurrent processes.
+This is useful for constructing concurrent pipelines with multiple sources and/or processors of tasks.
+
+#### Multi-threading
 
 The number of threads that Julia runs with can be set through one of the following equivalent command line flags, providing an integer or `auto`:
 ```bash threads-flag
@@ -587,7 +600,7 @@ Dynamic scheduling is the default for `@threads` since Julia 1.8, and while `@as
     For maximum performance, `@threads` should be used over `@spawn`/`@sync` because, as stated in the [documentation](https://docs.julialang.org/en/v1/base/multi-threading/#Base.Threads.@threads) of `@threads`, "each task processes contiguous regions of the iteration space".
 }
 
-#### Multi-threading ecosystem
+##### Multi-threading ecosystem
 
 [Transducer.jl](https://github.com/JuliaFolds2/Transducers.jl) is a package which allows for composition of higher-order functions like `map` and `reduce` in a memory-efficient way.
 The provided functions e.g. `Map` are automatically parallelised, as are their compositions, leading to simple to write, yet very efficient parallel code.
@@ -612,31 +625,50 @@ The upshot of this is that writing asynchronous programs is semantically similar
 
 <!-- For another great overview of this topic, see this [post](https://lwn.net/Articles/875367/) on LWN.net. -->
 
-### Distributed computing
+#### Distributed computing
 
-AM I DOING MORE HARM THAN GOOD FOR EXPLAINING DISTRIBUTED LIKE THIS? SHOULD PEOPLE FOLLOW THIS OR NOT?
-
-Julia's model of distributed computing explained [in the docs](https://docs.julialang.org/en/v1/manual/distributed-computing/) is similar to its model of multi-threading.
+<!-- Julia's model of distributed computing explained [in the docs](https://docs.julialang.org/en/v1/manual/distributed-computing/) is similar to its model of multi-threading. -->
+As explained earlier, Julia's [model of distributed computing](https://docs.julialang.org/en/v1/manual/distributed-computing/) is similar to its model of multi-threading.
 The complications and caveats to this that we highlight come from the fact that data is not shared between worker processes.
 
 Additional worker processes can be added with `addprocs`.
 These can run on local threads or remote machines (via [SSH](https://en.wikipedia.org/wiki/Secure_Shell)).
 
-In the Base Distributed library, there exist equivalents for `@threads` and `@spawn`: `@distributed` and `@spawnat`.
-We can use `@distributed` to parallelise a for loop.
-We use Base SharedArrays to automate the sharing and recombining of our result array.
+In the Base Distributed library, there exist _syntactic_ equivalents for `@threads` and `@spawn`: `@distributed` and `@spawnat`, respectively.
+Hence, we can use `@distributed` to parallelise a for loop, but we have to deal with sharing and recombining the `results` array.
+We can delegate this responsibility to the SharedArrays library, but in order for all workers to know about this library, we have to load it `@everywhere`.
 
-```julia @distributed-forloop
+``` @distributed-forloop
 using Distributed
-using SharedArrays
-addprocs(3)
+
+# Add additional workers then load code on the workers
+addprocs(3) 
+@everywhere using SharedArrays
+@everywhere f(x) = 3x^2
+
 results = SharedArray{Int}(4)
-@distributed for i in 1:4
-    results[i] = i^2
+@sync @distributed for i in 1:4
+    results[i] = f(i)
 end
 ```
 
-Alternatively, `@spawn` can be used _inside_ an iteration procedure to run the expression following on any available thread.
+While syntactically similar to `@threads`, `@distributed`, like `@spawn`, does not block execution, so we must `@sync` so Julia waits for all processes to finish computation before moving on.
+Alternatively, you can `fetch` the result when required, which.
+
+One feature `@distributed` has over `@threads` is the possibility to specify a reduction function (an [associative binary operator](https://en.wikipedia.org/wiki/Associative_property)) which combines the results of each worker.
+In this case `@sync` is implied, as the reduction cannot happen unless all of the workers have finished.
+
+```!Distributed
+using Distributed  # hide
+```
+
+```julia @distributed-sum
+@distributed (+) for i in 1:4
+    i^2
+end
+```
+
+Alternatively, `@spawnat` can be used like `@spawn` .
 In order to get Julia to "block" i.e. to wait for these tasks to be finished before proceeding with execution beyond the loop, it must be annotated with `@sync`.
 ```julia @spawn-forloop
 results = zeros(Int, 4)
