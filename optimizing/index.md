@@ -602,6 +602,14 @@ Dynamic scheduling is the default for `@threads` since Julia 1.8, and while `@as
 
 ##### Multi-threading ecosystem
 
+Julia's robust task scheduler allows Threads to be a very flexible library, but this robustness also leads to longer latency before tasks can be run when spinning up new threads.
+[ThreadingUtilities.jl](https://github.com/JuliaSIMD/ThreadingUtilities.jl/) provides a low-level interface to starting fast, lightweight threads exposed to users through packages such as:
+- [Polyester.jl](https://github.com/JuliaSIMD/Polyester.jl) for a Threads-like interface with `@batch` with a reduction argument like `@distributed` (see [below](#distributed_computing)),
+- [LoopVectorization.jl](https://github.com/JuliaSIMD/LoopVectorization.jl) for _maximal performance_ with loops via `@turbo` and `@tturbo` (see the [SIMD](#simd_and_gpu_programming) section for details), 
+- [Octavian.jl](https://github.com/JuliaLinearAlgebra/Octavian.jl) for multi-threaded linear algebra operations built ontop of LoopVectorization.jl.
+
+The [ThreadingUtilities.jl ecosystem](https://github.com/JuliaSIMD) will be deprecated in Julia 1.11 due to a lack of maintainers.
+
 [Transducer.jl](https://github.com/JuliaFolds2/Transducers.jl) is a package which allows for composition of higher-order functions like `map` and `reduce` in a memory-efficient way.
 The provided functions e.g. `Map` are automatically parallelised, as are their compositions, leading to simple to write, yet very efficient parallel code.
 The package also unifies the API of working with multi-threaded and distributed code.
@@ -688,12 +696,81 @@ The C library that MPI.jl wraps is _highly_ optimized, so Julia code that needs 
 
 ## SIMD and GPU programming
 
+### SIMD programming
 __Single instruction, multiple data__, abbreviated as __SIMD__, is a form of data-level parallelism.
 Distinct from the task-level parallelism of the previous section, data parallelism has no need for concurrent scheduling because the processing units can _only_ perform the same instruction at the same time, differing only in their inputs.
 
-On CPUs, the SIMD paradigm is implemented by building wide floating point registers into the CPU that can store small, fixed-size arrays of floating-point values.
+On CPUs, the SIMD paradigm is implemented by building wide floating-point registers into the CPU that can store small, fixed-size arrays of floats.
 Accompanying this, the CPU vendor extends the [x86 architecture](https://en.wikipedia.org/wiki/X86) to perform arithmetic on the entire array at in a single operation.
-While SIMD instructions can provide a large speed-up, they are limited to the width of the vector registers.
+This is called _(instruction-level) vectorization_.
+
+_Function-level vectorization_ is a related concept in which code that could have been written as a loop is written using Julia's broadcasting syntax `f.(x)`/`x .+ y`.
+While such vectorization is all but required in languages like R,  MATLAB, and Python for performant array-based code, Julia's loops are very fast as is, and broadcasting is typically just syntactic sugar.
+However, this syntax has the added benefit of making it easy to use memory efficiently.
+Dot-broadcasting `@.`, also known as chained broadcasting or [syntactic loop fusion](https://julialang.org/blog/2017/01/moredots/), allows Julia to avoid allocating memory for intermediate operations, providing a large speedup and performance similar to explicitly written loops.
+
+#### Instruction-level vectorization
+Julia uses [LLVM](https://en.wikipedia.org/wiki/LLVM) under the hood, which can automatically vectorize various forms of repeated numerical operations, which most frequently appears as loops over one-dimensional indices and repeated lines of code with similar instructions.
+There are a number of requirements that need to be met to apply SIMD optimizations:
+1. Reordering operations, or executing them simultaneously, must not change the result of the computation,
+2. There must be no control flow/branches in the core computation,
+3. All array accesses must have some linear pattern to them between loop iterations or lines of code.
+
+While this may seem straightforward for linear algebra-heavy code, there are a number of important caveats which can prevent code from being vectorized.
+1. To reorder operations and guarantee the same result, all operations must be [associative](https://en.wikipedia.org/wiki/Associative_property) and finite-precision float operations are [_not_](https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html). The `@simd` macro allows Julia to rearrange your operations, resulting in a different, equally valid answer.
+2. Indexing into an array requires a bounds check to see if the index is actually in the bounds of the array, you can use `@inbounds` to eliminate these checks and enable vectorization. On the contrary, control flow where both branches can be safely evaluated are permitted, thus `ifelse` can also encourage vectorization if your code fits this criteria.
+3. The access pattern of a loop is typically referred to as a _stride_. If this pattern doesn't have a "nice" order, say `a + bk` for integer constants `a`, `b`, and loop index `k`, such as views generated by permutations or filter masking, then the code cannot be automatically vectorized and [explicit vectorization tools](#explicit_vectorization) must be used.
+
+To see if instructions are being vectorized, look for `<n x type>` instructions in the output of `@code_llvm`:
+
+```julia
+# From "SIMD and SIMD-intrinsics in Julia" by Kristoffer Carlsson
+a = [1, 2, 3, 4]
+b = [5, 6, 7, 8]
+c = 9
+f(a, b, c) = a * b + c
+@code_llvm f.(a, b, c)
+```
+
+#### Explicit instruction-level vectorization
+Julia has `VecElement{T}`, tuples of which can be vectorised real good and nice, but worse than SIMD.jl:
+```julia
+f(a, b, c) = a * b + c
+
+using SIMD
+a = Vec(1, 2, 3, 4)
+b = Vec(5, 6, 7, 8)
+c = 9
+
+@code_llvm f.(a, b, c) # really nice
+d = NTuple{4, VecElement{Int64}}(1, 2, 3, 4)
+e = NTuple{4, VecElement{Int64}}(5, 6, 7, 8)
+
+@code_llvm f.(d, e, c) # not so nice
+```
+
+
+[SIMD.jl](https://github.com/eschnett/SIMD.jl) allows users to force the use of SIMD instructions and bypass the check for whether this is possible.
+One particular use-case for this is for vectorising non-contiguous memory reads and writes through `vgather` and `vscatter` (and their indexing syntaxes) respectively:
+```julia
+# From the SIMD.jl README
+arr = zeros(10)
+v = Vec((1.0, 2.0, 3.0, 4.0)) # create SIMD vector
+idx = Vec((1, 3, 4, 7))
+v = arr[idx]                  # vgather
+arr[idx] = v                  # vscatter
+```
+
+#### Function-level vectorization ecosystem
+A few packages implement Einstein notation for tensor operations, which are all typically very performant.
+- [Tullio.jl](https://github.com/mcabbott/Tullio.jl)'s eponymous macro `@tullio` allows for arbitrary element-wise operations and automatically uses LoopVectorization.jl and multithreading if available.
+- [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl) offers a NumPy `einsum`-like interface, re-use of array indices in the same expression, and support for generic element types.
+- [TensorCast.jl](https://github.com/mcabbott/TensorCast.jl) splits broadcasting and reductions into separate macros `@cast` and `@reduce`.
+- [TensorOperations.jl](https://github.com/Jutho/TensorOperations.jl) also exists.
+
+### GPU programming
+
+While CPU SIMD instructions can provide a large speed-up, they are limited to the width of the vector registers.
 In the example below, the first summation can be performed in two register loads (`ldr`) and an addition (`fadd`), while the latter requires an additional two loads and an addition despite only being one element longer.
 
 ```julia
@@ -728,9 +805,6 @@ str     s0, [x8, #16]
 ret
 ```
 
-
-* [LoopVectorization.jl](https://github.com/JuliaSIMD/LoopVectorization.jl) (deprecated in 1.11)
-* [Tullio.jl](https://github.com/mcabbott/Tullio.jl)
 * [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
 
 ## Efficient types
