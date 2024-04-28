@@ -761,7 +761,7 @@ v = arr[idx]                  # vgather
 arr[idx] = v                  # vscatter
 ```
 
-#### Function-level vectorization ecosystem
+#### Tensor operations
 A few packages implement Einstein notation for tensor operations, which are all typically very performant.
 - [Tullio.jl](https://github.com/mcabbott/Tullio.jl)'s eponymous macro `@tullio` allows for arbitrary element-wise operations and automatically uses LoopVectorization.jl and multithreading if available.
 - [OMEinsum.jl](https://github.com/under-Peter/OMEinsum.jl) offers a NumPy `einsum`-like interface, re-use of array indices in the same expression, and support for generic element types.
