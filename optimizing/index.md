@@ -263,6 +263,7 @@ This package allows you to label different sections of your code, then time them
 
 Finally, if you know a section is slow and you'll need to wait for it to be done, you can use [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl) to visualise how long it will take.
 
+
 ## Benchmark suites
 
 While we previously discussed the importance of documenting breaking changes in packages using [semantic versioning](/sharing/index.md#versions-and-registration), regressions in performance can also be vital to track.
