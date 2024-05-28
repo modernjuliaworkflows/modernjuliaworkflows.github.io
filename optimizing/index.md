@@ -86,97 +86,6 @@ c = zeros(100)
 @btime best_function!(c, x, y)
 ```
 
-<!-- Let's look at an illustrative example that breaks both of these rules.
-To break the first, we define a global variable which we later use many times [without passing it to a function](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables) or annotating its type [at the point of usage](https://docs.julialang.org/en/v1/manual/performance-tips/#Annotate-values-taken-from-untyped-locations).
-Hence its type must be determined at runtime every time it is used. -->
-
-<!-- For the second, we perform vector operations without fusing them with `@.` or performing them inplace with `@views` such that new memory is allocated for every intermediate result.
-
-```>break-rules-example
-X = rand(500, 500)
-function do_work(y)
-    ans = zeros(500, 10)
-    for i in 1:10
-        ans[:, i] = X*X #.+ transpose(y)*y .+ X*y
-    end
-    return ans
-end
-do_work(rand(500))
-```
-
-Secondly, Julia has a [garbage collector](https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)) whose job is to determine which variables no longer need to be stored in memory and free this memory so it can be reused.
-Variables whose type determines how much memory they require to be stored can be allocated and freed almost for free, but variables without this property must be managed by the garbage collector and stored on the ["heap"](https://en.wikipedia.org/wiki/Memory_management).
-In our example, our `AwfulNumber` will allocate 100, vectors of length 100,000 every time the user _dares_ to multiply it with another number.
-
-Combining these two fundamental ideas together, and then entirely ignoring them, we define our own number type whose multiplication method allocates lots of memory many times, and then refuse to tell the compiler whether our variable has our awful type or not:
-
-```>awful-number-example
-struct AwfulNumber <: Number
-    n::Int
-end
-
-import Base.*
-
-function *(x::Number, y::AwfulNumber)
-    for _ in 1:100
-        _ = rand(100_000)
-    end
-    return x * y.n
-end
-
-# num::Union{Int, AwfulNumber} = AwfulNumber(2)
-num = AwfulNumber(2)
-@time 2*AwfulNumber(2)
-@time 2*num
-@time 2*3
-```
-
-In the following example, we can see that untyped global variables cause slowdowns precisely because their type can't be inferred.
-To accurately measure runtime we use [`@btime`](#measurements).
-
-```>instability-example
-function f(x, y)
-    return x^2 + 2*x*y + y^2
-end
-
-x_untyped, y_untyped = 5, 2
-x_typed::Int, y_typed::Int = 5, 2
-
-@time f(x_untyped, y_untyped)
-@time f(x_typed, y_typed)
-```
-
-If a global variable is left untyped, then the user could reassign it to a different type at any time, and so the compiler can never optimize code using its current type.
-This is just one way that type instability can appear in Julia code, and this topic, as well as tools to find and fix it, is further explored in a [later section](#type-stability).
-
-A heap allocation occurs when an object is to be allocated, but how much space to allocate cannot be inferred from its type.
-Its counterpart is the [stack allocation](https://en.wikipedia.org/wiki/Stack-based_memory_allocation), which will only be performed if the object being allocated has a known size *and* its data cannot be modified after allocation i.e. the data is [immutable](https://en.wikipedia.org/wiki/Immutable_object).
-The benefit of these stringent rules is that stack allocations and deallocations are so fast that they are considered negligible by Julia's benchmarking tools (detailed below) and are not included in the total count of allocations.
-On the other hand, objects on the heap cannot be so heavily optimized by the compiler as the data and its size may change.
-In order to manage the deallocation of heap objects after their usage, Julia has a [mark-and-sweep](https://en.wikipedia.org/wiki/Tracing_garbage_collection#Copying_vs._mark-and-sweep_vs._mark-and-don't-sweep) [garbage collector](https://docs.julialang.org/en/v1/devdocs/gc/), which runs periodically during code execution to free up space so that other objects can be allocated.
-The necessity of the garbage collector combined with the lack of optimizations means that heap allocations, while incredibly useful and oftentimes necessary, should be avoided if possible.
-
-Paraphrasing the Julia manual's [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/) section: the most common causes of the "unnecessary" heap allocations are type-instability and unintended temporary arrays.
-The example function below, which calculates a weighted mean and returns its positive part, subtly exhibits both of these issues:
-
-```>heap-allocations-example
-function positive_weighted_mean(values, weights)
-    result = sum(weights .* values) / sum(weights)
-    return result > 0 ? result : 0
-end
-```
-
-The unintended heap allocation comes from the elementwise product `weights .* values`, which stores its result in a temporary array which is immediately used by `sum`.
-As the result of the product isn't needed anywhere else, this is an example of an unnecessary allcoation.
-There are a number of ways to rewrite this specific line to avoid allocating an intermediate vector: both `transpose(weights) * values` and `sum(splat(*), zip(weights, values))` have similar performance.
-More important than this specific fix is more generally that the more precise you are about what exactly the code should do, the better performance you are able to achieve.
-
-The type instability is a result of the final line `result > 0 ? result : 0`.
-What type does the function return?
-Sometimes it returns the integer `0`, whereas other times it returns `result`, which is, in most cases, a `Float64`.
-This dependence on run-time value as opposed to compile-time type results in the instability, causing an additional heap allocation which slows the function down further.
-We can fix this instability simply by replacing the final `0` with `zero(result)`, which returns the zero element of whatever type `result` happens to be. -->
-
 Any specific performance tip, either those found in the [manual](https://docs.julialang.org/en/v1/manual/performance-tips/) or elsewhere, will ultimately come down to these two fundamental ideas.
 For example, it's recommended to [__Avoid untyped global variables__](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables).
 Why? Because the type of a global variable could change, so it causes type instability wherever it is used without being passed to a function as an argument.
@@ -281,7 +190,6 @@ const SUITE = BenchmarkGroup()
 #TODO Insert example of a suite of benchmarks
 ```
 
-<!-- TODO: Elaborate -->
 To run this suite manually use [PkgBenchmark.jl](https://github.com/JuliaCI/PkgBenchmark.jl)
 
 However, catching regressions is much easier when it is automated which is what tools like [AirSpeedVelocity.jl](https://github.com/MilesCranmer/AirspeedVelocity.jl) and [PkgJogger.jl](https://github.com/awadell1/PkgJogger.jl) aim to help with.
@@ -453,17 +361,6 @@ While this can be done with [benchmarks](#measurements) or [profiling](#profilin
 
 By annotating a function you are writing with `@check_allocs`, if the function is run and the compiler detects that it might allocate, it will throw an error which can be inspected in a try-catch block to see exactly where this occurred.
 
-<!-- This currently segfaults Julia, see https://github.com/JuliaLang/AllocCheck.jl/issues/67 -->
-<!-- ```>alloc-writing-workflow
-using AllocCheck
-@check_allocs my_add(x, y) = x .+ y
-my_add(SA[1, 2, 3], SA[4, 5, 6])
-try
-    my_add([1, 2, 3], [4, 5, 6])
-catch e
-    e.errors[1]
-end
-``` -->
 
 Alternatively, to ensure that non-allocating functions never regress in future versions without you knowing, you can write a test set to check allocations by providing the function and a concrete type-signature.
 ```julia AllocCheck
@@ -471,34 +368,6 @@ Alternatively, to ensure that non-allocating functions never regress in future v
     @test isempty(AllocCheck.check_allocs(my_func, (Float64, Float64)))
 end
 ```
-
-
-<!-- 
-A common pattern in Julia code is `push!`ing to a vector, which can be made more efficient by using a `collector` from [BangBang.jl](https://github.com/JuliaFolds/BangBang.jl), which aims to allow users to interact with immutable and mutable data structures using the same syntax.
-
-```julia
-# Inefficient
-result = Int64[]
-for i in 1:10
-    push!(result, i)
-end
-result
-
-# Weird flex but ok
-result = SVector{0, Int64}
-for i in 1:10
-    push!!(result, i)
-end
-result
-
-# Efficient
-result = collector()
-for i in 1:10
-    push!!(result, i)
-end
-finish!(result)
-```
--->
 
 ## Precompilation
 
@@ -736,10 +605,12 @@ function axpy!(c::Array, a::Array, b::Array)
 end
 code_llvm(axpy!, Tuple{Vector{Float64}, Vector{Float64}, Vector{Float64}})
 ```
+<!-- 
 ```llvm
 # TODO: output looks something like this
 
 ```
+-->
 #### Explicit instruction-level vectorization
 [SIMD.jl](https://github.com/eschnett/SIMD.jl) allows users to force the use of SIMD instructions and bypass the check for whether this is possible.
 One particular use-case for this is for vectorising non-contiguous memory reads and writes through `vgather` and `vscatter` (and their indexing syntaxes) respectively:
@@ -778,7 +649,7 @@ Using an efficient data structure is a tried and true way of improving the perfo
 While users can write their own efficient implementations through officially documented [interfaces](https://docs.julialang.org/en/v1/manual/interfaces/), a number of packages containing common use cases are more tightly integrated into the Julia ecosystem.
 
 
-### StaticArrays
+### Static Arrays
 
 Using [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl), you can construct arrays that contain not only their type information, but also their size.
 With `MArray`, `MMatrix`, and `MVector`, data is mutable as in normal arrays.
@@ -787,25 +658,14 @@ Additionally, through multiple dispatch, statically sized arrays can have specia
 
 `SArray`s, as stack-allocated objects like tuples, cannot be mutated, but should instead be replaced entirely.
 Doing so comes at almost no extra cost compared to directly editing the data of a mutable object.
-<!-- 
-```>staticarrays-example
-using StaticArrays
-x = [1, 2, 3]
-x .= x .+ 1
-
-sx = SA[1, 2, 3] # SA constructs an SArray
-sx = sx .+ 1 # Note the = is not broadcasted
-```
--->
-
 For a more familiar in-place update syntax for immutable data structures like `SArrays`s, you can use [Accessors.jl](https://github.com/JuliaObjects/Accessors.jl):
 
 ```>accessors-example
-using Accessors
-@set sx[1] = 3 # Returns a copy of data, does not update the variable
-sx
-@reset sx[1] = 4 # Replaces the original data with an updated copy
-sx
+using StaticArrays, Accessors
+
+sx = SA[1, 2, 3] # SA constructs an SArray
+(@set sx[1] = 3), sx # Returns a copy, does not update the variable
+@reset sx[1] = 4; sx # Replaces the original
 ```
 
 \advanced{
