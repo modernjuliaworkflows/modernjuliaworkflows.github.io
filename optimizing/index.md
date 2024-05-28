@@ -222,33 +222,33 @@ Now that we're interpolating our argument `v`, we can see that our function `sum
 
 Note that you can also construct variables and interpolate them:
 
-<!-- ```>$-randomness-example
+```>$-randomness-example
 @btime sum_abs($(rand(10)))
-``` -->
+```
 
 However, doing so will mean that any randomness will be the same for every run!
 Furthermore, constructing and interpolating multiple variables can get messy.
 As such, the best way to run a benchmark is to construct variables in a `setup` phase.
 Note that variables constructed this way should not be interpolated in as this indicates that BenchmarkTools should search for a global variable with that name.
 
-<!-- ```>setup-example
+```>setup-example
 my_matmul(A, b) = A * b;
 @btime my_matmul(A, b) setup=(
     # use semi-colons inside a setup block to start new lines
     A = rand(1000, 1000);
     b = rand(1000)
 )
-``` -->
+```
 
 A setup phase means that you get a full overview of a function's performance as not only are you running the function many times, each run also has a different input.
 
 For the best visualisation of performance, the `@benchmark` macro is also provided which shows performance histograms:
-<!-- ```>benchmark-example
+```>benchmark-example
 @benchmark my_matmul(A, b) setup=(
     A = rand(1000, 1000);
     b = rand(1000)
 )
-``` -->
+```
 
 Finally, it's worth noting that certain computations may be optimized away by the compiler before the benchmark takes place, resulting in suspicuously fast performance, however the [details of this](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations) are beyond the scope of this post and most users should not worry at all about this.
 
