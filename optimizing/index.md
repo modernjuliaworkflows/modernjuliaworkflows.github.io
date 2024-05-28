@@ -787,6 +787,7 @@ Additionally, through multiple dispatch, statically sized arrays can have specia
 
 `SArray`s, as stack-allocated objects like tuples, cannot be mutated, but should instead be replaced entirely, but doing so comes at almost no extra cost compared to directly editing the data of a mutable object.
 
+<!--
 ```julia >>staticarrays-example
 using StaticArrays
 x = [1, 2, 3]
@@ -795,6 +796,7 @@ x .= x .+ 1
 sx = SA[1, 2, 3] # SA constructs an SArray
 sx = sx .+ 1 # Note the = is not broadcasted
 ```
+-->
 
 For a more familiar in-place update syntax for immutable data structures like `SArrays`s, you can use [Accessors.jl](https://github.com/JuliaObjects/Accessors.jl):
 
