@@ -24,7 +24,7 @@ Execution of code is stopped while the garbage collector runs, so minimising its
 
 In the example below, we break both fundamental principles.
 
-```>break-rules-example
+```julia >>break-rules-example
 x = rand(100)
 function bad_function(y)
     a = x + y
@@ -39,7 +39,7 @@ using BenchmarkTools
 
 While `y` is correctly passed as an argument to `bad_function`, `x` isn't, and because it is an [untyped global variable](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables), its type must be inferred each time the function is run, which results in an allocation.
 This could be solved by redefining `bad_function` to accept both `x` and `y` as arguments.
-```>remove-untyped-global
+```julia >>remove-untyped-global
 function better_function(x, y)
     a = x + y
     b = x - y
@@ -52,7 +52,7 @@ end;
 Moreover, even if the user only cares about the value of `c` the variables `a` and `b` are still heap allocated.
 Notably, this _cannot_ simply be improved by writing the function as
 
-```>no_better
+```julia >>no_better
 function no_better_function(x, y)
     c = (x + y) ./ (x - y)
     return c
@@ -63,7 +63,7 @@ because Julia allocates intermediate values in the same line.
 The way to avoid intermediate allocations is to reuse memory as much as possible.
 Typically, the simplest way to do this is to "fuse" operations through broadcasting with `@.`
 
-```>fuse-operations
+```julia >>fuse-operations
 function best_function(x, y)
     c = @. (x + y) ./ (x - y)
     return c
@@ -71,7 +71,7 @@ end;
 ```
 Finally, a common design pattern in Julia packages to achieve convenience and offer the best performance to end users is to write a non-allocating, in-place version of a function which performs all of the computation, and an allocating version which simply preallocates memory, and calls into the in-place function:
 
-```>timings
+```julia >>timings
 function best_function!(c, x, y)
      @. c = (x + y) ./ (x - y)
     return nothing
@@ -92,7 +92,7 @@ Hence its type must be determined at runtime every time it is used. -->
 
 <!-- For the second, we perform vector operations without fusing them with `@.` or performing them inplace with `@views` such that new memory is allocated for every intermediate result.
 
-```>break-rules-example
+```julia >>break-rules-example
 X = rand(500, 500)
 function do_work(y)
     ans = zeros(500, 10)
@@ -110,7 +110,7 @@ In our example, our `AwfulNumber` will allocate 100, vectors of length 100,000 e
 
 Combining these two fundamental ideas together, and then entirely ignoring them, we define our own number type whose multiplication method allocates lots of memory many times, and then refuse to tell the compiler whether our variable has our awful type or not:
 
-```>awful-number-example
+```julia >>awful-number-example
 struct AwfulNumber <: Number
     n::Int
 end
@@ -134,7 +134,7 @@ num = AwfulNumber(2)
 In the following example, we can see that untyped global variables cause slowdowns precisely because their type can't be inferred.
 To accurately measure runtime we use [`@btime`](#measurements).
 
-```>instability-example
+```julia >>instability-example
 function f(x, y)
     return x^2 + 2*x*y + y^2
 end
@@ -159,7 +159,7 @@ The necessity of the garbage collector combined with the lack of optimizations m
 Paraphrasing the Julia manual's [performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/) section: the most common causes of the "unnecessary" heap allocations are type-instability and unintended temporary arrays.
 The example function below, which calculates a weighted mean and returns its positive part, subtly exhibits both of these issues:
 
-```>heap-allocations-example
+```julia >>heap-allocations-example
 function positive_weighted_mean(values, weights)
     result = sum(weights .* values) / sum(weights)
     return result > 0 ? result : 0
@@ -189,7 +189,7 @@ Why might you want to [preallocate outputs](https://docs.julialang.org/en/v1/man
 The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints time, allocation, and compilation information.
 Because code needs to be compiled before it can be run, you should first run a function without timing it so it can be compiled, and _then_ time it:
 
-```>time-example
+```julia >>time-example
 sum_abs(vec) = sum(abs, vec)
 v = rand(100)
 @time sum_abs(v) # Inaccurate, >99% note compilation time
@@ -212,7 +212,7 @@ A commonly used tool to do both of these is [BenchmarkTools.jl](https://github.c
 Similarly to `@time`, BenchmarkTools offers `@btime` which can be used in exactly the same way but will run the code multiple times and provide an average.
 Additionally, by using `$` to interpolate values, you can be sure that you are timing __only__ the execution and not the setup or construction of the code in question.
 
-```>$-example
+```julia >>$-example
 using BenchmarkTools
 @btime sum_abs(v)
 @btime sum_abs($v)
@@ -222,7 +222,7 @@ Now that we're interpolating our argument `v`, we can see that our function `sum
 
 Note that you can also construct variables and interpolate them:
 
-<!-- ```>$-randomness-example
+<!-- ```julia >>$-randomness-example
 @btime sum_abs($(rand(10)))
 ``` -->
 
@@ -231,7 +231,7 @@ Furthermore, constructing and interpolating multiple variables can get messy.
 As such, the best way to run a benchmark is to construct variables in a `setup` phase.
 Note that variables constructed this way should not be interpolated in as this indicates that BenchmarkTools should search for a global variable with that name.
 
-<!-- ```>setup-example
+<!-- ```julia >>setup-example
 my_matmul(A, b) = A * b;
 @btime my_matmul(A, b) setup=(
     # use semi-colons inside a setup block to start new lines
@@ -243,7 +243,7 @@ my_matmul(A, b) = A * b;
 A setup phase means that you get a full overview of a function's performance as not only are you running the function many times, each run also has a different input.
 
 For the best visualisation of performance, the `@benchmark` macro is also provided which shows performance histograms:
-<!-- ```>benchmark-example
+<!-- ```julia >>benchmark-example
 @benchmark my_matmul(A, b) setup=(
     A = rand(1000, 1000);
     b = rand(1000)
@@ -385,7 +385,7 @@ Inspecting the call graph can help identify which types are responsible for the 
 
 For a section of code to be considered type stable, the type inferred by the compiler must be "concrete", which means that the size of memory that needs to be allocated to store its value is known at compile time.
 Types declared abstract with `abstract type` are not concrete and neither are [parametric types](https://docs.julialang.org/en/v1/manual/types/#Parametric-Types) whose parameters are not specified:
-```>isconcretetype-example
+```julia >>isconcretetype-example
 isconcretetype(AbstractVector)
 isconcretetype(Vector) # Shorthand for `Vector{T} where T`
 isconcretetype(Vector{Real})
@@ -414,7 +414,7 @@ The simplest way to detect an instability is with the builtin macros `@code_type
 using InteractiveUtils  # hide
 ```
 
-```>
+```julia >>
 #TODO: Find a different example, see the JET part, No errors detected
 unstable_ReLU(x) = x > 0 ? x : 0;
 @code_typed unstable_ReLU(-1) # Stable
@@ -438,7 +438,7 @@ We previously spoke about JET in the [Sharing](../sharing/#code_quality) article
 
 While [test integrations](https://aviatesk.github.io/JET.jl/stable/optanalysis/#optanalysis-test-integration) are also provided, the interactive entry point of JET is the `@report_opt` macro.
 
-```>JET_opt
+```julia >>JET_opt
 using JET
 @report_opt unstable_ReLU(1.0) #TODO: Find a different example.
 ```
@@ -454,7 +454,7 @@ While this can be done with [benchmarks](#measurements) or [profiling](#profilin
 By annotating a function you are writing with `@check_allocs`, if the function is run and the compiler detects that it might allocate, it will throw an error which can be inspected in a try-catch block to see exactly where this occurred.
 
 <!-- This currently segfaults Julia, see https://github.com/JuliaLang/AllocCheck.jl/issues/67 -->
-<!-- ```>alloc-writing-workflow
+<!-- ```julia >>alloc-writing-workflow
 using AllocCheck
 @check_allocs my_add(x, y) = x .+ y
 my_add(SA[1, 2, 3], SA[4, 5, 6])
@@ -586,7 +586,7 @@ end
 
 `@spawn` can also be used to parallelise a `map`, but rather than returning the result of the called function, the macro instead returns a `Task` object, the results of which must be `fetch`ed.
 Similarly to `@sync`, `fetch` asks the `Task` for the results of the function call and blocks Julia from proceeding until this is available.
-```> @spawn-map
+```julia >> @spawn-map
 tasks = map(i -> Threads.@spawn(i^2), 1:4)
 results = fetch.(tasks)
 ```
@@ -787,7 +787,7 @@ Additionally, through multiple dispatch, statically sized arrays can have specia
 
 `SArray`s, as stack-allocated objects like tuples, cannot be mutated, but should instead be replaced entirely, but doing so comes at almost no extra cost compared to directly editing the data of a mutable object.
 
-```>staticarrays-example
+```julia >>staticarrays-example
 using StaticArrays
 x = [1, 2, 3]
 x .= x .+ 1
@@ -798,7 +798,7 @@ sx = sx .+ 1 # Note the = is not broadcasted
 
 For a more familiar in-place update syntax for immutable data structures like `SArrays`s, you can use [Accessors.jl](https://github.com/JuliaObjects/Accessors.jl):
 
-```>accessors-example
+```julia >>accessors-example
 using Accessors
 @set sx[1] = 3 # Returns a copy of data, does not update the variable
 sx
@@ -808,7 +808,7 @@ sx
 
 \advanced{
     You can make your own array types with nice interfaces easily by inheriting from `FieldArray`/`FieldMatrix`/`FieldVector`.
-```>
+```julia >>
 struct CustomVector <: FieldVector{2, Float64}
     a::Float64
     b::Float64
