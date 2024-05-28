@@ -38,6 +38,7 @@ title = "Optimizing your code"
 * [Cthulhu.jl](https://github.com/JuliaDebug/Cthulhu.jl)
 * [JET.jl](https://github.com/aviatesk/JET.jl)
 * [linting in VSCode](https://www.julia-vscode.org/docs/stable/userguide/linter/)
+* [DispatchDoctor.jl](https://github.com/MilesCranmer/DispatchDoctor.jl)
 
 ## Memory management
 
