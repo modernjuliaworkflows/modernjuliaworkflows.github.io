@@ -622,6 +622,8 @@ Maintained by the same organisation, [OhMyThreads.jl](https://github.com/JuliaFo
 Like Folds and ThreadsX, it provides multi-threaded (notably, not distributed) Base functions as well as its own macro-based API.
 For those already familiar with Base Threads, a [translation guide](https://juliafolds2.github.io/OhMyThreads.jl/stable/translation/) can help get started with OhMyThreads.
 
+<!-- Should we talk about nchunks to speed up potentially unbalanced workloads? -->
+
 <!-- \advanced{
     Sometimes, multi-threaded applications themselves spawn threads. In this case, Julia's task scheduling is depth-first, which is typically [better for high-performance computing](https://www.youtube.com/watch?v=YdiZa0Y3F3c), and was the culmination of an [Intel research project](https://www.intel.com/content/www/us/en/developer/articles/technical/new-threading-capabilities-in-julia-v1-3.html) implemented in Julia.
 } -->
@@ -724,33 +726,21 @@ While this may seem straightforward, particularly for linear algebra-heavy code,
 
 To see if instructions are being vectorized, look for `<n x type>` instructions in the output of `@code_llvm`:
 
-```julia
+```julia SIMD-llvm
 # From "SIMD and SIMD-intrinsics in Julia" by Kristoffer Carlsson
-a = [1, 2, 3, 4]
-b = [5, 6, 7, 8]
-c = 9
-f(a, b, c) = a * b + c
-@code_llvm f.(a, b, c)
+function axpy!(c::Array, a::Array, b::Array)
+    @assert length(a) == length(b) == length(c)
+    @inbounds for i in 1:length(a)
+        c[i] = a[i] * b[i]
+    end
+end
+code_llvm(axpy!, Tuple{Vector{Float64}, Vector{Float64}, Vector{Float64}})
 ```
+```llvm
+# TODO: output looks something like this
 
+```
 #### Explicit instruction-level vectorization
-Julia has `VecElement{T}`, tuples of which can be vectorised real good and nice, but worse than SIMD.jl:
-```julia
-f(a, b, c) = a * b + c
-
-using SIMD
-a = Vec(1, 2, 3, 4)
-b = Vec(5, 6, 7, 8)
-c = 9
-
-@code_llvm f.(a, b, c) # really nice
-d = NTuple{4, VecElement{Int64}}(1, 2, 3, 4)
-e = NTuple{4, VecElement{Int64}}(5, 6, 7, 8)
-
-@code_llvm f.(d, e, c) # not so nice
-```
-
-
 [SIMD.jl](https://github.com/eschnett/SIMD.jl) allows users to force the use of SIMD instructions and bypass the check for whether this is possible.
 One particular use-case for this is for vectorising non-contiguous memory reads and writes through `vgather` and `vscatter` (and their indexing syntaxes) respectively:
 ```julia
@@ -762,6 +752,10 @@ v = arr[idx]                  # vgather
 arr[idx] = v                  # vscatter
 ```
 
+\advanced{
+    VecElement is a built-in type intended for use with `llvm_call` to force vectorization.
+}
+
 #### Tensor operations
 A few packages implement Einstein notation for tensor operations, which are all typically very performant.
 - [Tullio.jl](https://github.com/mcabbott/Tullio.jl)'s eponymous macro `@tullio` allows for arbitrary element-wise operations and automatically uses LoopVectorization.jl and multithreading if available.
@@ -772,39 +766,8 @@ A few packages implement Einstein notation for tensor operations, which are all 
 ### GPU programming
 
 While CPU SIMD instructions can provide a large speed-up, they are limited to the width of the vector registers.
-In the example below, the first summation can be performed in two register loads (`ldr`) and an addition (`fadd`), while the latter requires an additional two loads and an addition despite only being one element longer.
+Vectors of four 32-bit floats can be added together in a single instruction, whereas if they were one element longer it would take two (as well as additional load instructions).
 
-```julia
-a = SA[1f0, 2f0, 3f0, 4f0]
-b = SA[1f0, 2f0, 3f0, 4f0, 5f0]
-```
-
-```julia
-@code_native a + a
-```
-```arm-asm
-# Abridged output:
-ldr     q0, [x0]
-ldr     q1, [x1]
-fadd.4s v0, v0, v1
-str     q0, [x8]
-ret
-```
-
-```julia
-@code_native b + b
-```
-```arm-asm
-ldr     s0, [x0, #16]
-ldr     s1, [x1, #16]
-fadd    s0, s0, s1
-ldr     q1, [x0]
-ldr     q2, [x1]
-fadd.4s v1, v1, v2
-str     q1, [x8]
-str     s0, [x8, #16]
-ret
-```
 
 * [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
 
@@ -813,6 +776,7 @@ ret
 
 Using an efficient data structure is a tried and true way of improving the performance.
 While users can write their own efficient implementations through officially documented [interfaces](https://docs.julialang.org/en/v1/manual/interfaces/), a number of packages containing common use cases are more tightly integrated into the Julia ecosystem.
+
 
 ### StaticArrays
 
