@@ -2,6 +2,32 @@
 title = "Optimizing your code"
 +++
 
+```! run_bad_functions
+# hideall
+function bad_function(y)
+    a = x + y
+    b = x - y
+    return a ./ b
+end
+function better_function(x, y)
+    a = x + y
+    b = x - y
+    return a ./ b
+end
+function no_better_function(x, y)    
+    return (x + y) ./ (x - y)
+end
+function best_function!(c, x, y)
+     @. c = (x + y) ./ (x - y)
+    return nothing
+end
+function best_function(x, y)
+    c = zeros(size(x))
+    best_function!(c, x, y)
+    return c
+end
+```
+
 \activate{}
 
 # Optimizing your code
@@ -24,65 +50,64 @@ Execution of code is stopped while the garbage collector runs, so minimising its
 
 In the example below, we break both fundamental principles.
 
-```>break-rules-example
-x = rand(100)
+```julia break-rules-example
 function bad_function(y)
     a = x + y
     b = x - y
-    c = a ./ b
-end;
-y = rand(100)
-bad_function(y) # run once to compile the function
-using BenchmarkTools
-@btime bad_function(y)
+    return a ./ b
+end
 ```
 
 While `y` is correctly passed as an argument to `bad_function`, `x` isn't, and because it is an [untyped global variable](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables), its type must be inferred each time the function is run, which results in an allocation.
 This could be solved by redefining `bad_function` to accept both `x` and `y` as arguments.
-```>remove-untyped-global
+``` julia remove-untyped-global
 function better_function(x, y)
     a = x + y
     b = x - y
-    c = a ./ b
-    return c # technically superfluous return, but highly recommended for clarity
-end;
-@btime better_function(x, y)
+    return a ./ b
+end
 ```
 
 Moreover, even if the user only cares about the value of `c` the variables `a` and `b` are still heap allocated.
 Notably, this _cannot_ simply be improved by writing the function as
 
-```>no_better
-function no_better_function(x, y)
-    c = (x + y) ./ (x - y)
-    return c
-end;
+```julia no_better
+function no_better_function(x, y)    
+    return (x + y) ./ (x - y)
+end
 ```
 
 because Julia allocates intermediate values in the same line.
 The way to avoid intermediate allocations is to reuse memory as much as possible.
 Typically, the simplest way to do this is to "fuse" operations through broadcasting with `@.`
 
-```>fuse-operations
+```julia fuse-operations
 function best_function(x, y)
-    c = @. (x + y) ./ (x - y)
-    return c
-end;
+    return @. (x + y) ./ (x - y)
+end
 ```
+
 Finally, a common design pattern in Julia packages to achieve convenience and offer the best performance to end users is to write a non-allocating, in-place version of a function which performs all of the computation, and an allocating version which simply preallocates memory, and calls into the in-place function:
 
-```>timings
+```julia
 function best_function!(c, x, y)
      @. c = (x + y) ./ (x - y)
     return nothing
-end;
+end
+
 function best_function(x, y)
     c = zeros(size(x))
     best_function!(c, x, y)
     return c
 end
-@btime best_function(x, y)
-c = zeros(100)
+```
+
+```> timings
+using BenchmarkTools
+x = rand(100); y = rand(100); c = zeros(100);
+@btime bad_function(y);
+@btime better_function(x, y);
+@btime best_function(x, y);
 @btime best_function!(c, x, y)
 ```
 
@@ -93,7 +118,7 @@ Why might you want to [preallocate outputs](https://docs.julialang.org/en/v1/man
 
 ## Measurements
 
-\tldr{Use BenchmarkTools.jl's `@benchmark` with a setup phase to get the best overview of performance or `@btime` as a drop in for `@time`. Use Chairmarks.jl as a faster alternative.}
+\tldr{Use BenchmarkTools.jl's `@benchmark` with a setup phase to get the most accurate idea of your code's performance. Use Chairmarks.jl as a faster alternative.}
 
 The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints time, allocation, and compilation information.
 Because code needs to be compiled before it can be run, you should first run a function without timing it so it can be compiled, and _then_ time it:
