@@ -660,12 +660,12 @@ Additionally, through multiple dispatch, statically sized arrays can have specia
 Doing so comes at almost no extra cost compared to directly editing the data of a mutable object.
 For a more familiar in-place update syntax for immutable data structures like `SArrays`s, you can use [Accessors.jl](https://github.com/JuliaObjects/Accessors.jl):
 
-```>accessors-example
+```julia accessors-example
 using StaticArrays, Accessors
 
 sx = SA[1, 2, 3] # SA constructs an SArray
-(@set sx[1] = 3), sx # Returns a copy, does not update the variable
-@reset sx[1] = 4; sx # Replaces the original
+@set sx[1] = 3 # Returns a copy, does not update the variable
+@reset sx[1] = 4 # Replaces the original
 ```
 
 \advanced{
