@@ -4,6 +4,7 @@ title = "Optimizing your code"
 
 ```! run_bad_functions
 # hideall
+using Chairmarks
 function bad_function(y)
     a = x + y
     b = x - y
@@ -103,7 +104,7 @@ end
 ```
 
 ```> timings
-using BenchmarkTools
+using BenchmarkTools: @btime
 x = rand(100); y = rand(100); c = zeros(100);
 @btime bad_function(y);
 @btime better_function(x, y);
@@ -177,18 +178,34 @@ my_matmul(A, b) = A * b;
 A setup phase means that you get a full overview of a function's performance as not only are you running the function many times, each run also has a different input.
 
 For the best visualisation of performance, the `@benchmark` macro is also provided which shows performance histograms:
-```>benchmark-example
+```julia benchmark-example
 @benchmark my_matmul(A, b) setup=(
     A = rand(1000, 1000);
     b = rand(1000)
 )
+BenchmarkTools.Trial: 3870 samples with 1 evaluation.
+ Range (min … max):  133.584 μs …  3.278 ms  ┊ GC (min … max): 0.00% … 0.00%
+ Time  (median):     206.958 μs              ┊ GC (median):    0.00%
+ Time  (mean ± σ):   217.264 μs ± 89.229 μs  ┊ GC (mean ± σ):  0.00% ± 0.00%
+
+           ▁▆█▇▃▃▁▃▄▅▁                                          
+  ▂▃▃▃▃▃▄▄▅███████████▆▅▄▄▄▃▃▃▃▂▂▂▂▂▂▂▂▂▂▁▂▁▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂ ▃
+  134 μs          Histogram: frequency by time          439 μs <
+
+ Memory estimate: 8.00 KiB, allocs estimate: 1.
 ```
 
 Finally, it's worth noting that certain computations may be optimized away by the compiler before the benchmark takes place, resulting in suspicuously fast performance, however the [details of this](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations) are beyond the scope of this post and most users should not worry at all about this.
 
 ### Chairmarks.jl
-This package offers an alternative to BenchmarkTools.jl, promising _significantly_ faster benchmarking while attempting to maintain high accuracy, while using an alternative syntax.
+[This package](https://github.com/LilithHafner/Chairmarks.jl) offers an alternative to BenchmarkTools.jl, promising _significantly_ faster benchmarking while attempting to maintain high accuracy and using an alternative syntax based on pipelines.
 
+```julia chairmarks-example
+# Generate a random vector, sort it, then check if it's sorted
+@b rand(1000) sort! issorted(_) || error()
+```
+
+These pipelines ensure that you can not only benchmark your code, but that your code returns the result expected.
 
 ### Other tools
 
