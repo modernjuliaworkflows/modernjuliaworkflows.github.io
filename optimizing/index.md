@@ -26,7 +26,7 @@ function best_function(x, y)
     c = zeros(size(x))
     best_function!(c, x, y)
     return c
-end
+end;
 ```
 
 \activate{}
@@ -37,204 +37,98 @@ end
 
 ## Principles
 
-All tips to writing performant Julia code can be derived from two fundamental ideas:
-1. Ensure that the compiler can infer the type of every variable so optimizations be performed.
-2. Avoid unnecessary heap allocations which slow the code down.
+\tldr{
+The two fundamental principles for writing fast Julia code:
+
+1. Ensure that **the compiler can infer the type** of every variable.
+2. Avoid **unnecessary (heap) allocations**.
+}
 
 The compiler's job is to optimize and translate Julia code it into runnable [machine code](https://en.wikipedia.org/wiki/Machine_code).
-If some information about a variable's type isn't available to the compiler, for example because the [return type of a function is value-dependent](https://docs.julialang.org/en/v1/manual/performance-tips/#Write-%22type-stable%22-functions), then it cannot safely perform its most powerful optimizations as it cannot satisfy assumptions required for the optimizations to be performed. For more information see [below](#type_stability).
+If a variable's type cannot be deduced before the code is run, then the compiler won't generate efficient code to handle that variable.
+We call this phenomenon "type instability".
 
-A "heap" allocation occurs whenever a variable is allocated whose type doesn't contain enough information to know exactly how much space is required to store all of its data.
-An example of this is `Vector{Int}`, which doesn't contain information about how many elements the vector has.
-In order to manage the deallocation of objects after their usage, Julia has a [mark-and-sweep](https://en.wikipedia.org/wiki/Tracing_garbage_collection#Copying_vs._mark-and-sweep_vs._mark-and-don't-sweep) [garbage collector](https://docs.julialang.org/en/v1/devdocs/gc/), which runs periodically during code execution to free up space so that other objects can be allocated.
+A "heap allocation" (or simply "allocation") occurs when we create a new variable without knowing how much space it will require (like a `Vector` with flexible length).
+Julia has a [mark-and-sweep](https://en.wikipedia.org/wiki/Tracing_garbage_collection#Copying_vs._mark-and-sweep_vs._mark-and-don't-sweep) [garbage collector](https://docs.julialang.org/en/v1/devdocs/gc/) (GC), which runs periodically during code execution to free up space on the heap.
 Execution of code is stopped while the garbage collector runs, so minimising its usage is important.
 
-In the example below, we break both fundamental principles.
-
-```julia break-rules-example
-function bad_function(y)
-    a = x + y
-    b = x - y
-    return a ./ b
-end
-```
-
-While `y` is correctly passed as an argument to `bad_function`, `x` isn't, and because it is an [untyped global variable](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables), its type must be inferred each time the function is run, which results in an allocation.
-This could be solved by redefining `bad_function` to accept both `x` and `y` as arguments.
-``` julia remove-untyped-global
-function better_function(x, y)
-    a = x + y
-    b = x - y
-    return a ./ b
-end
-```
-
-Moreover, even if the user only cares about the value of `c` the variables `a` and `b` are still heap allocated.
-Notably, this _cannot_ simply be improved by writing the function as
-
-```julia no_better
-function no_better_function(x, y)    
-    return (x + y) ./ (x - y)
-end
-```
-
-because Julia allocates intermediate values in the same line.
-The way to avoid intermediate allocations is to reuse memory as much as possible.
-Typically, the simplest way to do this is to "fuse" operations through broadcasting with `@.`
-
-```julia fuse-operations
-function best_function(x, y)
-    return @. (x + y) ./ (x - y)
-end
-```
-
-Finally, a common design pattern in Julia packages to achieve convenience and offer the best performance to end users is to write a non-allocating, in-place version of a function which performs all of the computation, and an allocating version which simply preallocates memory, and calls into the in-place function:
-
-```julia
-function best_function!(c, x, y)
-     @. c = (x + y) ./ (x - y)
-    return nothing
-end
-
-function best_function(x, y)
-    c = zeros(size(x))
-    best_function!(c, x, y)
-    return c
-end
-```
-
-```> timings
-using BenchmarkTools: @btime
-x = rand(100); y = rand(100); c = zeros(100);
-@btime bad_function(y);
-@btime better_function(x, y);
-@btime best_function(x, y);
-@btime best_function!(c, x, y)
-```
-
-Any specific performance tip, either those found in the [manual](https://docs.julialang.org/en/v1/manual/performance-tips/) or elsewhere, will ultimately come down to these two fundamental ideas.
-For example, it's recommended to [__Avoid untyped global variables__](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables).
-Why? Because the type of a global variable could change, so it causes type instability wherever it is used without being passed to a function as an argument.
-Why might you want to [preallocate outputs](https://docs.julialang.org/en/v1/manual/performance-tips/#Pre-allocating-outputs) and [fuse vectorized opterations](https://docs.julialang.org/en/v1/manual/performance-tips/#More-dots:-Fuse-vectorized-operations)? To minimise heap allocations.
+The vast majority of performance tips, such as [those found in the manual](https://docs.julialang.org/en/v1/manual/performance-tips/), come down to these two fundamental ideas.
+Typically, the most common beginner pitfall is the use of [untyped global variables](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables) without passing them as arguments.
+Why is it bad?
+Because the type of a global variable can change outside of the body of a function, so it causes type instabilities wherever it is used.
+Those type instabilities in turn lead to more heap allocations.
 
 ## Measurements
 
 \tldr{Use BenchmarkTools.jl's `@benchmark` with a setup phase to get the most accurate idea of your code's performance. Use Chairmarks.jl as a faster alternative.}
 
-The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints time, allocation, and compilation information.
-Because code needs to be compiled before it can be run, you should first run a function without timing it so it can be compiled, and _then_ time it:
+The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints the measured runtime and allocations.
+Because code needs to be compiled before it can be run, you should first run a function without timing it so it can be compiled, and then time it:
 
 ```>time-example
-sum_abs(vec) = sum(abs, vec)
-v = rand(100)
-@time sum_abs(v) # Inaccurate, >99% note compilation time
-@time sum_abs(v) # Accurate
+sum_abs(vec) = sum(abs(x) for x in vec);
+v = rand(100);
+@time sum_abs(v); # Inaccurate, note the >99% compilation time
+@time sum_abs(v); # Accurate
 ```
 
-Above, we can see that the first invocation of `@time` was dominated by the compilation time of `sum_abs`, while the second only involved a single allocation of 16 bytes.
-Below, in the BenchmarkTools section we will see that this single allocation is actually a red herring.
-One consequence of a large number of heap allocations is that the [GC](https://en.wikipedia.org/wiki/Tracing_garbage_collection) (garbage collector) will need to run to clear up the program's memory so it can be reused.
-This can heavily impact performance and so `@time` also shows how much of the time (if any) was taken up by the GC.
-
-This method of running `@time` is quick but has flaws because your code is only timed once.
-For example, just because the GC wasn't invoked one time, doesn't mean it won't the next.
-This combined with the varying background processes running on a computer means that running the same line of code multiple times can vary in performance.
-Furthermore, while a function may run well on certain data, for a more complete picture the function should be tested on many different inputs relevant to how it will be used.
-A commonly used tool to do both of these is [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl).
+Using `@time` is quick but it has flaws, because your function is only measured once.
+For example, just because the GC wasn't invoked that one time, doesn't mean it will never be needed.
+In general, running the same block of code multiple times is a safer measurement method, because it diminishes the probability of only observing an outlier.
 
 ### BenchmarkTools
 
+[BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl) is the most popular package for repeated measurements on function executions.
 Similarly to `@time`, BenchmarkTools offers `@btime` which can be used in exactly the same way but will run the code multiple times and provide an average.
-Additionally, by using `$` to interpolate values, you can be sure that you are timing __only__ the execution and not the setup or construction of the code in question.
+Additionally, by using `$` to [interpolate external values](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Interpolating-values-into-benchmark-expressions), you remove the overhead caused by global variables.
 
 ```>$-example
 using BenchmarkTools
-@btime sum_abs(v)
-@btime sum_abs($v)
+@btime sum_abs(v);
+@btime sum_abs($v);
 ```
 
-Now that we're interpolating our argument `v`, we can see that our function `sum_abs` is completely non-allocating and so its performance won't be slowed down by GC invocations.
+For better visualization, the `@benchmark` macro shows performance histograms:
 
-Note that you can also construct variables and interpolate them:
-
-```>$-randomness-example
-@btime sum_abs($(rand(10)))
+```>benchmark-example
+b = @benchmark sum_abs($v)
+println(b)
 ```
 
-However, doing so will mean that any randomness will be the same for every run!
-Furthermore, constructing and interpolating multiple variables can get messy.
-As such, the best way to run a benchmark is to construct variables in a `setup` phase.
-Note that variables constructed this way should not be interpolated in as this indicates that BenchmarkTools should search for a global variable with that name.
+In more complex settings, you might need to construct variables in a [setup phase](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases) that is run before each sample.
+This is very useful to generate a new random input every time, instead of always using the same input.
 
 ```>setup-example
 my_matmul(A, b) = A * b;
 @btime my_matmul(A, b) setup=(
-    # use semi-colons inside a setup block to start new lines
-    A = rand(1000, 1000);
+    A = rand(1000, 1000); # use semi-colons between setup lines
     b = rand(1000)
-)
+);
 ```
 
-A setup phase means that you get a full overview of a function's performance as not only are you running the function many times, each run also has a different input.
+\advanced{
+Certain computations may be [optimized away by the compiler]((https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)) before the benchmark takes place.
+If you observe suspiciously fast performance, especially below the nanosecond scale, this is very likely to have happened.
+}
 
-For the best visualisation of performance, the `@benchmark` macro is also provided which shows performance histograms:
-```julia benchmark-example
-@benchmark my_matmul(A, b) setup=(
-    A = rand(1000, 1000);
-    b = rand(1000)
-)
-BenchmarkTools.Trial: 3870 samples with 1 evaluation.
- Range (min … max):  133.584 μs …  3.278 ms  ┊ GC (min … max): 0.00% … 0.00%
- Time  (median):     206.958 μs              ┊ GC (median):    0.00%
- Time  (mean ± σ):   217.264 μs ± 89.229 μs  ┊ GC (mean ± σ):  0.00% ± 0.00%
+[Chairmarks.jl](https://github.com/LilithHafner/Chairmarks.jl) offers an alternative to BenchmarkTools.jl, promising faster benchmarking while attempting to maintain high accuracy and using an alternative syntax based on pipelines.
 
-           ▁▆█▇▃▃▁▃▄▅▁                                          
-  ▂▃▃▃▃▃▄▄▅███████████▆▅▄▄▄▃▃▃▃▂▂▂▂▂▂▂▂▂▂▁▂▁▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂▂ ▃
-  134 μs          Histogram: frequency by time          439 μs <
+### Benchmark suites
 
- Memory estimate: 8.00 KiB, allocs estimate: 1.
-```
+While we previously discussed the importance of documenting breaking changes in packages using [semantic versioning](/sharing/index.md#versions-and-registration), regressions in performance can also be vital to track.
+Several packages exist for this purpose:
 
-Finally, it's worth noting that certain computations may be optimized away by the compiler before the benchmark takes place, resulting in suspicuously fast performance, however the [details of this](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations) are beyond the scope of this post and most users should not worry at all about this.
-
-### Chairmarks.jl
-[This package](https://github.com/LilithHafner/Chairmarks.jl) offers an alternative to BenchmarkTools.jl, promising _significantly_ faster benchmarking while attempting to maintain high accuracy and using an alternative syntax based on pipelines.
-
-```julia chairmarks-example
-# Generate a random vector, sort it, then check if it's sorted
-@b rand(1000) sort! issorted(_) || error()
-```
-
-These pipelines ensure that you can not only benchmark your code, but that your code returns the result expected.
+- [PkgBenchmark.jl](https://github.com/JuliaCI/PkgBenchmark.jl) and its unmaintained but functional CI wrapper [BenchmarkCI.jl](https://github.com/tkf/BenchmarkCI.jl)
+- [AirSpeedVelocity.jl](https://github.com/MilesCranmer/AirspeedVelocity.jl)
+- [PkgJogger.jl](https://github.com/awadell1/PkgJogger.jl)
 
 ### Other tools
 
-The setup above is great for individual lines of code, but get insight into which parts of a larger program are bottlenecks it is recommended to use a [profiler](#profiling) or a lightweight tool like [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl).
-This package allows you to label different sections of your code, then time them and view the performance summarised by label.
+BenchmarkTools.jl works fine for relatively short and simple blocks of code (microbenchmarking).
+To find bottlenecks in a larger program, you should rather use a [profiler](#profiling) or the package [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl).
+It allows you to label different sections of your code, then time them and display a table of grouped by label.
 
-Finally, if you know a section is slow and you'll need to wait for it to be done, you can use [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl) to visualise how long it will take.
-
-
-## Benchmark suites
-
-While we previously discussed the importance of documenting breaking changes in packages using [semantic versioning](/sharing/index.md#versions-and-registration), regressions in performance can also be vital to track.
-
-Package benchmarks are typically stored in `MyPackage/benchmark/benchmarks.jl` and the file typically defines a 
-  1. Load BenchmarkTools
-  2. Initialise a `const` `BenchmarkGroup()` called `SUITE` by convention.
-  3. Use `@benchmarkable` to define named benchmarks as key value pairs of `SUITE`
-
-```julia
-using BenchmarkTools
-
-const SUITE = BenchmarkGroup()
-
-#TODO Insert example of a suite of benchmarks
-```
-
-To run this suite manually use [PkgBenchmark.jl](https://github.com/JuliaCI/PkgBenchmark.jl)
-
-However, catching regressions is much easier when it is automated which is what tools like [AirSpeedVelocity.jl](https://github.com/MilesCranmer/AirspeedVelocity.jl) and [PkgJogger.jl](https://github.com/awadell1/PkgJogger.jl) aim to help with.
+Finally, if you know a loop is slow and you'll need to wait for it to be done, you can use [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl) or [ProgressLogging.jl](https://github.com/JuliaLogging/ProgressLogging.jl) to track its progress.
 
 ## Profiling
 \tldr{
@@ -402,7 +296,6 @@ After ensuring type stability, one should try to reduce the number of heap alloc
 While this can be done with [benchmarks](#measurements) or [profiling](#profiling) as described above, this can also be done as part of your writing or CI workflow using [AllocCheck.jl](https://github.com/JuliaLang/AllocCheck.jl), a package by the official JuliaLang organisation.
 
 By annotating a function you are writing with `@check_allocs`, if the function is run and the compiler detects that it might allocate, it will throw an error which can be inspected in a try-catch block to see exactly where this occurred.
-
 
 Alternatively, to ensure that non-allocating functions never regress in future versions without you knowing, you can write a test set to check allocations by providing the function and a concrete type-signature.
 ```julia AllocCheck
