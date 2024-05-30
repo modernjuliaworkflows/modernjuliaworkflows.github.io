@@ -269,6 +269,7 @@ html {
     bottom: 0;
     width: 15rem;
     text-align: left;
+    overflow-y: scroll;
   }
 }
 
@@ -307,6 +308,7 @@ a.sidebar-nav-item:focus {
 /* Hide submenu by default */
 .menu-list-child-list {
   display: none;
+  padding-left: 1.5rem;
 }
 
 /* Show submenu when parent item has 'active' class */
@@ -327,7 +329,7 @@ a.sidebar-nav-item:focus {
 
 @media (min-width: 768px) {
   .sidebar-sticky {
-    position: absolute;
+    position: relative;
     top: 1rem;
     right: 1rem;
     left: 1rem;
