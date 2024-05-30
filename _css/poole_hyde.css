@@ -304,6 +304,21 @@ a.sidebar-nav-item:focus {
   font-weight: bold;
 }
 
+/* Hide submenu by default */
+.menu-list-child-list {
+  display: none;
+}
+
+/* Show submenu when parent item has 'active' class */
+.sidebar-nav-item.active + .menu-list-child-list {
+  display: block;
+}
+
+.menu-list-link {
+  color: rgba(255, 255, 255, 0.5)  !important;
+  font-size: var(--small);
+}
+
 /* Sticky sidebar
  *
  * Add the `sidebar-sticky` class to the sidebar's container to affix it the
