@@ -269,6 +269,7 @@ html {
     bottom: 0;
     width: 15rem;
     text-align: left;
+    overflow-y: scroll;
   }
 }
 
@@ -328,7 +329,7 @@ a.sidebar-nav-item:focus {
 
 @media (min-width: 768px) {
   .sidebar-sticky {
-    position: absolute;
+    position: relative;
     top: 1rem;
     right: 1rem;
     left: 1rem;
