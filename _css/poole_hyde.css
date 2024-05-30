@@ -307,6 +307,7 @@ a.sidebar-nav-item:focus {
 /* Hide submenu by default */
 .menu-list-child-list {
   display: none;
+  padding-left: 1.5rem;
 }
 
 /* Show submenu when parent item has 'active' class */
