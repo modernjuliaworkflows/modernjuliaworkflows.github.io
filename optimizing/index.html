@@ -130,11 +130,13 @@ Because code needs to be compiled before it can be run, you should first run a f
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> v = rand(100);
 
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
+
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Inaccurate, note the &gt;99% compilation time
-0.029694 seconds (48.49 k allocations: 3.214 MiB, 99.92% compilation time)
+0.030247 seconds (48.49 k allocations: 3.214 MiB, 99.92% compilation time)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Accurate
-0.000005 seconds (1 allocation: 16 bytes)
+0.000006 seconds (1 allocation: 16 bytes)
 </code></pre>
 <p>Using <code>@time</code> is quick but it has flaws, because your function is only measured once.
 That measurement might have been influenced by other things going on in your computer at the same time.
@@ -143,65 +145,12 @@ In general, running the same block of code multiple times is a safer measurement
 Similarly to <code>@time</code>, BenchmarkTools offers <code>@btime</code> which can be used in exactly the same way but will run the code multiple times and provide an average.
 Additionally, by using <code>$</code> to <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Interpolating-values-into-benchmark-expressions">interpolate external values</a>, you remove the overhead caused by global variables.</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
-ERROR: ArgumentError: Package BenchmarkTools not found in current path.
-- Run `import Pkg; Pkg.add(&quot;BenchmarkTools&quot;)` to install the BenchmarkTools package.
-Stacktrace:
-  [1] macro expansion
-    @ ./loading.jl:1772 [inlined]
-  [2] macro expansion
-    @ ./lock.jl:267 [inlined]
-  [3] __require(into::Module, mod::Symbol)
-    @ Base ./loading.jl:1753
-  [4] #invoke_in_world#3
-    @ ./essentials.jl:926 [inlined]
-  [5] invoke_in_world
-    @ ./essentials.jl:923 [inlined]
-  [6] require(into::Module, mod::Symbol)
-    @ Base ./loading.jl:1746
-  [7] eval
-    @ ./boot.jl:385 [inlined]
-  [8] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
-    @ Base ./loading.jl:2076
-  [9] include_string
-    @ ./loading.jl:2060 [inlined]
- [10] #69
-    @ ~/.julia/packages/Xranklin/6wt1L/src/context/code/eval.jl:91 [inlined]
- [11] (::IOCapture.var&quot;#5#9&quot;{DataType, Xranklin.var&quot;#69#70&quot;{Module, String}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
-    @ IOCapture ~/.julia/packages/IOCapture/Y5rEA/src/IOCapture.jl:170
- [12] with_logstate(f::Function, logstate::Any)
-    @ Base.CoreLogging ./logging.jl:515
- [13] with_logger
-    @ ./logging.jl:627 [inlined]
- [14] capture(f::Xranklin.var&quot;#69#70&quot;{Module, String}; rethrow::Type, color::Bool, passthrough::Bool, capture_buffer::IOBuffer, io_context::Vector{Any})
-    @ IOCapture ~/.julia/packages/IOCapture/Y5rEA/src/IOCapture.jl:167
- [15] _attempt_eval
-    @ ~/.julia/packages/Xranklin/6wt1L/src/context/code/eval.jl:90 [inlined]
- [16] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/context/code/eval.jl:73
- [17] eval_nb_cell
-    @ ~/.julia/packages/Xranklin/6wt1L/src/context/code/eval.jl:45 [inlined]
- [18] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/context/code/notebook_code.jl:169
- [19] eval_code_cell!(lc::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/context/code/notebook_code.jl:126
- [20] eval_code_cell!
-    @ ~/.julia/packages/Xranklin/6wt1L/src/context/code/notebook_code.jl:21 [inlined]
- [21] _eval_repl_code(io::IOBuffer, ci::Xranklin.CodeInfo, lc::Xranklin.LocalContext; tohtml::Bool)
-    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/convert/markdown/rules/code.jl:388
- [22] _eval_repl_code
-    @ ~/.julia/packages/Xranklin/6wt1L/src/convert/markdown/rules/code.jl:352 [inlined]
- [23] html_repl_code(ci::Xranklin.CodeInfo, lc::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/convert/markdown/rules/code.jl:332
- [24] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
-    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/convert/markdown/rules/code.jl:257
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs(v);
-ERROR: UndefVarError: `@btime` not defined
-Stacktrace:
+99.965 ns (1 allocation: 16 bytes)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs($v);
-ERROR: UndefVarError: `@btime` not defined
-Stacktrace:
+62.627 ns (0 allocations: 0 bytes)
 </code></pre>
 <p>In more complex settings, you might need to construct variables in a <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases">setup phase</a> that is run before each sample.
 This can be useful to generate a new random input every time, instead of always using the same input.</p>
@@ -211,8 +160,7 @@ This can be useful to generate a new random input every time, instead of always 
     A = rand(1000, 1000); # use semi-colons between setup lines
     b = rand(1000)
 );
-ERROR: UndefVarError: `@btime` not defined
-Stacktrace:
+148.718 μs (1 allocation: 7.94 KiB)
 </code></pre>
 <p>For better visualization, the <code>@benchmark</code> macro shows performance histograms:</p>
 <div class="advanced"><p><strong>Advanced</strong>: Certain computations may be <a href="(https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)">optimized away by the compiler</a> before the benchmark takes place.

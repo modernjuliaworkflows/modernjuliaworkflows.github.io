@@ -149,9 +149,9 @@ The rest of this post will explain to you what each part of this folder does, an
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.develop(path=sitepath(&quot;MyAwesomePackage&quot;))  # ignore sitepath
 <span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/sharing/Project.toml`
-  <span class="sgr90">[b7307195] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+  <span class="sgr90">[e2a5aa54] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/sharing/Manifest.toml`
-  <span class="sgr90">[b7307195] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+  <span class="sgr90">[e2a5aa54] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyAwesomePackage
 </code></pre>
@@ -225,7 +225,7 @@ You can either use it in report mode (with a nice <a href="https://www.julia-vsc
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using JET, MyAwesomePackage
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> JET.report_package(MyAwesomePackage)
-[toplevel-info] virtualized the context of Main (took 0.012 sec)
+[toplevel-info] virtualized the context of Main (took 0.013 sec)
 [toplevel-info] entered into /home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl
 [toplevel-info]  exited from /home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl (took 0.01 sec)
 [toplevel-info] analyzed 0 top-level definitions (took 0.006 sec)
