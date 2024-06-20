@@ -44,6 +44,8 @@ Because code needs to be compiled before it can be run, you should first run a f
 ```>time-example
 sum_abs(vec) = sum(abs(x) for x in vec);
 v = rand(100);
+
+using BenchmarkTools
 @time sum_abs(v); # Inaccurate, note the >99% compilation time
 @time sum_abs(v); # Accurate
 ```
