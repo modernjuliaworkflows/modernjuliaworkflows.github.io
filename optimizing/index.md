@@ -47,16 +47,19 @@ The two fundamental principles for writing fast Julia code:
 The compiler's job is to optimize and translate Julia code it into runnable [machine code](https://en.wikipedia.org/wiki/Machine_code).
 If a variable's type cannot be deduced before the code is run, then the compiler won't generate efficient code to handle that variable.
 We call this phenomenon "type instability".
+Enabling type inference means making sure that every variable's type in every function can be deduced from the types of the function inputs alone.
 
 A "heap allocation" (or simply "allocation") occurs when we create a new variable without knowing how much space it will require (like a `Vector` with flexible length).
-Julia has a [mark-and-sweep](https://en.wikipedia.org/wiki/Tracing_garbage_collection#Copying_vs._mark-and-sweep_vs._mark-and-don't-sweep) [garbage collector](https://docs.julialang.org/en/v1/devdocs/gc/) (GC), which runs periodically during code execution to free up space on the heap.
+Julia has a mark-and-sweep [garbage collector](https://docs.julialang.org/en/v1/devdocs/gc/) (GC), which runs periodically during code execution to free up space on the heap.
 Execution of code is stopped while the garbage collector runs, so minimising its usage is important.
 
-The vast majority of performance tips, such as [those found in the manual](https://docs.julialang.org/en/v1/manual/performance-tips/), come down to these two fundamental ideas.
+The vast majority of performance tips come down to these two fundamental ideas.
 Typically, the most common beginner pitfall is the use of [untyped global variables](https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables) without passing them as arguments.
 Why is it bad?
 Because the type of a global variable can change outside of the body of a function, so it causes type instabilities wherever it is used.
 Those type instabilities in turn lead to more heap allocations.
+
+With this in mind, after you're done with the current page, you should read the [official performance tips](https://docs.julialang.org/en/v1/manual/performance-tips/): they contain some useful advice which is not repeated here for space reasons.
 
 ## Measurements
 
@@ -73,7 +76,7 @@ v = rand(100);
 ```
 
 Using `@time` is quick but it has flaws, because your function is only measured once.
-For example, just because the GC wasn't invoked that one time, doesn't mean it will never be needed.
+That measurement might have been influenced by other things going on in your computer at the same time.
 In general, running the same block of code multiple times is a safer measurement method, because it diminishes the probability of only observing an outlier.
 
 ### BenchmarkTools
@@ -88,15 +91,8 @@ using BenchmarkTools
 @btime sum_abs($v);
 ```
 
-For better visualization, the `@benchmark` macro shows performance histograms:
-
-```>benchmark-example
-b = @benchmark sum_abs($v)
-println(b)
-```
-
 In more complex settings, you might need to construct variables in a [setup phase](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases) that is run before each sample.
-This is very useful to generate a new random input every time, instead of always using the same input.
+This can be useful to generate a new random input every time, instead of always using the same input.
 
 ```>setup-example
 my_matmul(A, b) = A * b;
@@ -105,6 +101,8 @@ my_matmul(A, b) = A * b;
     b = rand(1000)
 );
 ```
+
+For better visualization, the `@benchmark` macro shows performance histograms:
 
 \advanced{
 Certain computations may be [optimized away by the compiler]((https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)) before the benchmark takes place.
@@ -131,173 +129,125 @@ It allows you to label different sections of your code, then time them and displ
 Finally, if you know a loop is slow and you'll need to wait for it to be done, you can use [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl) or [ProgressLogging.jl](https://github.com/JuliaLogging/ProgressLogging.jl) to track its progress.
 
 ## Profiling
+
 \tldr{
-    The built-in [Profile](https://docs.julialang.org/en/v1/stdlib/Profile/#lib-profiling) module and its [`Allocs`](https://docs.julialang.org/en/v1/stdlib/Profile/#Memory-profiling) submodule can help you find performance bottlenecks.
-    Visualise the results interactively with [PProf.jl](https://github.com/JuliaPerf/PProf.jl), or with [ProfileSVG.jl](https://github.com/kimikage/ProfileSVG.jl) if you program in Jupyter/Pluto notebooks.
+    Profiling can identify performance bottlenecks at function level, and graphical tools such as ProfileView.jl are the best way to use it.
 }
 
-Whereas a benchmark measures the overall performance of some code, a profiler breaks this data down function by function.
-This allows the user to identify sections of code responsible for performance bottlenecks, and shows precisely which functions take up most of the running time.
-As with benchmarks, there are a number of ways to both collect and visualise this performance data.
-Julia features a built-in [sampling profiler](https://en.wikipedia.org/wiki/Profiling_(computer_programming)#Statistical_profilers), a tool that periodically captures a snapshot of what the program is doing.
+### Sampling
 
-Let's define a few inefficient functions and then use a few different tools to identify the lines causing trouble.
+Whereas a benchmark measures the overall performance of some code, a profiler breaks it down function by function to identify bottlenecks.
+Sampling-based profilers periodically ask the program which line it is currently executing, and aggregate results by line or by function.
+Julia offers two kinds: [one for runtime](https://docs.julialang.org/en/v1/stdlib/Profile/#lib-profiling) (in the module `Profile`) and [one for memory](https://docs.julialang.org/en/v1/stdlib/Profile/#Memory-profiling) (in the submodule `Profile.Allocs`).
 
-```julia profile-functions
-slow_relu(x) = x > 0 ? x : 0 # Don't define ReLU like this.
+These built-in profilers print textual outputs, but the result of profiling is best visualized as a flame graph.
+In a flame graph, each horizontal layer corresponds to a specific level in the call stack, and the width of a tile shows how much time was spent in the corresponding function.
+Here's an example:
 
-function do_work(xs)
-    ans = []
-    for x in xs
-        push!(ans, slow_relu(x))
-    end
-    return ans
-end
+![flamegraph](https://github.com/pfitzseb/ProfileCanvas.jl/raw/main/assets/flamegraph.png)
+
+### Visualization tools
+
+The packages [ProfileView.jl](https://github.com/timholy/ProfileView.jl) and [PProf.jl](https://github.com/JuliaPerf/PProf.jl) both allow users to record and interact with flame graphs.
+ProfileView.jl is simpler to use, but PProf is more featureful and is based on [pprof](https://github.com/google/pprof), an external tool maintained by Google which applies to more than just Julia code.
+Here we only demonstrate the former:
+
+```julia profileview-example
+using ProfileView
+@profview do_work(some_input)
 ```
 
 \vscode{
-    Calling `@profview do_work(xs)` will open an interactive flame graph of the profiled stackframes in a split screen. Note that, due to function name overlap, importing ProfileView in a VSCode session causes namespace conflicts which can be resolved by writing `ProfileView.@profview`.
+    Calling `@profview do_work(some_input)` in the integrated Julia REPL will open an interactive flame graph, similar to ProfileView.jl but without requiring a separate package.
 }
 
-The tools [ProfileView.jl](https://github.com/timholy/ProfileView.jl) and [PProf.jl](https://github.com/JuliaPerf/PProf.jl) both allow users to produce and interact with CPU flamegraphs, in which functions that were more frequently sampled take up a wider space in the chart.
-ProfileView.jl is simpler to use, but PProf is more featureful and is based on `pprof`, an external tool maintained by employees at Google which can be used to profile more than just Julia code.
-The code example below demonstrates the usage differences between the packages:
+To integrate profile visualisations into environments like Jupyter and Pluto, use [ProfileSVG.jl](https://github.com/kimikage/ProfileSVG.jl) or [ProfileCanvas.jl](https://github.com/pfitzseb/ProfileCanvas.jl), whose outputs can be embedded into a notebook.
 
-```julia profileview-example
-xs = rand(100_000) .- 0.5;
+No matter which tool you use, if your code is too fast to collect samples, you may need to run it multiple times in a loop.
 
-do_work(xs) # Run once to precompile
-
-# ProfileView.jl
-using ProfileView
-@profview do_work(xs)
-```
-
-ProfileView exports `@profileview` which combines the collection and visualisation step in one, opening the flamegraph in a separate window.
-
-```julia pprof-example
-# PProf.jl
-using Profile #stdlib
-using PProf
-begin 
-    Profile.clear()
-    @profile do_work(xs)
-    pprof()
-end
-```
-
-On the other hand PProf.jl requires slightly more effort to use.
-When running `@profile`, the CPU data collected is saved to a global buffer which must be cleared with `Profile.clear()` each time you want to perform a new performance analysis.
-Next, the call to `pprof` produces a file called `profile.pb.gz` and provides a link to open it in a locally hosted web server.
-Upon opening this server in a browser, the user is presented with a call graph, which visualises how often functions call eachother.
-A more traditional flamegraph view can be selected from the options menu.
-Users of PProf should put `*.pb.gz` in their .gitignore file to avoid cluttering their codebase.
-
-To integrate profile visualisations into notebook environments like Jupyter and Pluto, use [ProfileSVG.jl](https://github.com/kimikage/ProfileSVG.jl), whose outputs can be embedded into a notebook.
-
-Note that no matter which tool you use, if your code is fast, you may need to run it multiple times in a loop.
-This is because it may run quickly enough that the code is never actually sampled.
-This is an issue for code faster than 1 ms on Unix systems and 10 ms on Windows, but these values can be changed (globally) by running `Profile.init(delay=0.01)`, where `delay` is measured in seconds.
-Given that the sample rate is a global variable and the number of runs is a local one, it makes more sense to adjust the number of runs when required as opposed to changing the sample delay every time you run a sample.
-
-### Allocation profiling
-
-The Profile module also contains `Allocs`, a submodule that can be used to track down the source of allocations.
-Currently, [PProf.jl](https://github.com/JuliaPerf/PProf.jl) is the only tool that can visualise this data.
-
-```julia
-using PProf
-using Profile
-begin
-    Profile.Allocs.clear()
-    do_work(xs) # Run once to precompile
-    Profile.Allocs.@profile sample_rate=1 do_work(xs)
-    PProf.Allocs.pprof(from_c=false)
-end
-```
-
-The `sample_rate` determines the proportion of allocations that are sampled by the profiler, much like how `delay` controls how often CPU profiler probes the program to see what's going on.
-A lower sample rate like 0.1 or 0.01 should be used when the code allocates "a lot", on the order of a million times, otherwise, a sample rate of 1 won't slow down data collection _too_ much.
-`from_c = false` tells PProf to not display stackframes from Julia's internals that are written in C.
-For more information see [this talk](https://www.youtube.com/watch?v=BFvpwC8hEWQ) at JuliaCon 2022.
-
-A [known issue](https://github.com/JuliaLang/julia/issues/43688) with the allocation profiler is that it is not able to determine the type of every object allocated, instead `Profile.Allocs.UnknownType` is shown instead.
-Inspecting the call graph can help identify which types are responsible for the allocations.
+\advanced{
+    To visualize memory allocation profiles, use PProf.jl or VSCode's `@profview_allocs`. 
+    A known issue with the allocation profiler is that it is not able to determine the type of every object allocated, instead `Profile.Allocs.UnknownType` is shown instead.
+    Inspecting the call graph can help identify which types are responsible for the allocations.
+}
 
 ## Type stability
-\tldr{Use JET.jl to automatically detect type instabilities in your code, and `@code_typed`/`@code_warntype` and Cthulhu.jl to do so manually.}
+
+\tldr{Use JET.jl to automatically detect type instabilities in your code, and `@code_warntype` or Cthulhu.jl to do so manually. DispatchDoctor.jl can help prevent them altogether.}
 
 For a section of code to be considered type stable, the type inferred by the compiler must be "concrete", which means that the size of memory that needs to be allocated to store its value is known at compile time.
 Types declared abstract with `abstract type` are not concrete and neither are [parametric types](https://docs.julialang.org/en/v1/manual/types/#Parametric-Types) whose parameters are not specified:
+
 ```>isconcretetype-example
+isconcretetype(Any)
 isconcretetype(AbstractVector)
 isconcretetype(Vector) # Shorthand for `Vector{T} where T`
 isconcretetype(Vector{Real})
+isconcretetype(eltype(Vector{Real}))
 isconcretetype(Vector{Int64})
 ```
 
 \advanced{
-`Vector{Real}` is concrete despite `Real` being abstract because all parametric types besides tuples are [invariant](https://docs.julialang.org/en/v1/manual/types/#man-parametric-composite-types) in their parameters (as opposed to covariant or contravariant).
-Because `Vector{Real}` therefore can't be subtyped, it must have a concrete implementation which, in Julia's case, is as a vector of pointers to individually allocated `Real` objects.
-This implementation detail (a pointer to pointers) also explains part of the reason why `Vector{Real}` is slow, the other being a lack of concrete compile-time specialisation on the elements of the vector.
+`Vector{Real}` is concrete despite `Real` being abstract for [subtle typing reasons](https://docs.julialang.org/en/v1/manual/types/#man-parametric-composite-types) but it will still be slow in practice because the type of its elements is abstract.
 }
 
-Before running any piece of code, the Julia compiler tries to determine the most specialised method it can use to ensure that the code runs as fast as possible e.g. `1+1` faster than 1 floatingpoint+ 1.
-For each variable, including a function output, contained in a block of code, if all pieces of information necessary to determine its type are type inferrable, then so is the variable in question.
-This means that if a variable cannot be inferred, then no variables that depend on it in any way can be either.
-
 <!-- thanks Frames White: https://stackoverflow.com/a/58132532 -->
-While type stable function calls compile down to fast `GOTO` statements, unstable function calls compile to code that reads the list of all methods for that function and find the one that matches.
-This phenomenon called "dynamic dispatch" essentially prevents further optimizations via [inlining](https://en.wikipedia.org/wiki/Inline_expansion).
+While type-stable function calls compile down to fast `GOTO` statements, type-unstable function calls generate code that must read the list of all methods for a given operation and find the one that matches.
+This phenomenon called "dynamic dispatch" prevents further optimizations.
+
+Type-stability is a fragile thing: if a variable's type cannot be inferred, then the types of variables that depend on it may not be inferrable either.
+As a first approximation, most code should be type-stable unless it has a good reason not to be.
 
 ### Detecting instabilities
-Fixing type instabilities is usually a straightforward affair once one is found, but finding the source of the instability is not always easy.
-The simplest way to detect an instability is with the builtin macros `@code_typed` and `@code_warntype`:
+
+The simplest way to detect an instability is with the builtin macro [`@code_warntype`](https://docs.julialang.org/en/v1/manual/performance-tips/#man-code-warntype):
+The output of `@code_warntype` is difficult to parse, but the key takeaway is the return type of the function's `Body`: if it is an abstract type, like `Any`, something is wrong.
+In a normal Julia REPL, such cases would show up colored in red as a warning.
 
 ```!interactiveutils
 using InteractiveUtils  # hide
 ```
 
 ```>
-#TODO: Find a different example, see the JET part, No errors detected
-unstable_ReLU(x) = x > 0 ? x : 0;
-@code_typed unstable_ReLU(-1) # Stable
-@code_warntype unstable_ReLU(2.0) # Unstable!
+function put_in_vec_and_sum(x)
+    v = []
+    push!(v, x)
+    return sum(v)
+end;
+
+@code_warntype put_in_vec_and_sum(1)
 ```
 
-The function `unstable_ReLU` is not type stable when called with a float argument.
-In the output of `@code_typed`, we see in the last line that the return type is `Int64`.
-However, in `@code_warntype` the return type, shown as the type of `Body`, is `Union{Float64, Int64}`, which is not concrete and is therefore flagged to the user.
-
-The problem with this method is that, while an instability detected by the macros will be present inside the called function, it may not be the _actual_ cause of the instability, and one may need to make repeated calls to the macros to determine the underlying culprit.
-This is where tools like [Cthulhu.jl](https://github.com/JuliaDebug/Cthulhu.jl) and [JET.jl](https://github.com/aviatesk/JET.jl) can help.
-
-Cthulhu.jl exposes the `@descend` macro which can be used to interactively "step through" lines of the corresponding typed code with the arrow keys and "descend" into a particular line with `Enter`, where any instabilities can be highlighted by pressing the "w" key.
-This is akin to repeatedly calling `@code_warntype` deeper and deeper into your functions, slowly succumbing to the madness...
-The official [README](https://github.com/JuliaDebug/Cthulhu.jl) provides more information on the controls and options as well as a [video example](https://www.youtube.com/watch?v=pvduxLowpPY).
-
-The best way to avoid instabilities is not to be automatically flagged when one is detected.
-This is among the functionality provided by [JET.jl](https://github.com/aviatesk/JET.jl).
-We previously spoke about JET in the [Sharing](../sharing/#code_quality) article in the context of [error analysis](https://aviatesk.github.io/JET.jl/stable/jetanalysis/#jetanalysis), but JET also provides [optimization analysis](https://aviatesk.github.io/JET.jl/stable/optanalysis/) aimed primarily at finding type instabilities.
-
+Unfortunately, `@code_warntype` is limited to one function body: calls to other functions are not expanded, which makes deeper type instabilities easy to miss.
+That is where [JET.jl](https://github.com/aviatesk/JET.jl) can help: it provides [optimization analysis](https://aviatesk.github.io/JET.jl/stable/optanalysis/) aimed primarily at finding type instabilities.
 While [test integrations](https://aviatesk.github.io/JET.jl/stable/optanalysis/#optanalysis-test-integration) are also provided, the interactive entry point of JET is the `@report_opt` macro.
 
 ```>JET_opt
 using JET
-@report_opt unstable_ReLU(1.0) #TODO: Find a different example.
+@report_opt put_in_vec_and_sum(1)
 ```
-
 
 \vscode{The Julia extension features a [static linter](https://www.julia-vscode.org/docs/stable/userguide/linter/), and runtime diagnostics with JET can be automated to run periodically on your codebase and show any problems detected.}
 
+[Cthulhu.jl](https://github.com/JuliaDebug/Cthulhu.jl) exposes the `@descend` macro which can be used to interactively "step through" lines of the corresponding typed code, and "descend" into a particular line if needed.
+This is akin to repeatedly calling `@code_warntype` deeper and deeper into your functions, slowly succumbing to the madness...
+We cannot demonstrate it on a static website, but the [video example](https://www.youtube.com/watch?v=pvduxLowpPY) is a good starting point.
+
+### Fixing instabilities
+
+The Julia manual has a collection of tips to [improve type inference](https://docs.julialang.org/en/v1.12-dev/manual/performance-tips/#Type-inference).
+
+A more direct approach is to error whenever a type instability occurs: the macro `@stable` from [DispatchDoctor.jl](https://github.com/MilesCranmer/DispatchDoctor.jl) allows exactly that.
+
 ## Memory management
 
-After ensuring type stability, one should try to reduce the number of heap allocations a program makes in order to spend less time in garbage collection cycles.
-While this can be done with [benchmarks](#measurements) or [profiling](#profiling) as described above, this can also be done as part of your writing or CI workflow using [AllocCheck.jl](https://github.com/JuliaLang/AllocCheck.jl), a package by the official JuliaLang organisation.
+After ensuring type stability, one should try to reduce the number of heap allocations a program makes.
+Again, the Julia manual has a series of tricks related to [arrays and allocations](https://docs.julialang.org/en/v1.12-dev/manual/performance-tips/#Memory-management-and-arrays) which you should take a look at.
 
-By annotating a function you are writing with `@check_allocs`, if the function is run and the compiler detects that it might allocate, it will throw an error which can be inspected in a try-catch block to see exactly where this occurred.
+And again, you can also choose to error whenever an allocation occurs, with the help of [AllocCheck.jl](https://github.com/JuliaLang/AllocCheck.jl).
+By annotating a function with `@check_allocs`, if the function is run and the compiler detects that it might allocate, it will throw an error.
+Alternatively, to ensure that non-allocating functions never regress in future versions of your code, you can write a test set to check allocations by providing the function and a concrete type-signature.
 
-Alternatively, to ensure that non-allocating functions never regress in future versions without you knowing, you can write a test set to check allocations by providing the function and a concrete type-signature.
 ```julia AllocCheck
 @testset "non-allocating" begin
     @test isempty(AllocCheck.check_allocs(my_func, (Float64, Float64)))
@@ -306,18 +256,20 @@ end
 
 ## Precompilation
 
-* [PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl)
-* [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl)
-* [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl)
-* [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
+- [PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl)
+- [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl)
+- [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl)
+- [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
 
 ## Concurrency and Parallelism
+
 \tldr{
     For multi-threaded computation, we recommend using the `@threads` macro or [Transducers.jl](https://github.com/JuliaFolds/Transducers.jl)-based extensions like [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl).
     If you have multiple cores or machines, use the [Distributed](https://docs.julialang.org/en/v1/manual/distributed-computing/) standard library, [MPI.jl](https://github.com/JuliaParallel/MPI.jl) or [Elemental.jl](https://github.com/JuliaParallel/Elemental.jl).
 }
 
 ### What is concurrency?
+
 Modern computing hardware is typically capable of parallel processing, where multiple separate computations are completed at once.
 The ability to manage a non-sequential order of execution, such as parallel execution, is called _concurrency_.
 
