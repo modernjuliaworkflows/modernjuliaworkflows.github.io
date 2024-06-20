@@ -2,33 +2,6 @@
 title = "Optimizing your code"
 +++
 
-```! run_bad_functions
-# hideall
-using Chairmarks
-function bad_function(y)
-    a = x + y
-    b = x - y
-    return a ./ b
-end
-function better_function(x, y)
-    a = x + y
-    b = x - y
-    return a ./ b
-end
-function no_better_function(x, y)    
-    return (x + y) ./ (x - y)
-end
-function best_function!(c, x, y)
-     @. c = (x + y) ./ (x - y)
-    return nothing
-end
-function best_function(x, y)
-    c = zeros(size(x))
-    best_function!(c, x, y)
-    return c
-end;
-```
-
 \activate{}
 
 # Optimizing your code
