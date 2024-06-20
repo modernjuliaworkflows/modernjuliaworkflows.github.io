@@ -258,5 +258,22 @@ end
 
 - [PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl)
 - [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl)
+- [StaticCompiler.jl](https://github.com/tshort/StaticCompiler.jl)
 - [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl)
 - [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
+
+## Parallelism
+
+- [distributed vs. multithreading](https://docs.julialang.org/en/v1/manual/parallel-computing/)
+- [OhMyThreads.jl](https://github.com/JuliaFolds2/OhMyThreads.jl)
+
+## SIMD / GPU
+
+- [LoopVectorization.jl](https://github.com/JuliaSIMD/LoopVectorization.jl) (deprecated in 1.11)
+- [Tullio.jl](https://github.com/mcabbott/Tullio.jl)
+- [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
+
+## Efficient types
+
+- [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)
+- [Dictionaries.jl](https://github.com/andyferris/Dictionaries.jl)
