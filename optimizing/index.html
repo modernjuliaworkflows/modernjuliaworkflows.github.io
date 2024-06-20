@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   
-  
+   <link rel="stylesheet" href="/libs/highlight/styles/github.min.css">
+   
   <link rel="stylesheet" href="/css/franklin.css">
 <link rel="stylesheet" href="/css/poole_hyde.css">
 <link rel="stylesheet" href="/css/custom.css">
@@ -104,36 +105,249 @@
 
 
 <div class="franklin-content" >
-  <h1 id="optimizing_your_code" ><a href="#optimizing_your_code"> Optimizing your code</a></h1><div class="toc"><ol><li><a href="#principles">Principles</a></li><li><a href="#measurements">Measurements</a></li><li><a href="#benchmark_suites">Benchmark suites</a></li><li><a href="#profiling">Profiling</a></li><li><a href="#type_stability">Type stability</a></li><li><a href="#memory_management">Memory management</a></li><li><a href="#precompilation">Precompilation</a></li><li><a href="#parallelism">Parallelism</a></li><li><a href="#simd_/_gpu">SIMD / GPU</a></li><li><a href="#efficient_types">Efficient types</a></li></ol></div><h2 id="principles" ><a href="#principles"> Principles</a></h2><ul>
-<li><a href="https://docs.julialang.org/en/v1/manual/performance-tips/">performance tips</a></li>
-</ul>
-<h2 id="measurements" ><a href="#measurements"> Measurements</a></h2><ul>
-<li><a href="https://github.com/timholy/ProgressMeter.jl">ProgressMeter.jl</a></li>
-<li><a href="https://github.com/JuliaCI/BenchmarkTools.jl">BenchmarkTools.jl</a></li>
-<li><a href="https://github.com/LilithHafner/Chairmarks.jl">Chairmarks.jl</a></li>
-<li><a href="https://github.com/KristofferC/TimerOutputs.jl">TimerOutputs.jl</a></li>
-</ul>
-<h2 id="benchmark_suites" ><a href="#benchmark_suites"> Benchmark suites</a></h2><ul>
-<li><a href="https://github.com/JuliaCI/PkgBenchmark.jl">PkgBenchmark.jl</a></li>
-<li><a href="https://github.com/tkf/BenchmarkCI.jl">BenchmarkCI.jl</a> (unmaintained)</li>
+  <h1 id="optimizing_your_code" ><a href="#optimizing_your_code"> Optimizing your code</a></h1><div class="toc"><ol><li><a href="#principles">Principles</a></li><li><a href="#measurements">Measurements</a></li><li><a href="#profiling">Profiling</a></li><li><a href="#type_stability">Type stability</a></li><li><a href="#memory_management">Memory management</a></li><li><a href="#precompilation">Precompilation</a></li><li><a href="#parallelism">Parallelism</a></li><li><a href="#simd_/_gpu">SIMD / GPU</a></li><li><a href="#efficient_types">Efficient types</a></li></ol></div><h2 id="principles" ><a href="#principles"> Principles</a></h2><div class="tldr"><p><strong>TLDR</strong>: The two fundamental principles for writing fast Julia code:</p>
+<ol>
+<li>Ensure that <strong>the compiler can infer the type</strong> of every variable.</li>
+<li>Avoid <strong>unnecessary (heap) allocations</strong>. </li>
+</ol>
+</div><p>The compiler's job is to optimize and translate Julia code it into runnable <a href="https://en.wikipedia.org/wiki/Machine_code">machine code</a>.
+If a variable's type cannot be deduced before the code is run, then the compiler won't generate efficient code to handle that variable.
+We call this phenomenon "type instability".
+Enabling type inference means making sure that every variable's type in every function can be deduced from the types of the function inputs alone.</p>
+<p>A "heap allocation" (or simply "allocation") occurs when we create a new variable without knowing how much space it will require (like a <code>Vector</code> with flexible length).
+Julia has a mark-and-sweep <a href="https://docs.julialang.org/en/v1/devdocs/gc/">garbage collector</a> (GC), which runs periodically during code execution to free up space on the heap.
+Execution of code is stopped while the garbage collector runs, so minimising its usage is important.</p>
+<p>The vast majority of performance tips come down to these two fundamental ideas.
+Typically, the most common beginner pitfall is the use of <a href="https://docs.julialang.org/en/v1/manual/performance-tips/#Avoid-untyped-global-variables">untyped global variables</a> without passing them as arguments.
+Why is it bad?
+Because the type of a global variable can change outside of the body of a function, so it causes type instabilities wherever it is used.
+Those type instabilities in turn lead to more heap allocations.</p>
+<p>With this in mind, after you're done with the current page, you should read the <a href="https://docs.julialang.org/en/v1/manual/performance-tips/">official performance tips</a>: they contain some useful advice which is not repeated here for space reasons.</p>
+<h2 id="measurements" ><a href="#measurements"> Measurements</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use BenchmarkTools.jl's <code>@benchmark</code> with a setup phase to get the most accurate idea of your code's performance. Use Chairmarks.jl as a faster alternative. </p>
+</div><p>The simplest way to measure how fast a piece of code runs is to use the <code>@time</code> macro, which returns the result of the code and prints the measured runtime and allocations.
+Because code needs to be compiled before it can be run, you should first run a function without timing it so it can be compiled, and then time it:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> sum_abs(vec) = sum(abs(x) for x in vec);
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> v = rand(100);
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Inaccurate, note the &gt;99% compilation time
+0.029694 seconds (48.49 k allocations: 3.214 MiB, 99.92% compilation time)
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Accurate
+0.000005 seconds (1 allocation: 16 bytes)
+</code></pre>
+<p>Using <code>@time</code> is quick but it has flaws, because your function is only measured once.
+That measurement might have been influenced by other things going on in your computer at the same time.
+In general, running the same block of code multiple times is a safer measurement method, because it diminishes the probability of only observing an outlier.</p>
+<h3 id="benchmarktools" ><a href="#benchmarktools"> BenchmarkTools</a></h3><p><a href="https://github.com/JuliaCI/BenchmarkTools.jl">BenchmarkTools.jl</a> is the most popular package for repeated measurements on function executions.
+Similarly to <code>@time</code>, BenchmarkTools offers <code>@btime</code> which can be used in exactly the same way but will run the code multiple times and provide an average.
+Additionally, by using <code>$</code> to <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Interpolating-values-into-benchmark-expressions">interpolate external values</a>, you remove the overhead caused by global variables.</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
+ERROR: ArgumentError: Package BenchmarkTools not found in current path.
+- Run `import Pkg; Pkg.add(&quot;BenchmarkTools&quot;)` to install the BenchmarkTools package.
+Stacktrace:
+  [1] macro expansion
+    @ ./loading.jl:1772 [inlined]
+  [2] macro expansion
+    @ ./lock.jl:267 [inlined]
+  [3] __require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1753
+  [4] #invoke_in_world#3
+    @ ./essentials.jl:926 [inlined]
+  [5] invoke_in_world
+    @ ./essentials.jl:923 [inlined]
+  [6] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1746
+  [7] eval
+    @ ./boot.jl:385 [inlined]
+  [8] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:2076
+  [9] include_string
+    @ ./loading.jl:2060 [inlined]
+ [10] #69
+    @ ~/.julia/packages/Xranklin/6wt1L/src/context/code/eval.jl:91 [inlined]
+ [11] (::IOCapture.var&quot;#5#9&quot;{DataType, Xranklin.var&quot;#69#70&quot;{Module, String}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
+    @ IOCapture ~/.julia/packages/IOCapture/Y5rEA/src/IOCapture.jl:170
+ [12] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:515
+ [13] with_logger
+    @ ./logging.jl:627 [inlined]
+ [14] capture(f::Xranklin.var&quot;#69#70&quot;{Module, String}; rethrow::Type, color::Bool, passthrough::Bool, capture_buffer::IOBuffer, io_context::Vector{Any})
+    @ IOCapture ~/.julia/packages/IOCapture/Y5rEA/src/IOCapture.jl:167
+ [15] _attempt_eval
+    @ ~/.julia/packages/Xranklin/6wt1L/src/context/code/eval.jl:90 [inlined]
+ [16] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/context/code/eval.jl:73
+ [17] eval_nb_cell
+    @ ~/.julia/packages/Xranklin/6wt1L/src/context/code/eval.jl:45 [inlined]
+ [18] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/context/code/notebook_code.jl:169
+ [19] eval_code_cell!(lc::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/context/code/notebook_code.jl:126
+ [20] eval_code_cell!
+    @ ~/.julia/packages/Xranklin/6wt1L/src/context/code/notebook_code.jl:21 [inlined]
+ [21] _eval_repl_code(io::IOBuffer, ci::Xranklin.CodeInfo, lc::Xranklin.LocalContext; tohtml::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/convert/markdown/rules/code.jl:388
+ [22] _eval_repl_code
+    @ ~/.julia/packages/Xranklin/6wt1L/src/convert/markdown/rules/code.jl:352 [inlined]
+ [23] html_repl_code(ci::Xranklin.CodeInfo, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/convert/markdown/rules/code.jl:332
+ [24] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/convert/markdown/rules/code.jl:257
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs(v);
+ERROR: UndefVarError: `@btime` not defined
+Stacktrace:
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs($v);
+ERROR: UndefVarError: `@btime` not defined
+Stacktrace:
+</code></pre>
+<p>In more complex settings, you might need to construct variables in a <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases">setup phase</a> that is run before each sample.
+This can be useful to generate a new random input every time, instead of always using the same input.</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> my_matmul(A, b) = A * b;
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime my_matmul(A, b) setup=(
+    A = rand(1000, 1000); # use semi-colons between setup lines
+    b = rand(1000)
+);
+ERROR: UndefVarError: `@btime` not defined
+Stacktrace:
+</code></pre>
+<p>For better visualization, the <code>@benchmark</code> macro shows performance histograms:</p>
+<div class="advanced"><p><strong>Advanced</strong>: Certain computations may be <a href="(https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)">optimized away by the compiler</a> before the benchmark takes place.
+ If you observe suspiciously fast performance, especially below the nanosecond scale, this is very likely to have happened.</p>
+</div><p><a href="https://github.com/LilithHafner/Chairmarks.jl">Chairmarks.jl</a> offers an alternative to BenchmarkTools.jl, promising faster benchmarking while attempting to maintain high accuracy and using an alternative syntax based on pipelines.</p>
+<h3 id="benchmark_suites" ><a href="#benchmark_suites"> Benchmark suites</a></h3><p>While we previously discussed the importance of documenting breaking changes in packages using <a href="/sharing/index.md#versions-and-registration">semantic versioning</a>, regressions in performance can also be vital to track.
+Several packages exist for this purpose:</p>
+<ul>
+<li><a href="https://github.com/JuliaCI/PkgBenchmark.jl">PkgBenchmark.jl</a> and its unmaintained but functional CI wrapper <a href="https://github.com/tkf/BenchmarkCI.jl">BenchmarkCI.jl</a></li>
 <li><a href="https://github.com/MilesCranmer/AirspeedVelocity.jl">AirSpeedVelocity.jl</a></li>
 <li><a href="https://github.com/awadell1/PkgJogger.jl">PkgJogger.jl</a></li>
 </ul>
-<h2 id="profiling" ><a href="#profiling"> Profiling</a></h2><ul>
-<li><a href="https://docs.julialang.org/en/v1/manual/profile/">built-in profiler</a> and <a href="https://docs.julialang.org/en/v1/stdlib/Profile/#Memory-profiling">allocation profiler</a></li>
-<li><a href="https://github.com/timholy/ProfileView.jl">ProfileView.jl</a> / <a href="https://github.com/kimikage/ProfileSVG.jl">ProfileSVG.jl</a></li>
-<li><a href="https://github.com/JuliaPerf/PProf.jl">PProf.jl</a></li>
-<li><a href="https://www.julia-vscode.org/docs/stable/userguide/profiler/">profiling in VSCode</a></li>
-</ul>
-<h2 id="type_stability" ><a href="#type_stability"> Type stability</a></h2><ul>
-<li><a href="https://github.com/JuliaDebug/Cthulhu.jl">Cthulhu.jl</a></li>
-<li><a href="https://github.com/aviatesk/JET.jl">JET.jl</a></li>
-<li><a href="https://www.julia-vscode.org/docs/stable/userguide/linter/">linting in VSCode</a></li>
-</ul>
-<h2 id="memory_management" ><a href="#memory_management"> Memory management</a></h2><ul>
-<li><a href="https://github.com/JuliaLang/AllocCheck.jl">AllocCheck.jl</a></li>
-<li><a href="https://github.com/JuliaFolds2/BangBang.jl">BangBang.jl</a></li>
-</ul>
+<h3 id="other_tools" ><a href="#other_tools"> Other tools</a></h3><p>BenchmarkTools.jl works fine for relatively short and simple blocks of code (microbenchmarking).
+To find bottlenecks in a larger program, you should rather use a <a href="#profiling">profiler</a> or the package <a href="https://github.com/KristofferC/TimerOutputs.jl">TimerOutputs.jl</a>.
+It allows you to label different sections of your code, then time them and display a table of grouped by label.</p>
+<p>Finally, if you know a loop is slow and you'll need to wait for it to be done, you can use <a href="https://github.com/timholy/ProgressMeter.jl">ProgressMeter.jl</a> or <a href="https://github.com/JuliaLogging/ProgressLogging.jl">ProgressLogging.jl</a> to track its progress.</p>
+<h2 id="profiling" ><a href="#profiling"> Profiling</a></h2><div class="tldr"><p><strong>TLDR</strong>: Profiling can identify performance bottlenecks at function level, and graphical tools such as ProfileView.jl are the best way to use it. </p>
+</div><h3 id="sampling" ><a href="#sampling"> Sampling</a></h3><p>Whereas a benchmark measures the overall performance of some code, a profiler breaks it down function by function to identify bottlenecks.
+Sampling-based profilers periodically ask the program which line it is currently executing, and aggregate results by line or by function.
+Julia offers two kinds: <a href="https://docs.julialang.org/en/v1/stdlib/Profile/#lib-profiling">one for runtime</a> (in the module <code>Profile</code>) and <a href="https://docs.julialang.org/en/v1/stdlib/Profile/#Memory-profiling">one for memory</a> (in the submodule <code>Profile.Allocs</code>).</p>
+<p>These built-in profilers print textual outputs, but the result of profiling is best visualized as a flame graph.
+In a flame graph, each horizontal layer corresponds to a specific level in the call stack, and the width of a tile shows how much time was spent in the corresponding function.
+Here's an example:</p>
+<img src="https://github.com/pfitzseb/ProfileCanvas.jl/raw/main/assets/flamegraph.png" alt="flamegraph"><h3 id="visualization_tools" ><a href="#visualization_tools"> Visualization tools</a></h3><p>The packages <a href="https://github.com/timholy/ProfileView.jl">ProfileView.jl</a> and <a href="https://github.com/JuliaPerf/PProf.jl">PProf.jl</a> both allow users to record and interact with flame graphs.
+ProfileView.jl is simpler to use, but PProf is more featureful and is based on <a href="https://github.com/google/pprof">pprof</a>, an external tool maintained by Google which applies to more than just Julia code.
+Here we only demonstrate the former:</p>
+<pre><code class="julia">using ProfileView
+@profview do_work(some_input)</code></pre>
+<div class="vscode"><p><strong>VSCode</strong>: Calling <code>@profview do_work(some_input)</code> in the integrated Julia REPL will open an interactive flame graph, similar to ProfileView.jl but without requiring a separate package.</p>
+</div><p>To integrate profile visualisations into environments like Jupyter and Pluto, use <a href="https://github.com/kimikage/ProfileSVG.jl">ProfileSVG.jl</a> or <a href="https://github.com/pfitzseb/ProfileCanvas.jl">ProfileCanvas.jl</a>, whose outputs can be embedded into a notebook.</p>
+<p>No matter which tool you use, if your code is too fast to collect samples, you may need to run it multiple times in a loop.</p>
+<div class="advanced"><p><strong>Advanced</strong>: To visualize memory allocation profiles, use PProf.jl or VSCode's <code>@profview_allocs</code>. 
+ A known issue with the allocation profiler is that it is not able to determine the type of every object allocated, instead <code>Profile.Allocs.UnknownType</code> is shown instead.
+ Inspecting the call graph can help identify which types are responsible for the allocations.</p>
+</div><h2 id="type_stability" ><a href="#type_stability"> Type stability</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use JET.jl to automatically detect type instabilities in your code, and <code>@code_warntype</code> or Cthulhu.jl to do so manually. DispatchDoctor.jl can help prevent them altogether. </p>
+</div><p>For a section of code to be considered type stable, the type inferred by the compiler must be "concrete", which means that the size of memory that needs to be allocated to store its value is known at compile time.
+Types declared abstract with <code>abstract type</code> are not concrete and neither are <a href="https://docs.julialang.org/en/v1/manual/types/#Parametric-Types">parametric types</a> whose parameters are not specified:</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> isconcretetype(Any)
+false
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> isconcretetype(AbstractVector)
+false
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> isconcretetype(Vector) # Shorthand for `Vector{T} where T`
+false
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> isconcretetype(Vector{Real})
+true
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> isconcretetype(eltype(Vector{Real}))
+false
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> isconcretetype(Vector{Int64})
+true
+</code></pre>
+<div class="advanced"><p><strong>Advanced</strong>: <code>Vector&lbrace;Real&rbrace;</code> is concrete despite <code>Real</code> being abstract for <a href="https://docs.julialang.org/en/v1/manual/types/#man-parametric-composite-types">subtle typing reasons</a> but it will still be slow in practice because the type of its elements is abstract.</p>
+</div><p>While type-stable function calls compile down to fast <code>GOTO</code> statements, type-unstable function calls generate code that must read the list of all methods for a given operation and find the one that matches.
+This phenomenon called "dynamic dispatch" prevents further optimizations.</p>
+<p>Type-stability is a fragile thing: if a variable's type cannot be inferred, then the types of variables that depend on it may not be inferrable either.
+As a first approximation, most code should be type-stable unless it has a good reason not to be.</p>
+<h3 id="detecting_instabilities" ><a href="#detecting_instabilities"> Detecting instabilities</a></h3><p>The simplest way to detect an instability is with the builtin macro <a href="https://docs.julialang.org/en/v1/manual/performance-tips/#man-code-warntype"><code>@code_warntype</code></a>:
+The output of <code>@code_warntype</code> is difficult to parse, but the key takeaway is the return type of the function's <code>Body</code>: if it is an abstract type, like <code>Any</code>, something is wrong.
+In a normal Julia REPL, such cases would show up colored in red as a warning.</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> function put_in_vec_and_sum(x)
+    v = []
+    push!(v, x)
+    return sum(v)
+end;
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @code_warntype put_in_vec_and_sum(1)
+MethodInstance for Main.__FRANKLIN_1579807.put_in_vec_and_sum(::Int64)
+  from put_in_vec_and_sum(<span class="sgr90">x</span>)<span class="sgr90"> @</span> <span class="sgr90">Main.__FRANKLIN_1579807</span> <span class="sgr90"><span class="sgr4">string:1</span></span>
+Arguments
+  #self#<span class="sgr36">::Core.Const(Main.__FRANKLIN_1579807.put_in_vec_and_sum)</span>
+  x<span class="sgr36">::Int64</span>
+Locals
+  v<span class="sgr36">::Vector{Any}</span>
+Body<span class="sgr91"><span class="sgr1">::Any</span></span>
+<span class="sgr90">1 ─</span>      (v = Base.vect())
+<span class="sgr90">│  </span>      Main.__FRANKLIN_1579807.push!(v, x)
+<span class="sgr90">│  </span> %3 = Main.__FRANKLIN_1579807.sum(v)<span class="sgr91"><span class="sgr1">::Any</span></span>
+<span class="sgr90">└──</span>      return %3
+</code></pre>
+<p>Unfortunately, <code>@code_warntype</code> is limited to one function body: calls to other functions are not expanded, which makes deeper type instabilities easy to miss.
+That is where <a href="https://github.com/aviatesk/JET.jl">JET.jl</a> can help: it provides <a href="https://aviatesk.github.io/JET.jl/stable/optanalysis/">optimization analysis</a> aimed primarily at finding type instabilities.
+While <a href="https://aviatesk.github.io/JET.jl/stable/optanalysis/#optanalysis-test-integration">test integrations</a> are also provided, the interactive entry point of JET is the <code>@report_opt</code> macro.</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using JET
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @report_opt put_in_vec_and_sum(1)
+═════ 6 possible errors found ═════
+┌ put_in_vec_and_sum(x::Int64) @ Main.__FRANKLIN_1579807 ./string:4
+│┌ sum(a::Vector{Any}) @ Base ./reducedim.jl:1010
+││┌ sum(a::Vector{Any}; dims::Colon, kw::@Kwargs{}) @ Base ./reducedim.jl:1010
+│││┌ _sum(a::Vector{Any}, ::Colon) @ Base ./reducedim.jl:1014
+││││┌ _sum(a::Vector{Any}, ::Colon; kw::@Kwargs{}) @ Base ./reducedim.jl:1014
+│││││┌ _sum(f::typeof(identity), a::Vector{Any}, ::Colon) @ Base ./reducedim.jl:1015
+││││││┌ _sum(f::typeof(identity), a::Vector{Any}, ::Colon; kw::@Kwargs{}) @ Base ./reducedim.jl:1015
+│││││││┌ mapreduce(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{Any}) @ Base ./reducedim.jl:357
+││││││││┌ mapreduce(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{Any}; dims::Colon, init::Base._InitialValue) @ Base ./reducedim.jl:357
+│││││││││┌ _mapreduce_dim(f::typeof(identity), op::typeof(Base.add_sum), ::Base._InitialValue, A::Vector{Any}, ::Colon) @ Base ./reducedim.jl:365
+││││││││││┌ _mapreduce(f::typeof(identity), op::typeof(Base.add_sum), ::IndexLinear, A::Vector{Any}) @ Base ./reduce.jl:447
+│││││││││││┌ mapreduce_impl(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{Any}, ifirst::Int64, ilast::Int64) @ Base ./reduce.jl:277
+││││││││││││┌ mapreduce_impl(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{…}, ifirst::Int64, ilast::Int64, blksize::Int64) @ Base ./reduce.jl:257
+│││││││││││││ runtime dispatch detected: Base.mapreduce_first(f::typeof(identity), op::typeof(Base.add_sum), %3::Any)::Any
+││││││││││││└────────────────────
+││││││││││││┌ mapreduce_impl(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{…}, ifirst::Int64, ilast::Int64, blksize::Int64) @ Base ./reduce.jl:262
+│││││││││││││ runtime dispatch detected: op::typeof(Base.add_sum)(%9::Any, %11::Any)::Any
+││││││││││││└────────────────────
+││││││││││││┌ mapreduce_impl(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{…}, ifirst::Int64, ilast::Int64, blksize::Int64) @ Base ./reduce.jl:273
+│││││││││││││ runtime dispatch detected: op::typeof(Base.add_sum)(%69::Any, %71::Any)::Any
+││││││││││││└────────────────────
+││││││││││┌ _mapreduce(f::typeof(identity), op::typeof(Base.add_sum), ::IndexLinear, A::Vector{Any}) @ Base ./reduce.jl:435
+│││││││││││ runtime dispatch detected: Base.mapreduce_first(f::typeof(identity), op::typeof(Base.add_sum), %10::Any)::Any
+││││││││││└────────────────────
+││││││││││┌ _mapreduce(f::typeof(identity), op::typeof(Base.add_sum), ::IndexLinear, A::Vector{Any}) @ Base ./reduce.jl:440
+│││││││││││ runtime dispatch detected: op::typeof(Base.add_sum)(%15::Any, %16::Any)::Any
+││││││││││└────────────────────
+││││││││││┌ _mapreduce(f::typeof(identity), op::typeof(Base.add_sum), ::IndexLinear, A::Vector{Any}) @ Base ./reduce.jl:443
+│││││││││││ runtime dispatch detected: op::typeof(Base.add_sum)(%18::Any, %25::Any)::Any
+││││││││││└────────────────────
+</code></pre>
+<div class="vscode"><p><strong>VSCode</strong>: The Julia extension features a <a href="https://www.julia-vscode.org/docs/stable/userguide/linter/">static linter</a>, and runtime diagnostics with JET can be automated to run periodically on your codebase and show any problems detected.</p>
+</div><p><a href="https://github.com/JuliaDebug/Cthulhu.jl">Cthulhu.jl</a> exposes the <code>@descend</code> macro which can be used to interactively "step through" lines of the corresponding typed code, and "descend" into a particular line if needed.
+This is akin to repeatedly calling <code>@code_warntype</code> deeper and deeper into your functions, slowly succumbing to the madness...
+We cannot demonstrate it on a static website, but the <a href="https://www.youtube.com/watch?v=pvduxLowpPY">video example</a> is a good starting point.</p>
+<h3 id="fixing_instabilities" ><a href="#fixing_instabilities"> Fixing instabilities</a></h3><p>The Julia manual has a collection of tips to <a href="https://docs.julialang.org/en/v1.12-dev/manual/performance-tips/#Type-inference">improve type inference</a>.</p>
+<p>A more direct approach is to error whenever a type instability occurs: the macro <code>@stable</code> from <a href="https://github.com/MilesCranmer/DispatchDoctor.jl">DispatchDoctor.jl</a> allows exactly that.</p>
+<h2 id="memory_management" ><a href="#memory_management"> Memory management</a></h2><p>After ensuring type stability, one should try to reduce the number of heap allocations a program makes.
+Again, the Julia manual has a series of tricks related to <a href="https://docs.julialang.org/en/v1.12-dev/manual/performance-tips/#Memory-management-and-arrays">arrays and allocations</a> which you should take a look at.</p>
+<p>And again, you can also choose to error whenever an allocation occurs, with the help of <a href="https://github.com/JuliaLang/AllocCheck.jl">AllocCheck.jl</a>.
+By annotating a function with <code>@check_allocs</code>, if the function is run and the compiler detects that it might allocate, it will throw an error.
+Alternatively, to ensure that non-allocating functions never regress in future versions of your code, you can write a test set to check allocations by providing the function and a concrete type-signature.</p>
+<pre><code class="julia">@testset &quot;non-allocating&quot; begin
+    @test isempty(AllocCheck.check_allocs(my_func, (Float64, Float64)))
+end</code></pre>
 <h2 id="precompilation" ><a href="#precompilation"> Precompilation</a></h2><ul>
 <li><a href="https://github.com/JuliaLang/PrecompileTools.jl">PrecompileTools.jl</a></li>
 <li><a href="https://github.com/JuliaLang/PackageCompiler.jl">PackageCompiler.jl</a></li>
@@ -156,7 +370,7 @@
 </ul>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: May 30, 2024. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: June 20, 2024. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
@@ -164,6 +378,10 @@
 
     </div>  
     
+    
+        <script src="/libs/highlight/highlight.min.js"></script>
+<script>hljs.highlightAll();hljs.configure({tabReplace: '    '});</script>
+
     
   </body>
 </html>

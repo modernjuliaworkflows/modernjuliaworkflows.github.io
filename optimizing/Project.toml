@@ -1,3 +1,6 @@
 [deps]
+Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
+AllocCheck = "9b6a8646-10ed-4001-bbdc-1d2f46dfbb1a"
 Cthulhu = "f68482b8-f384-11e8-15f7-abe071a5a75f"
 JET = "c3a54625-cd67-489e-a8e7-0a5a0ff4e31b"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
