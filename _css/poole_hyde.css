@@ -269,6 +269,7 @@ html {
     bottom: 0;
     width: 15rem;
     text-align: left;
+    overflow-y: scroll;
   }
 }
 
@@ -304,6 +305,22 @@ a.sidebar-nav-item:focus {
   font-weight: bold;
 }
 
+/* Hide submenu by default */
+.menu-list-child-list {
+  display: none;
+  padding-left: 1.5rem;
+}
+
+/* Show submenu when parent item has 'active' class */
+.sidebar-nav-item.active + .menu-list-child-list {
+  display: block;
+}
+
+.menu-list-link {
+  color: rgba(255, 255, 255, 0.5)  !important;
+  font-size: var(--small);
+}
+
 /* Sticky sidebar
  *
  * Add the `sidebar-sticky` class to the sidebar's container to affix it the
@@ -312,7 +329,7 @@ a.sidebar-nav-item:focus {
 
 @media (min-width: 768px) {
   .sidebar-sticky {
-    position: absolute;
+    position: relative;
     top: 1rem;
     right: 1rem;
     left: 1rem;
