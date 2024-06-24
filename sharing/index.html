@@ -79,7 +79,6 @@
       <ul class="menu-list-child-list ">
         <li class="menu-list-item"><a href="/optimizing/#principles" class="menu-list-link">Principles</a>
         <li class="menu-list-item"><a href="/optimizing/#measurements" class="menu-list-link">Measurements</a>
-        <li class="menu-list-item"><a href="/optimizing/#benchmark_suites" class="menu-list-link">Benchmark suites</a>
         <li class="menu-list-item"><a href="/optimizing/#profiling" class="menu-list-link">Profiling</a>
         <li class="menu-list-item"><a href="/optimizing/#type_stability" class="menu-list-link">Type stability</a>
         <li class="menu-list-item"><a href="/optimizing/#memory_management" class="menu-list-link">Memory management</a>
@@ -149,9 +148,9 @@ The rest of this post will explain to you what each part of this folder does, an
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.develop(path=sitepath(&quot;MyAwesomePackage&quot;))  # ignore sitepath
 <span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/sharing/Project.toml`
-  <span class="sgr90">[e2a5aa54] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+  <span class="sgr90">[764ccdf6] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/sharing/Manifest.toml`
-  <span class="sgr90">[e2a5aa54] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
+  <span class="sgr90">[764ccdf6] </span><span class="sgr92">+ MyAwesomePackage v1.0.0-DEV `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage`</span>
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using MyAwesomePackage
 </code></pre>
@@ -231,7 +230,7 @@ You can either use it in report mode (with a nice <a href="https://www.julia-vsc
 [toplevel-info] analyzed 0 top-level definitions (took 0.006 sec)
 JET.JETToplevelResult{JET.JETAnalyzer{JET.BasicPass}, Base.Pairs{Symbol, Any, NTuple{4, Symbol}, @NamedTuple{concretization_patterns::Vector{Symbol}, analyze_from_definitions::Bool, toplevel_logger::IOContext{Base.PipeEndpoint}, ignore_missing_comparison::Bool}}}(JET.JETAnalyzer{JET.BasicPass}(JET.AnalyzerState(0x0000000000007b80, Core.Compiler.InferenceResult[], Core.Compiler.InferenceParams(3, 4, 8, 32, 3, true, true, false, true, false), Core.Compiler.OptimizationParams(true, 100, 1000, 250, 20, 32, true, false, false), IdDict{Core.Compiler.InferenceResult, Union{JET.AnalysisResult, JET.CachedAnalysisResult}}(), JET.InferenceErrorReport[], nothing, Bool[], JET.__toplevelmod__, Dict{Int64, Symbol}(), nothing, 0), JET.AnalysisCache(IdDict{Core.MethodInstance, Core.CodeInstance}()), JET.BasicPass(), Core.Compiler.CachedMethodTable{Core.Compiler.OverlayMethodTable}(Core.Compiler.IdDict{Core.Compiler.MethodMatchKey, Union{Nothing, Core.Compiler.MethodMatchResult}}(Any[#undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef, #undef], 0, 0), Core.Compiler.OverlayMethodTable(0x0000000000007b80, # 1 method for callable object:
  [1] iterate(::Tuple{}, ::Int64)
-     @ ~/.julia/packages/JET/69rEh/src/analyzers/jetanalyzer.jl:177)), JET.JETAnalyzerConfig(true)), JET.VirtualProcessResult(Set([&quot;/home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl&quot;]), String[], Set(Module[Main.var&quot;##JETVirtualModule#225&quot;, Main.var&quot;##JETVirtualModule#225&quot;.MyAwesomePackage]), JET.ToplevelErrorReport[], JET.InferenceErrorReport[], Type[], Main =&gt; Main.var&quot;##JETVirtualModule#225&quot;), &quot;JETAnalyzer: \&quot;/home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl\&quot;&quot;, Base.Pairs{Symbol, Any, NTuple{4, Symbol}, @NamedTuple{concretization_patterns::Vector{Symbol}, analyze_from_definitions::Bool, toplevel_logger::IOContext{Base.PipeEndpoint}, ignore_missing_comparison::Bool}}(:concretization_patterns =&gt; [:x_], :analyze_from_definitions =&gt; true, :toplevel_logger =&gt; IOContext(Base.PipeEndpoint(RawFD(4294967295) closed, 0 bytes waiting)), :ignore_missing_comparison =&gt; true))
+     @ ~/.julia/packages/JET/RhbDD/src/analyzers/jetanalyzer.jl:177)), JET.JETAnalyzerConfig(true)), JET.VirtualProcessResult(Set([&quot;/home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl&quot;]), String[], Set(Module[Main.var&quot;##JETVirtualModule#225&quot;, Main.var&quot;##JETVirtualModule#225&quot;.MyAwesomePackage]), JET.ToplevelErrorReport[], JET.InferenceErrorReport[], Type[], Main =&gt; Main.var&quot;##JETVirtualModule#225&quot;), &quot;JETAnalyzer: \&quot;/home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl\&quot;&quot;, Base.Pairs{Symbol, Any, NTuple{4, Symbol}, @NamedTuple{concretization_patterns::Vector{Symbol}, analyze_from_definitions::Bool, toplevel_logger::IOContext{Base.PipeEndpoint}, ignore_missing_comparison::Bool}}(:concretization_patterns =&gt; [:x_], :analyze_from_definitions =&gt; true, :toplevel_logger =&gt; IOContext(Base.PipeEndpoint(RawFD(4294967295) closed, 0 bytes waiting)), :ignore_missing_comparison =&gt; true))
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> JET.test_package(MyAwesomePackage)
 Test Passed
@@ -325,7 +324,7 @@ Working together on a software project has its own set of challenges, which are 
 Of course, collaboration goes both ways: if you find a Julia package you really like, you are more than welcome to <a href="https://julialang.org/contribute/">contribute</a> as well, for example by opening issues or submitting pull requests.</p>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: June 20, 2024. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: June 24, 2024. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
