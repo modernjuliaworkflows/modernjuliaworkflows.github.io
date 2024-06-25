@@ -35,6 +35,7 @@ title = "Going further"
 * [Bogumił Kamiński](https://bkamins.github.io/)
 * [Katharine Hyatt](https://kshyatt.github.io/)
 * [Frames Catherine White](https://www.oxinabox.net/blog.html)
+* [Julius Krumbiegel](https://jkrumbiegel.com/)
 * [Invenia](https://invenia.github.io/blog/)
 
 ## Videos
