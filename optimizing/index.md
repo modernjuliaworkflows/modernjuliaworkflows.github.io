@@ -231,11 +231,71 @@ end
 
 ## Precompilation
 
-- [PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl)
-- [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl)
-- [StaticCompiler.jl](https://github.com/tshort/StaticCompiler.jl)
-- [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl)
-- [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
+A number of tools allow you to reduce Julia's latency, also referred to as TTFX (time to first X, where X was historically plotting a graph).
+
+[PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl) reduces the amount of time taken to run functions loaded from a package or local module.
+It allows module authors to give a "list" of methods to precompile when a module is loaded, which then have the same latency as if they were already run by the end user.
+
+The example usage below is adapted from the package's [documentation](https://julialang.github.io/PrecompileTools.jl/stable/#Tutorial:-forcing-precompilation-with-workloads):
+
+```julia
+module MyPackage
+
+using PrecompileTools: @setup_workload, @compile_workload
+
+struct MyType
+    x::Int
+end
+
+@compile_workload begin
+    d = Dict(MyType(1) => 1)
+    x = get(d, MyType(2), nothing)
+    d[MyType(1)]
+end
+
+end
+```
+
+Note that every method that is called, no matter how far down the call stack or whether it comes from this module, will be precompiled.
+To see if the intended calls were, in fact, compiled or diagnose other problems related to precompilation, use [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl).
+This is especially important for writers of public Julia packages, as it allows you to diagnose recompilation that happens due to invalidation.
+
+### Package compilation
+To reduce the time that packages take to load, you can use [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl) to generate a custom version of Julia, called a sysimage, with its own standard library.
+As packages in the standard are already compiled, any `using` or `import` statement involving them is almost instant.
+
+Once PackageCompiler.jl is added to your global environment, activate a local environment for which you want to generate a sysimage, ensure all of the packages you want to compile are in its `Project.toml`, and run `create_sysimage` as in the example below:
+
+```julia packagecompiler-example
+packages_to_compile = ["Makie", "DifferentialEquations"]
+create_sysimage(packages_to_compile; sysimage_path="MySysimage.so")
+```
+
+The filetype of `sysimage_path` differs by operating system: Linux has `.so`, MacOS has `.dylib`, and Windows has `.dll`.
+
+\vscode{
+    [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
+}
+
+### Static compilation
+[PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl) also facilitates the creation of [apps](https://julialang.github.io/PackageCompiler.jl/stable/apps.html) and [libraries](https://julialang.github.io/PackageCompiler.jl/stable/libs.html) that can be shared to and run on machines that don't have Julia installed.
+
+At a basic level, all that's required to turn a Julia module `MyModule` into an app is a function `julia_main()::Cint` that returns `0` upon successful completion.
+Then, with PackageCompiler.jl loaded, run `create_app("MyModule", "MyAppCompiled")`.
+Command line arguments to the resulting app are assigned to the global variable `ARGS::Array{ASCIIString}`, the handling of which can be made easier [ArgParse.jl](https://github.com/carlobaldassi/ArgParse.jl).
+
+In Julia, a library is just a sysimage with some extras that enable external programs to interact with it.
+Any functions in a module marked with `Base.@ccallable`, and whose type signature involves C-conforming types e.g. `Cint`, `Cstring`, and `Cvoid`, can be compiled into an externally callable library with `create_library`, similarly to `create_app`.
+
+Unfortunately, the process of compiling and sharing a standalone executable or callable library must take [relocability](https://julialang.github.io/PackageCompiler.jl/stable/apps.html#relocatability) into account, which is beyond the scope of this blog.
+
+#### StaticCompiler.jl
+An alternative way to compile a shareable app or library that doesn't need to compile a sysimage, and therefore results in smaller binaries, is to use [StaticCompiler.jl](https://github.com/tshort/StaticCompiler.jl) and its sister package [StaticTools.jl](https://github.com/brenhinkeller/StaticTools.jl).
+The biggest tradeoff of not compiling a sysimage, is that Julia's garbage collector is no longer included, so all heap allocations must be managed manually, and all code compiled _must_ be [type stable](#type_stability).
+
+To get around this limitation, you can use static equivalents of dynamic types, such as a `StaticArray` ([StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)) instead of an `Array` or a `StaticString` (StaticTools.jl), use `malloc` and `free` from StaticTools.jl directly, or use arena allocators with [Bumper.jl](https://github.com/MasonProtter/Bumper.jl).
+
+The README of StaticCompliler.jl contains a more [detailed guide](https://github.com/tshort/StaticCompiler.jl?tab=readme-ov-file#guide-for-package-authors) on how to prepare code to be compiled.
 
 ## Parallelism
 
