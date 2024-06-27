@@ -273,8 +273,12 @@ create_sysimage(packages_to_compile; sysimage_path="MySysimage.so")
 
 The filetype of `sysimage_path` differs by operating system: Linux has `.so`, MacOS has `.dylib`, and Windows has `.dll`.
 
+Once a sysimage is generated, it can be used with the command line flag: `julia --sysimage=path/to/sysimage`.
+
 \vscode{
-    [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
+    The generation and loading of sysimages can be streamlined with VSCode.
+    By default, the command sequence `Task: Run Build Task` followed by `Julia: Build custom sysimage for current environment` will compile a sysimage containing all packages in the current environment, but [additional details](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/) can be specified in a `/.vscode/JuliaSysimage.toml` file.
+    To automatically detect and use a custom sysimage, set `useCustomSysimage` to true in the application settings.
 }
 
 ### Static compilation
