@@ -282,8 +282,7 @@ html {
 .sidebar-about h1 {
   color: #fff;
   margin-top: 0;
-  /* font-family: "Abril Fatface", sans-serif; */ /* MODIFIED */
-  font-size: 3.25rem;
+  font-size: 40px;
 }
 
 /* Sidebar nav */
@@ -312,12 +311,12 @@ a.sidebar-nav-item:focus {
 }
 
 /* Show submenu when parent item has 'active' class */
-.sidebar-nav-item.active + .menu-list-child-list {
+.sidebar-nav-item.active+.menu-list-child-list {
   display: block;
 }
 
 .menu-list-link {
-  color: rgba(255, 255, 255, 0.5)  !important;
+  color: rgba(255, 255, 255, 0.5) !important;
   font-size: var(--small);
 }
 
@@ -356,9 +355,12 @@ a.sidebar-nav-item:focus {
   }
 }
 
-/* Hide the logo on screens with width less than 768px */
+/* Hide the logo and submenu on screens with width less than 768px */
 @media (max-width: 767px) {
   .logo-container {
+    display: none;
+  }
+  .sidebar-nav-item.active+.menu-list-child-list {
     display: none;
   }
 }
