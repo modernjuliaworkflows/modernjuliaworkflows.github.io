@@ -96,7 +96,7 @@ For interactive testing work, use [TestEnv.jl](https://github.com/JuliaTesting/T
 \vscode{
 
 The Julia extension also has its own testing framework, which relies on sprinkling "test items" throughout the code.
-See [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) and [ReTestItems.jl](https://github.com/JuliaTesting/ReTestItems.jl) for indications on how to use them optimally.
+See [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) for indications on how to use them optimally.
 
 }
 
@@ -108,6 +108,7 @@ If you want to have more control over your tests, you can try
 * [ReTest.jl](https://github.com/JuliaTesting/ReTest.jl) to define tests next to the source code and control their execution.
 * [TestSetExtensions.jl](https://github.com/ssfrr/TestSetExtensions.jl) to make test set outputs more readable.
 * [TestReadme.jl](https://github.com/thchr/TestReadme.jl) to test whatever code samples are in your README.
+* [ReTestItems.jl](https://github.com/JuliaTesting/ReTestItems.jl) for an alternative take on VSCode's test item framework.
 
 }
 

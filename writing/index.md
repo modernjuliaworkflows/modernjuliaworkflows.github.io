@@ -240,7 +240,8 @@ julia> IJulia.notebook()
 
 \vscode{
 
-Jupyter notebooks can be modified and run directly from your editor.
+Jupyter notebooks can be opened, modified and run directly from the editor.
+Thanks to the Julia extension, you don't even need to install IJulia.jl or Jupyter first.
 
 }
 
@@ -649,7 +650,7 @@ About to run: (^)(2, 64)
 
 \vscode{
 
-Debugger.jl also has a nice [graphical interface](https://www.julia-vscode.org/docs/stable/userguide/debugging/).
+VSCode offers a nice [graphical interface for debugging](https://www.julia-vscode.org/docs/stable/userguide/debugging/).
 Click left of a line number in an editor pane to add a _breakpoint_, which is represented by a red circle.
 In the debugging pane of the Julia extension, click `Run and Debug` to start the debugger.
 The program will automatically halt when it hits a breakpoint.
