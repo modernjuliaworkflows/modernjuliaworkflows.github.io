@@ -216,8 +216,11 @@ A more direct approach is to error whenever a type instability occurs: the macro
 
 ## Memory management
 
+\tldr{You can reduce allocations with careful array management.}
+
 After ensuring type stability, one should try to reduce the number of heap allocations a program makes.
 Again, the Julia manual has a series of tricks related to [arrays and allocations](https://docs.julialang.org/en/v1.12-dev/manual/performance-tips/#Memory-management-and-arrays) which you should take a look at.
+In particular, try to modify existing arrays instead of allocating new objects.
 
 And again, you can also choose to error whenever an allocation occurs, with the help of [AllocCheck.jl](https://github.com/JuliaLang/AllocCheck.jl).
 By annotating a function with `@check_allocs`, if the function is run and the compiler detects that it might allocate, it will throw an error.
@@ -229,26 +232,250 @@ Alternatively, to ensure that non-allocating functions never regress in future v
 end
 ```
 
-## Precompilation
+## Compilation
 
-- [PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl)
-- [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl)
-- [StaticCompiler.jl](https://github.com/tshort/StaticCompiler.jl)
-- [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl)
-- [compiling in VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/)
+\tldr{If you can anticipate which functions or packages you will need, loading time can be greatly reduced with PrecompileTools.jl or PackageCompiler.jl.}
+
+A number of tools allow you to reduce Julia's latency, also referred to as TTFX (time to first X, where X was historically plotting a graph).
+
+### Precompilation
+
+[PrecompileTools.jl](https://github.com/JuliaLang/PrecompileTools.jl) reduces the amount of time taken to run functions loaded from a package or local module that you wrote.
+It allows module authors to give a "list" of methods to precompile when a module is loaded for the first time.
+These methods then have the same latency as if they had already been run by the end user.
+
+Here's an example of precompilation, adapted from the package's [documentation](https://julialang.github.io/PrecompileTools.jl/stable/#Tutorial:-forcing-precompilation-with-workloads):
+
+```julia
+module MyPackage
+
+using PrecompileTools: @compile_workload
+
+struct MyType
+    x::Int
+end
+
+myfunction(a::Vector) = a[1].x
+
+@compile_workload begin
+    a = [MyType(1)]
+    myfunction(a)
+end
+
+end
+```
+
+Note that every method that is called will be compiled, no matter how far down the call stack or which module it comes from.
+To see if the intended calls were compiled correctly or diagnose other problems related to precompilation, use [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl).
+This is especially important for writers of registered Julia packages, as it allows you to diagnose recompilation that happens due to invalidation.
+
+### Package compilation
+
+To reduce the time that packages take to load, you can use [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl) to generate a custom version of Julia, called a sysimage, with its own standard library.
+As packages in the standard library are already compiled, any `using` or `import` statement involving them is almost instant.
+
+Once PackageCompiler.jl is added to your global environment, activate a local environment for which you want to generate a sysimage, ensure all of the packages you want to compile are in its `Project.toml`, and run `create_sysimage` as in the example below.
+The filetype of `sysimage_path` differs by operating system: Linux has `.so`, MacOS has `.dylib`, and Windows has `.dll`.
+
+```julia packagecompiler-example
+packages_to_compile = ["Makie", "DifferentialEquations"]
+create_sysimage(packages_to_compile; sysimage_path="MySysimage.so")
+```
+
+Once a sysimage is generated, it can be used with the command line flag: `julia --sysimage=path/to/sysimage`.
+
+\vscode{
+    The generation and loading of sysimages can be [streamlined with VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/).
+    By default, the command sequence `Task: Run Build Task` followed by `Julia: Build custom sysimage for current environment` will compile a sysimage containing all packages in the current environment, but additional details can be specified in a `/.vscode/JuliaSysimage.toml` file.
+    To automatically detect and use a custom sysimage, set `useCustomSysimage` to `true` in the application settings.
+}
+
+### Static compilation
+
+[PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl) also facilitates the creation of [apps](https://julialang.github.io/PackageCompiler.jl/stable/apps.html) and [libraries](https://julialang.github.io/PackageCompiler.jl/stable/libs.html) that can be shared to and run on machines that don't have Julia installed.
+
+At a basic level, all that's required to turn a Julia module `MyModule` into an app is a function `julia_main()::Cint` that returns `0` upon successful completion.
+Then, with PackageCompiler.jl loaded, run `create_app("MyModule", "MyAppCompiled")`.
+Command line arguments to the resulting app are assigned to the global variable `ARGS::Array{ASCIIString}`, the handling of which can be made easier by [ArgParse.jl](https://github.com/carlobaldassi/ArgParse.jl).
+
+In Julia, a library is just a sysimage with some extras that enable external programs to interact with it.
+Any functions in a module marked with `Base.@ccallable`, and whose type signature involves C-conforming types e.g. `Cint`, `Cstring`, and `Cvoid`, can be compiled into an externally callable library with `create_library`, similarly to `create_app`.
+Unfortunately, the process of compiling and sharing a standalone executable or callable library must take [relocability](https://julialang.github.io/PackageCompiler.jl/stable/apps.html#relocatability) into account, which is beyond the scope of this blog.
+
+\advanced{
+
+An alternative way to compile a shareable app or library that doesn't need to compile a sysimage, and therefore results in smaller binaries, is to use [StaticCompiler.jl](https://github.com/tshort/StaticCompiler.jl) and its sister package [StaticTools.jl](https://github.com/brenhinkeller/StaticTools.jl).
+The biggest tradeoff of not compiling a sysimage, is that Julia's garbage collector is no longer included, so all heap allocations must be managed manually, and all code compiled _must_ be type-stable.
+To get around this limitation, you can use static equivalents of dynamic types, such as a `StaticArray` ([StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)) instead of an `Array` or a `StaticString` (StaticTools.jl), use `malloc` and `free` from StaticTools.jl directly, or use arena allocators with [Bumper.jl](https://github.com/MasonProtter/Bumper.jl).
+The README of StaticCompiler.jl contains a more [detailed guide](https://github.com/tshort/StaticCompiler.jl?tab=readme-ov-file#guide-for-package-authors) on how to prepare code to be compiled.
+
+}
 
 ## Parallelism
 
-- [distributed vs. multithreading](https://docs.julialang.org/en/v1/manual/parallel-computing/)
-- [OhMyThreads.jl](https://github.com/JuliaFolds2/OhMyThreads.jl)
+\tldr{Use `Threads` or OhMyThreads.jl on a single machine, `Distributed` or MPI.jl on a computing cluster. GPU-compatible code is easy to write and run.}
 
-## SIMD / GPU
+Code can be made to run faster through parallel execution with [multithreading](https://docs.julialang.org/en/v1/manual/multi-threading/) or [multiprocessing / distributed computing](https://docs.julialang.org/en/v1/manual/distributed-computing/).
+Many common operations such as maps and reductions can be trivially parallelised through either method by using their respective Julia packages.
+Multithreading is available on almost all modern hardware, whereas distributed computing is most useful to users of high-performance computing clusters.
 
-- [LoopVectorization.jl](https://github.com/JuliaSIMD/LoopVectorization.jl) (deprecated in 1.11)
-- [Tullio.jl](https://github.com/mcabbott/Tullio.jl)
-- [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl)
+### Multithreading
+
+To enable multithreading with the built-in `Threads` library, use one of the following equivalent command line flags, and give either an integer or `auto`:
+
+```bash threads-flag
+julia --threads 4
+julia -t auto
+```
+
+Once Julia is running, you can check if this was successful by calling `Threads.nthreads()`.
+
+\vscode{
+    The default number of threads can be edited by adding `"julia.NumThreads": 4,` to your settings. This will be applied to the integrated terminal.
+}
+
+\advanced{
+    Linear algebra code calls the low-level libraries [BLAS](https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms) and [LAPACK](https://en.wikipedia.org/wiki/LAPACK).
+    These libraries manage their own pool of threads, so single-threaded Julia processes can still make use of multiple threads, and multi-threaded Julia processes that call these libraries may run into performance issues due to the limited number of threads available in a single core.
+    In this case, once `LinearAlgebra` is loaded, BLAS can be set to use only one thread by calling `BLAS.set_num_threads(1)`.
+    For more information see the docs on [multithreading and linear algebra](https://docs.julialang.org/en/v1/manual/performance-tips/#man-multithreading-linear-algebra).
+}
+
+Regardless of the number of threads, you can parallelise a for loop with the macro `Threads.@threads`.
+The macros `@spawn` and `@async` function similarly, but require more manual management of the results, which can result in bugs and performance footguns.
+For this reason `@threads` is recommended for those who do not wish to use third-party packages.
+
+When you design multithreaded code, you need to be careful to avoid "race conditions", i.e. situations when competing threads try to write different things to the same memory location.
+It is usually a good idea to separate memory accesses with loop indices, as in the example below:
+
+```julia @threads-forloop
+results = zeros(Int, 4)
+Threads.@threads for i in 1:4
+    results[i] = i^2
+end
+```
+
+Managing threads and their memory use is made much easier by [OhMyThreads.jl](https://github.com/JuliaFolds2/OhMyThreads.jl), which provides a user-friendly alternative to `Threads`.
+The helpful [translation guide](https://juliafolds2.github.io/OhMyThreads.jl/stable/translation/) will get you started in a jiffy.
+
+If the latency of spinning up new threads becomes a bottleneck, check out [Polyester.jl](https://github.com/JuliaSIMD/Polyester.jl) for very lightweight threads that are quicker to start.
+
+\advanced{
+Some widely used parallel programming packages like [LoopVectorization.jl](https://github.com/JuliaSIMD/LoopVectorization.jl) (which also powers [Octavian.jl](https://github.com/JuliaLinearAlgebra/Octavian.jl)) or [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl) are no longer maintained.
+}
+
+### Distributed computing
+
+Julia's multiprocessing and distributed relies on the standard library `Distributed`.
+The main difference with multi-threading is that data isn't shared between worker processes.
+Once Julia is started, processes can be added with `addprocs`, and their can be queried with `nworkers`.
+
+The macro `Distributed.@distributed` is a _syntactic_ equivalent for `Threads.@threads`.
+Hence, we can use `@distributed` to parallelise a for loop as before, but we have to additionally deal with sharing and recombining the `results` array.
+We can delegate this responsibility to the standard library `SharedArrays`.
+However, in order for all workers to know about a function or module, we have to load it `@everywhere`:
+
+``` @distributed-forloop
+using Distributed
+
+# Add additional workers then load code on the workers
+addprocs(3) 
+@everywhere using SharedArrays
+@everywhere f(x) = 3x^2
+
+results = SharedArray{Int}(4)
+@sync @distributed for i in 1:4
+    results[i] = f(i)
+end
+```
+
+Note that `@distributed` does not force the main process to wait for other workers, so we must use `@sync` to block execution until all computations are done.
+
+One feature `@distributed` has over `@threads` is the possibility to specify a reduction function (an associative binary operator) which combines the results of each worker.
+In this case `@sync` is implied, as the reduction cannot happen unless all of the workers have finished.
+
+```!Distributed
+using Distributed  # hide
+```
+
+```julia @distributed-sum
+@distributed (+) for i in 1:4
+    i^2
+end
+```
+
+Alternately, the convenience function `pmap` can be used to easily parallelise a `map`, both in a distributed and multi-threaded way.
+
+```julia
+results = pmap(f, 1:100; distributed=true, batch_size=25, on_error=ex->0)
+```
+
+For more functionalities related to higher-order functions, [Transducers.jl](https://github.com/JuliaFolds2/Transducers.jl) and [Folds.jl](https://github.com/JuliaFolds2/Folds.jl) are the way to go.
+
+\advanced{
+
+[MPI.jl](https://github.com/JuliaParallel/MPI.jl) implements the [Message Passing Interface standard](https://en.wikipedia.org/wiki/Message_Passing_Interface), which is heavily used in high-performance computing beyond Julia.
+The C library that MPI.jl wraps is _highly_ optimized, so Julia code that needs to be scaled up to a large number of cores, such as an HPC cluster, will typically run faster with MPI than with plain `Distributed`.
+
+[Elemental.jl](https://github.com/JuliaParallel/Elemental.jl) is a package for distributed dense and sparse linear algebra which wraps the [Elemental](https://github.com/LLNL/Elemental) library written in C++, itself using MPI under the hood.
+}
+
+### GPU programming
+
+GPUs are specialised in executing instructions in parallel over a large number of threads.
+While they were originally designed for accelerating graphics rendering, more recently they have been used to train and evaluate machine learning models.
+
+Julia's GPU ecosystem is managed by the [JuliaGPU](https://juliagpu.org/) organisation, which provides individual packages for directly working with each GPU vendor's instruction set.
+The most popular one is [CUDA.jl](https://github.com/JuliaGPU/CUDA.jl), which also simplifies installation of CUDA drivers for NVIDIA GPUs.
+Through [KernelAbstractions.jl](https://github.com/JuliaGPU/KernelAbstractions.jl), you can easily write code that is agnostic to the type of GPU where it will run.
+
+### SIMD instructions
+
+In the Single Instruction, Multiple Data paradigm, several processing units perform the same instruction at the same time, differing only in their inputs.
+The range of operations that can be parallelised (or "vectorized") like this is more limited than in the previous sections, and slightly harder to control.
+Julia can automatically vectorize repeated numerical operations (such as those found in loops) provided a few conditions are met:
+
+1. Reordering operations must not change the result of the computation.
+2. There must be no control flow or branches in the core computation.
+3. All array accesses must follow some linear pattern.
+
+While this may seem straightforward, there are a number of important caveats which prevent code from being vectorized.
+[Performance annotations](https://docs.julialang.org/en/v1/manual/performance-tips/#man-performance-annotations) like `@simd` or `@inbounds` help enable vectorization in some cases, as does replacing control flow with `ifelse`.
+
+If this isn't enough, [SIMD.jl](https://github.com/eschnett/SIMD.jl) allows users to force the use of SIMD instructions and bypass the check for whether this is possible.
+One particular use-case for this is for vectorising non-contiguous memory reads and writes through `SIMD.vgather` and `SIMD.vscatter` respectively.
+
+\advanced{
+You can detect whether the optimizations have occurred by inspecting the output of `@code_llvm` or `@code_native` and looking for vectorised registers, types, instructions.
+Note that the exact things you're looking for will vary between code and CPU instruction set, an example of what to look for can be seen in this [blog post](https://kristofferc.github.io/post/intrinsics/) by Kristoffer Carlsson.
+}
 
 ## Efficient types
 
-- [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)
-- [Dictionaries.jl](https://github.com/andyferris/Dictionaries.jl)
+\tldr{Be aware that [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl) exist and learn how they work.}
+
+Using an efficient data structure is a tried and true way of improving the performance.
+While users can write their own efficient implementations through officially documented [interfaces](https://docs.julialang.org/en/v1/manual/interfaces/), a number of packages containing common use cases are more tightly integrated into the Julia ecosystem.
+
+### Static arrays
+
+Using [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl), you can construct arrays which contain size information in their type.
+Through multiple dispatch, statically sized arrays give rise to specialised, efficient methods for certain algorithms like linear algebra.
+In addition, the `SArray`, `SMatrix` and `SVector` types are immutable, so the array does not need to be garbage collected as it can be stack-allocated.
+Creating a new `SArray`s comes at almost no extra cost, compared to directly editing the data of a mutable object.
+With `MArray`, `MMatrix`, and `MVector`, data remains mutable as in normal arrays.
+
+To handle mutable and immutable data structures with the same syntax, you can use [Accessors.jl](https://github.com/JuliaObjects/Accessors.jl):
+
+```julia accessors-example
+using StaticArrays, Accessors
+
+sx = SA[1, 2, 3] # SA constructs an SArray
+@set sx[1] = 3 # Returns a copy, does not update the variable
+@reset sx[1] = 4 # Replaces the original
+```
+
+### Classic data structures
+
+All but the most obscure data structures can be found in the packages from the [JuliaCollections](https://github.com/JuliaCollections) organization, especially [DataStructures.jl](https://github.com/JuliaCollections/DataStructures.jl) which has all the standards from the computer science courses (stacks, queues, heaps, trees and the like).
+Iteration and memoization utilities are also provided by packages like [IterTools.jl](https://github.com/JuliaCollections/IterTools.jl) and [Memoize.jl](https://github.com/JuliaCollections/Memoize.jl).
