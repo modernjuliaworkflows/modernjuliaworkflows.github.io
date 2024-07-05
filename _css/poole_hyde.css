@@ -256,7 +256,6 @@ html {
 
 .sidebar {
   text-align: center;
-  padding: 2rem 1rem;
   color: rgba(255, 255, 255, 0.5);
   background-color: #202020;
 }
@@ -304,6 +303,21 @@ a.sidebar-nav-item:focus {
   font-weight: bold;
 }
 
+.copyright-notice a {
+  text-decoration: none;
+  color: rgba(255, 255, 255, 0.5)  !important;
+}
+
+.github-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.github-link a {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
 /* Hide submenu by default */
 .menu-list-child-list {
   display: none;
@@ -326,15 +340,18 @@ a.sidebar-nav-item:focus {
  * contents to the top of the sidebar in tablets and up.
  */
 
+.sidebar-sticky {
+  padding-top: 1rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  padding-bottom: 0.5rem;
+}
+
 @media (min-width: 768px) {
   .sidebar-sticky {
     position: relative;
-    top: 1rem;
-    right: 1rem;
-    left: 1rem;
   }
 }
-
 
 /* Container
  *
