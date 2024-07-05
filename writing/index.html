@@ -259,7 +259,8 @@ Then, if you have also <a href="https://jupyter.org/install">installed Jupyter</
 <pre><code class="julia-repl">julia&gt; using IJulia
 
 julia&gt; IJulia.notebook()</code></pre>
-<div class="vscode"><p><strong>VSCode</strong>: Jupyter notebooks can be modified and run directly from your editor.</p>
+<div class="vscode"><p><strong>VSCode</strong>: Jupyter notebooks can be opened, modified and run directly from the editor.
+ Thanks to the Julia extension, you don't even need to install IJulia.jl or Jupyter first.</p>
 </div><p>A pure-Julia alternative to Jupyter is given by <a href="https://plutojl.org/">Pluto.jl</a>.
 Unlike Jupyter notebooks, Pluto notebooks are</p>
 <ul>
@@ -568,7 +569,7 @@ In fermat_prime(n) at REPL[7]:1
 About to run: (^)(2, 64)
 1|julia&gt; k
 64</code></pre>
-<div class="vscode"><p><strong>VSCode</strong>: Debugger.jl also has a nice <a href="https://www.julia-vscode.org/docs/stable/userguide/debugging/">graphical interface</a>.
+<div class="vscode"><p><strong>VSCode</strong>: VSCode offers a nice <a href="https://www.julia-vscode.org/docs/stable/userguide/debugging/">graphical interface for debugging</a>.
  Click left of a line number in an editor pane to add a <em>breakpoint</em>, which is represented by a red circle.
  In the debugging pane of the Julia extension, click <code>Run and Debug</code> to start the debugger.
  The program will automatically halt when it hits a breakpoint.
@@ -578,7 +579,7 @@ About to run: (^)(2, 64)
  It is often easiest to start by adding <code>ALL_MODULES_EXCEPT_MAIN</code> to the compiled list, and then selectively remove the modules you need to have interpreted.</p>
 </div>
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: June 24, 2024. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: July 05, 2024. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
