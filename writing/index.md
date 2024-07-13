@@ -241,7 +241,7 @@ julia> IJulia.notebook()
 \vscode{
 
 Jupyter notebooks can be opened, modified and run directly from the editor.
-Thanks to the Julia extension, you don't even need to install IJulia.jl or Jupyter first.
+Thanks to the Julia extension, you don't even need to install IJulia.jl or Jupyter first. However, for ProgressMeter.jl to output the progressbar properly a IJulia kernel still has to be used.
 
 }
 
