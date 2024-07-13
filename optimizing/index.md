@@ -146,6 +146,10 @@ No matter which tool you use, if your code is too fast to collect samples, you m
     Inspecting the call graph can help identify which types are responsible for the allocations.
 }
 
+### External profilers
+
+Apart from the built-in `Profile` standard library, there are a few external profilers that you can use including [Intel VTune](https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html) (in combination with [IntelITT.jl](https://github.com/JuliaPerf/IntelITT.jl)), [NVIDIA Nsight Systems](https://developer.nvidia.com/nsight-systems) (in combination with [NVTX.jl](https://github.com/JuliaGPU/NVTX.jl)), and [Tracy](https://docs.julialang.org/en/v1/devdocs/external_profilers/#Tracy-Profiler).
+
 ## Type stability
 
 \tldr{Use JET.jl to automatically detect type instabilities in your code, and `@code_warntype` or Cthulhu.jl to do so manually. DispatchDoctor.jl can help prevent them altogether.}
