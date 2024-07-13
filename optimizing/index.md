@@ -315,8 +315,8 @@ The README of StaticCompiler.jl contains a more [detailed guide](https://github.
 
 \tldr{Use `Threads` or OhMyThreads.jl on a single machine, `Distributed` or MPI.jl on a computing cluster. GPU-compatible code is easy to write and run.}
 
-Code can be made to run faster through parallel execution with [multithreading](https://docs.julialang.org/en/v1/manual/multi-threading/) or [multiprocessing / distributed computing](https://docs.julialang.org/en/v1/manual/distributed-computing/).
-Many common operations such as maps and reductions can be trivially parallelised through either method by using their respective Julia packages.
+Code can be made to run faster through parallel execution with [multithreading](https://docs.julialang.org/en/v1/manual/multi-threading/) (shared-memory parallelism) or [multiprocessing / distributed computing](https://docs.julialang.org/en/v1/manual/distributed-computing/).
+Many common operations such as maps and reductions can be trivially parallelised through either method by using their respective Julia packages (e.g `pmap` from Distributed.jl and `tmap` from OhMyThreads.jl).
 Multithreading is available on almost all modern hardware, whereas distributed computing is most useful to users of high-performance computing clusters.
 
 ### Multithreading
@@ -345,7 +345,7 @@ Regardless of the number of threads, you can parallelise a for loop with the mac
 The macros `@spawn` and `@async` function similarly, but require more manual management of the results, which can result in bugs and performance footguns.
 For this reason `@threads` is recommended for those who do not wish to use third-party packages.
 
-When you design multithreaded code, you need to be careful to avoid "race conditions", i.e. situations when competing threads try to write different things to the same memory location.
+When designing multithreaded code, you should generally try to write to shared memory as rarely as possible. Where it cannot be avoided, you need to be careful to avoid "race conditions", i.e. situations when competing threads try to write different things to the same memory location.
 It is usually a good idea to separate memory accesses with loop indices, as in the example below:
 
 ```julia @threads-forloop
@@ -354,8 +354,9 @@ Threads.@threads for i in 1:4
     results[i] = i^2
 end
 ```
+Almost always, it is [**not** a good idea to use `threadid()`](https://julialang.org/blog/2023/07/PSA-dont-use-threadid/).
 
-Managing threads and their memory use is made much easier by [OhMyThreads.jl](https://github.com/JuliaFolds2/OhMyThreads.jl), which provides a user-friendly alternative to `Threads`.
+Even if you manage to avoid any race conditions in your multithreaded code, it is very easy to run into subtle performance issues (like [false sharing](https://en.wikipedia.org/wiki/False_sharing)). For these reasons, you might want to consider using a high-level package like [OhMyThreads.jl](https://github.com/JuliaFolds2/OhMyThreads.jl), which provides a user-friendly alternative to `Threads` and makes managing threads and their memory use much easier.
 The helpful [translation guide](https://juliafolds2.github.io/OhMyThreads.jl/stable/translation/) will get you started in a jiffy.
 
 If the latency of spinning up new threads becomes a bottleneck, check out [Polyester.jl](https://github.com/JuliaSIMD/Polyester.jl) for very lightweight threads that are quicker to start.
