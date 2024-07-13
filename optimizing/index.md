@@ -360,6 +360,8 @@ The helpful [translation guide](https://juliafolds2.github.io/OhMyThreads.jl/sta
 
 If the latency of spinning up new threads becomes a bottleneck, check out [Polyester.jl](https://github.com/JuliaSIMD/Polyester.jl) for very lightweight threads that are quicker to start.
 
+If you're on Linux, you should consider using [ThreadPinning.jl](https://github.com/carstenbauer/ThreadPinning.jl) to pin your Julia threads to CPU cores to obtain stable and optimal performance. The package can also be used to visualize where the Julia threads are running on your system (see `threadinfo()`).
+
 \advanced{
 Some widely used parallel programming packages like [LoopVectorization.jl](https://github.com/JuliaSIMD/LoopVectorization.jl) (which also powers [Octavian.jl](https://github.com/JuliaLinearAlgebra/Octavian.jl)) or [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl) are no longer maintained.
 }
