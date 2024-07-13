@@ -220,7 +220,7 @@ A more direct approach is to error whenever a type instability occurs: the macro
 
 After ensuring type stability, one should try to reduce the number of heap allocations a program makes.
 Again, the Julia manual has a series of tricks related to [arrays and allocations](https://docs.julialang.org/en/v1.12-dev/manual/performance-tips/#Memory-management-and-arrays) which you should take a look at.
-In particular, try to modify existing arrays instead of allocating new objects.
+In particular, try to modify existing arrays instead of allocating new objects (caution with array slices) and try to access arrays in the right order (column major order).
 
 And again, you can also choose to error whenever an allocation occurs, with the help of [AllocCheck.jl](https://github.com/JuliaLang/AllocCheck.jl).
 By annotating a function with `@check_allocs`, if the function is run and the compiler detects that it might allocate, it will throw an error.
