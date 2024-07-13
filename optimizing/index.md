@@ -342,8 +342,7 @@ Once Julia is running, you can check if this was successful by calling `Threads.
 }
 
 Regardless of the number of threads, you can parallelise a for loop with the macro `Threads.@threads`.
-The macros `@spawn` and `@async` function similarly, but require more manual management of the results, which can result in bugs and performance footguns.
-For this reason `@threads` is recommended for those who do not wish to use third-party packages.
+The macros `@spawn` and `@async` function similarly, but require more manual management of tasks and their results. For this reason `@threads` is recommended for those who do not wish to use third-party packages.
 
 When designing multithreaded code, you should generally try to write to shared memory as rarely as possible. Where it cannot be avoided, you need to be careful to avoid "race conditions", i.e. situations when competing threads try to write different things to the same memory location.
 It is usually a good idea to separate memory accesses with loop indices, as in the example below:
