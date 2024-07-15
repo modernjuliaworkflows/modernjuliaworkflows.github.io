@@ -143,10 +143,10 @@ Because code needs to be compiled before it can be run, you should first run a f
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Inaccurate, note the &gt;99% compilation time
-0.026011 seconds (48.49 k allocations: 3.214 MiB, 99.96% compilation time)
+0.027777 seconds (48.49 k allocations: 3.215 MiB, 99.96% compilation time)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Accurate
-0.000002 seconds (1 allocation: 16 bytes)
+0.000003 seconds (1 allocation: 16 bytes)
 </code></pre>
 <p>Using <code>@time</code> is quick but it has flaws, because your function is only measured once.
 That measurement might have been influenced by other things going on in your computer at the same time.
@@ -157,10 +157,10 @@ Additionally, by using <code>$</code> to <a href="https://juliaci.github.io/Benc
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs(v);
-95.641 ns (1 allocation: 16 bytes)
+95.652 ns (1 allocation: 16 bytes)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs($v);
-60.775 ns (0 allocations: 0 bytes)
+60.468 ns (0 allocations: 0 bytes)
 </code></pre>
 <p>In more complex settings, you might need to construct variables in a <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases">setup phase</a> that is run before each sample.
 This can be useful to generate a new random input every time, instead of always using the same input.</p>
@@ -170,7 +170,7 @@ This can be useful to generate a new random input every time, instead of always 
     A = rand(1000, 1000); # use semi-colons between setup lines
     b = rand(1000)
 );
-153.266 μs (1 allocation: 7.94 KiB)
+144.579 μs (1 allocation: 7.94 KiB)
 </code></pre>
 <p>For better visualization, the <code>@benchmark</code> macro shows performance histograms:</p>
 <div class="advanced"><p><strong>Advanced</strong>: Certain computations may be <a href="(https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)">optimized away by the compiler</a> before the benchmark takes place.
@@ -205,7 +205,8 @@ Here we only demonstrate the former:</p>
 <div class="advanced"><p><strong>Advanced</strong>: To visualize memory allocation profiles, use PProf.jl or VSCode's <code>@profview_allocs</code>. 
  A known issue with the allocation profiler is that it is not able to determine the type of every object allocated, instead <code>Profile.Allocs.UnknownType</code> is shown instead.
  Inspecting the call graph can help identify which types are responsible for the allocations.</p>
-</div><h2 id="type_stability" ><a href="#type_stability"> Type stability</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use JET.jl to automatically detect type instabilities in your code, and <code>@code_warntype</code> or Cthulhu.jl to do so manually. DispatchDoctor.jl can help prevent them altogether. </p>
+</div><h3 id="external_profilers" ><a href="#external_profilers"> External profilers</a></h3><p>Apart from the built-in <code>Profile</code> standard library, there are a few external profilers that you can use including <a href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html">Intel VTune</a> (in combination with <a href="https://github.com/JuliaPerf/IntelITT.jl">IntelITT.jl</a>), <a href="https://developer.nvidia.com/nsight-systems">NVIDIA Nsight Systems</a> (in combination with <a href="https://github.com/JuliaGPU/NVTX.jl">NVTX.jl</a>), and <a href="https://docs.julialang.org/en/v1/devdocs/external_profilers/#Tracy-Profiler">Tracy</a>.</p>
+<h2 id="type_stability" ><a href="#type_stability"> Type stability</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use JET.jl to automatically detect type instabilities in your code, and <code>@code_warntype</code> or Cthulhu.jl to do so manually. DispatchDoctor.jl can help prevent them altogether. </p>
 </div><p>For a section of code to be considered type stable, the type inferred by the compiler must be "concrete", which means that the size of memory that needs to be allocated to store its value is known at compile time.
 Types declared abstract with <code>abstract type</code> are not concrete and neither are <a href="https://docs.julialang.org/en/v1/manual/types/#Parametric-Types">parametric types</a> whose parameters are not specified:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> isconcretetype(Any)
@@ -301,7 +302,7 @@ We cannot demonstrate it on a static website, but the <a href="https://www.youtu
 <h2 id="memory_management" ><a href="#memory_management"> Memory management</a></h2><div class="tldr"><p><strong>TLDR</strong>: You can reduce allocations with careful array management. </p>
 </div><p>After ensuring type stability, one should try to reduce the number of heap allocations a program makes.
 Again, the Julia manual has a series of tricks related to <a href="https://docs.julialang.org/en/v1.12-dev/manual/performance-tips/#Memory-management-and-arrays">arrays and allocations</a> which you should take a look at.
-In particular, try to modify existing arrays instead of allocating new objects.</p>
+In particular, try to modify existing arrays instead of allocating new objects (caution with array slices) and try to access arrays in the right order (column major order).</p>
 <p>And again, you can also choose to error whenever an allocation occurs, with the help of <a href="https://github.com/JuliaLang/AllocCheck.jl">AllocCheck.jl</a>.
 By annotating a function with <code>@check_allocs</code>, if the function is run and the compiler detects that it might allocate, it will throw an error.
 Alternatively, to ensure that non-allocating functions never regress in future versions of your code, you can write a test set to check allocations by providing the function and a concrete type-signature.</p>
@@ -355,8 +356,8 @@ Unfortunately, the process of compiling and sharing a standalone executable or c
  To get around this limitation, you can use static equivalents of dynamic types, such as a <code>StaticArray</code> (<a href="https://github.com/JuliaArrays/StaticArrays.jl">StaticArrays.jl</a>) instead of an <code>Array</code> or a <code>StaticString</code> (StaticTools.jl), use <code>malloc</code> and <code>free</code> from StaticTools.jl directly, or use arena allocators with <a href="https://github.com/MasonProtter/Bumper.jl">Bumper.jl</a>.
  The README of StaticCompiler.jl contains a more <a href="https://github.com/tshort/StaticCompiler.jl?tab=readme-ov-file#guide-for-package-authors">detailed guide</a> on how to prepare code to be compiled.</p>
 </div><h2 id="parallelism" ><a href="#parallelism"> Parallelism</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use <code>Threads</code> or OhMyThreads.jl on a single machine, <code>Distributed</code> or MPI.jl on a computing cluster. GPU-compatible code is easy to write and run. </p>
-</div><p>Code can be made to run faster through parallel execution with <a href="https://docs.julialang.org/en/v1/manual/multi-threading/">multithreading</a> or <a href="https://docs.julialang.org/en/v1/manual/distributed-computing/">multiprocessing / distributed computing</a>.
-Many common operations such as maps and reductions can be trivially parallelised through either method by using their respective Julia packages.
+</div><p>Code can be made to run faster through parallel execution with <a href="https://docs.julialang.org/en/v1/manual/multi-threading/">multithreading</a> (shared-memory parallelism) or <a href="https://docs.julialang.org/en/v1/manual/distributed-computing/">multiprocessing / distributed computing</a>.
+Many common operations such as maps and reductions can be trivially parallelised through either method by using their respective Julia packages (e.g <code>pmap</code> from Distributed.jl and <code>tmap</code> from OhMyThreads.jl).
 Multithreading is available on almost all modern hardware, whereas distributed computing is most useful to users of high-performance computing clusters.</p>
 <h3 id="multithreading" ><a href="#multithreading"> Multithreading</a></h3><p>To enable multithreading with the built-in <code>Threads</code> library, use one of the following equivalent command line flags, and give either an integer or <code>auto</code>:</p>
 <pre><code class="bash">julia --threads 4
@@ -368,17 +369,18 @@ julia -t auto</code></pre>
  In this case, once <code>LinearAlgebra</code> is loaded, BLAS can be set to use only one thread by calling <code>BLAS.set_num_threads(1)</code>.
  For more information see the docs on <a href="https://docs.julialang.org/en/v1/manual/performance-tips/#man-multithreading-linear-algebra">multithreading and linear algebra</a>.</p>
 </div><p>Regardless of the number of threads, you can parallelise a for loop with the macro <code>Threads.@threads</code>.
-The macros <code>@spawn</code> and <code>@async</code> function similarly, but require more manual management of the results, which can result in bugs and performance footguns.
-For this reason <code>@threads</code> is recommended for those who do not wish to use third-party packages.</p>
-<p>When you design multithreaded code, you need to be careful to avoid "race conditions", i.e. situations when competing threads try to write different things to the same memory location.
+The macros <code>@spawn</code> and <code>@async</code> function similarly, but require more manual management of tasks and their results. For this reason <code>@threads</code> is recommended for those who do not wish to use third-party packages.</p>
+<p>When designing multithreaded code, you should generally try to write to shared memory as rarely as possible. Where it cannot be avoided, you need to be careful to avoid "race conditions", i.e. situations when competing threads try to write different things to the same memory location.
 It is usually a good idea to separate memory accesses with loop indices, as in the example below:</p>
 <pre><code class="julia">results = zeros(Int, 4)
 Threads.@threads for i in 1:4
     results[i] = i^2
 end</code></pre>
-<p>Managing threads and their memory use is made much easier by <a href="https://github.com/JuliaFolds2/OhMyThreads.jl">OhMyThreads.jl</a>, which provides a user-friendly alternative to <code>Threads</code>.
+<p>Almost always, it is <a href="https://julialang.org/blog/2023/07/PSA-dont-use-threadid/"><strong>not</strong> a good idea to use <code>threadid()</code></a>.</p>
+<p>Even if you manage to avoid any race conditions in your multithreaded code, it is very easy to run into subtle performance issues (like <a href="https://en.wikipedia.org/wiki/False_sharing">false sharing</a>). For these reasons, you might want to consider using a high-level package like <a href="https://github.com/JuliaFolds2/OhMyThreads.jl">OhMyThreads.jl</a>, which provides a user-friendly alternative to <code>Threads</code> and makes managing threads and their memory use much easier.
 The helpful <a href="https://juliafolds2.github.io/OhMyThreads.jl/stable/translation/">translation guide</a> will get you started in a jiffy.</p>
 <p>If the latency of spinning up new threads becomes a bottleneck, check out <a href="https://github.com/JuliaSIMD/Polyester.jl">Polyester.jl</a> for very lightweight threads that are quicker to start.</p>
+<p>If you're on Linux, you should consider using <a href="https://github.com/carstenbauer/ThreadPinning.jl">ThreadPinning.jl</a> to pin your Julia threads to CPU cores to obtain stable and optimal performance. The package can also be used to visualize where the Julia threads are running on your system (see <code>threadinfo()</code>).</p>
 <div class="advanced"><p><strong>Advanced</strong>: Some widely used parallel programming packages like <a href="https://github.com/JuliaSIMD/LoopVectorization.jl">LoopVectorization.jl</a> (which also powers <a href="https://github.com/JuliaLinearAlgebra/Octavian.jl">Octavian.jl</a>) or <a href="https://github.com/tkf/ThreadsX.jl">ThreadsX.jl</a> are no longer maintained.</p>
 </div><h3 id="distributed_computing" ><a href="#distributed_computing"> Distributed computing</a></h3><p>Julia's multiprocessing and distributed relies on the standard library <code>Distributed</code>.
 The main difference with multi-threading is that data isn't shared between worker processes.
@@ -447,7 +449,7 @@ sx = SA[1, 2, 3] # SA constructs an SArray
 Iteration and memoization utilities are also provided by packages like <a href="https://github.com/JuliaCollections/IterTools.jl">IterTools.jl</a> and <a href="https://github.com/JuliaCollections/Memoize.jl">Memoize.jl</a>.</p>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: July 13, 2024. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: July 15, 2024. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
