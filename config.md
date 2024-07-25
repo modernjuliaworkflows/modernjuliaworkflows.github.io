@@ -19,7 +19,7 @@ ignore = [
 generate_rss = true
 website_title = "Modern Julia Workflows"
 website_descr = "Blog posts on best practices for Julia development"
-website_url   = "https://modernjuliaworkflows.github.io/"
+website_url   = "https://modernjuliaworkflows.org/"
 +++
 
 <!--
