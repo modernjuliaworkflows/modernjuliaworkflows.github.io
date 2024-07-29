@@ -259,6 +259,49 @@ julia> using Pluto
 julia> Pluto.run()
 ```
 
+## Markdown
+
+\tldr{Markdown is also a good fit for literate programming.}
+
+[Markdown](https://www.markdownguide.org/) can be an alternative to writing code in notebooks (such as Jupyter), and is particularly useful when the file itself is not the final product, which is a key element of literate programming. Markdown is a markup language used to add formatting elements to plaintext text files, for example to bold text one would write `**bold words**`. Markdown is portable so it can be opened by any text editor, such as VSCode.
+
+### Plain Text Markdown
+Plain text markdown files, which have the `.md` extension, are not used for interactive programming, meaning one cannot run code written in the file.
+Plain text markdown files are not an alternative to writing code in notebooks.
+Plain text markdown files are usually rendered into something else, such as but not limited to documents (e.g., PDF, Word), websites, presentations, and even books.
+
+This is an example of a plain text markdown file:
+
+````markdown
+# Title
+
+## Section Header
+
+This is example text.
+
+```julia
+println("hello world")
+```
+````
+
+### Quarto
+
+An alternative to `.md` markdown files are Quarto markdown files (`.qmd`).
+[Quarto](https://quarto.org/) is an open-source scientific and technical publishing system.
+
+Unlike plain text `.md` markdown files, Quarto markdown files offer several advantages.
+In regards to writing code, the primary advantage is executable code cells/ chunks.
+In this fashion, Quarto markdown files are an alternative to writing code in notebooks (such as Jupyter).
+Quarto markdown files can also be rendered into the aforementioned output formats.
+
+If the above example of a plain text markdown file were instead a Quarto markdown file, then within the editor, VSCode for example, one would be able to execute the `println("hello world")` Julia code and view the output.
+
+\vscode{
+
+Install the Quarto extension for a streamlined experience.
+
+}
+
 ## Environments
 
 \tldr{Activate a local environment for each project with `]activate path`. Its details are stored in `Project.toml` and `Manifest.toml`.}
