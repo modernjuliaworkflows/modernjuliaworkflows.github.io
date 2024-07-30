@@ -259,6 +259,82 @@ julia> using Pluto
 julia> Pluto.run()
 ```
 
+## Markdown
+
+\tldr{Markdown is also a good fit for literate programming, and Quarto is an alternative to notebooks.}
+
+[Markdown](https://www.markdownguide.org/) is a markup language used to add formatting elements to plaintext text files.
+For example, to bold text one encapsulates words with double asterisks: `**bold text**` -> **bold text**.
+Markdown files can be opened by any text editor, such as VSCode, and are particularly useful when the file itself is not the final product.
+
+### Plain Text Markdown
+Plain text markdown files, which have the `.md` extension, are not used for interactive programming, meaning one cannot run code written in the file.
+Plain text markdown files are usually rendered into something else, such as but not limited to documents (e.g., PDF, Word), websites, presentations, and even books.
+
+This is an example of a plain text markdown file:
+
+````markdown
+# Title
+
+## Section Header
+
+This is example text.
+
+```julia
+println("hello world")
+```
+````
+
+### Quarto
+
+[Quarto](https://quarto.org/) "is an open-source scientific and technical publishing system."
+Quarto makes a plain text markdown file (`.md`) alternative called Quarto markdown file (`.qmd`).
+
+Quarto markdown files like plain text markdown files also integrate with editors, such as VSCode, and can be rendered into various output formats, such as websites.
+
+\vscode{
+
+Install the Quarto extension for a streamlined experience.
+
+}
+
+Unlike plain text markdown files, Quarto markdown files have executable code chunks.
+These code chunks provide a functionality similar to notebooks, which makes Quarto markdown files an alternative to writing code in notebooks.
+Additionally, Quarto markdown files give users additional control over output and styling via YAML headers.
+
+Below is a revised markdown example using Quarto.
+If this file were opened in an editor such as VSCode one could execute the `println("hello world")` Julia code and view the output.
+Also, notice the YAML header at the top of the page that defines the document's title and specifies to make the code chunks invisible via the `echo: false` command.
+When `echo` is set to `false` the output of the code chunks will be displayed but the code itself will be hidden.
+
+Last, as of Quarto version 1.5, Julia programmers have the option to use a native Julia engine to execute code - previously IJulia.jl was the only Julia engine.
+The primary difference betweens IJulia.jl and the native Julia engine is that the native Julia engine does not depend on Python and can utilize local environments.
+Learn more about the native Julia engine in Quarto's [documentation](https://quarto.org/docs/blog/posts/2024-07-11-1.5-release/#native-julia-engine).
+To use the native Julia engine set `engine` equal to `julia` in the YAML header of the Quarto markdown file as seen below.
+
+````quarto
+---
+title: "My document"
+format:
+  html:
+    toc: true
+execute:
+  echo: false
+  warning: false
+engine: julia
+---
+
+# Title
+
+## Section Header
+
+Below is an executable code chunk.
+
+```{{julia}}
+println("hello world")
+```
+````
+
 ## Environments
 
 \tldr{Activate a local environment for each project with `]activate path`. Its details are stored in `Project.toml` and `Manifest.toml`.}
