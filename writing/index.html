@@ -118,7 +118,7 @@
 
 <div class="franklin-content" >
   <h1 id="writing_your_code" ><a href="#writing_your_code"> Writing your code</a></h1><p>In this post, you will learn about tools to create, run and debug Julia code.</p>
-<div class="toc"><ol><li><a href="#getting_help">Getting help</a></li><li><a href="#installation">Installation</a></li><li><a href="#repl">REPL</a></li><li><a href="#editor">Editor</a></li><li><a href="#running_code">Running code</a></li><li><a href="#notebooks">Notebooks</a></li><li><a href="#environments">Environments</a></li><li><a href="#local_packages">Local packages</a></li><li><a href="#development_workflow">Development workflow</a></li><li><a href="#configuration">Configuration</a></li><li><a href="#interactivity">Interactivity</a></li><li><a href="#logging">Logging</a></li><li><a href="#debugging">Debugging</a></li></ol></div><h2 id="getting_help" ><a href="#getting_help"> Getting help</a></h2><div class="tldr"><p><strong>TLDR</strong>: You're not alone! </p>
+<div class="toc"><ol><li><a href="#getting_help">Getting help</a></li><li><a href="#installation">Installation</a></li><li><a href="#repl">REPL</a></li><li><a href="#editor">Editor</a></li><li><a href="#running_code">Running code</a></li><li><a href="#notebooks">Notebooks</a></li><li><a href="#markdown">Markdown</a></li><li><a href="#environments">Environments</a></li><li><a href="#local_packages">Local packages</a></li><li><a href="#development_workflow">Development workflow</a></li><li><a href="#configuration">Configuration</a></li><li><a href="#interactivity">Interactivity</a></li><li><a href="#logging">Logging</a></li><li><a href="#debugging">Debugging</a></li></ol></div><h2 id="getting_help" ><a href="#getting_help"> Getting help</a></h2><div class="tldr"><p><strong>TLDR</strong>: You're not alone! </p>
 </div><p>Before you write any line of code, it's good to know where to find help.
 The official <a href="https://julialang.org/about/help/">help page</a> is a good place to start.
 In particular, the Julia <a href="https://julialang.org/community/">community</a> is always happy to guide beginners.</p>
@@ -283,6 +283,60 @@ Unlike Jupyter notebooks, Pluto notebooks are</p>
 <pre><code class="julia-repl">julia&gt; using Pluto
 
 julia&gt; Pluto.run()</code></pre>
+<h2 id="markdown" ><a href="#markdown"> Markdown</a></h2><div class="tldr"><p><strong>TLDR</strong>: Markdown is also a good fit for literate programming, and Quarto is an alternative to notebooks. </p>
+</div><p><a href="https://www.markdownguide.org/">Markdown</a> is a markup language used to add formatting elements to plaintext text files.</p>
+<h3 id="plain_text_markdown" ><a href="#plain_text_markdown"> Plain Text Markdown</a></h3><p>Plain text markdown files, which have the <code>.md</code> extension, are not used for interactive programming, meaning one cannot run code written in the file.
+As a result, plain text markdown files are usually rendered into a final product by other software.</p>
+<p>This is an example of a plain text markdown file:</p>
+<pre><code class="markdown"># Title
+
+## Section Header
+
+This is example text.
+
+```julia
+println(&quot;hello world&quot;)
+```</code></pre>
+<h3 id="quarto" ><a href="#quarto"> Quarto</a></h3><p><a href="https://quarto.org/">Quarto</a> "is an open-source scientific and technical publishing system."
+Quarto makes a plain text markdown file (<code>.md</code>) alternative called Quarto markdown file (<code>.qmd</code>).</p>
+<p>Quarto markdown files like plain text markdown files also integrate with editors, such as VSCode.</p>
+<div class="vscode"><p><strong>VSCode</strong>: Install the Quarto <a href="https://marketplace.visualstudio.com/items?itemName=quarto.quarto">extension</a> for a streamlined experience.</p>
+</div><p>Unlike plain text markdown files, Quarto markdown files have executable code chunks.
+These code chunks provide a functionality similar to notebooks, thus Quarto markdown files are an alternative to notebooks.
+Additionally, Quarto markdown files give users additional control over output and styling via the YAML header at the top of the <code>.qmd</code> file.</p>
+<p>As of Quarto version 1.5, users can choose from two Julia engines to execute code - a native Julia engine and IJulia.jl.
+The primary difference between the native Julia engine and IJulia.jl is that the native Julia engine does not depend on Python and can utilize local environments.
+For this reason it's recommended to start with the native Julia engine.
+Learn more about the native Julia engine in Quarto's <a href="https://quarto.org/docs/blog/posts/2024-07-11-1.5-release/#native-julia-engine">documentation</a>.</p>
+<p>Below is an example of a Quarto markdown file.</p>
+<pre><code class="quarto">---
+title: &quot;My document&quot;
+format:
+  # renders a HTML document
+  html:
+    # table of contents
+    toc: true
+execute:
+  # makes code chunks invisible in the output
+  # code output is still visible though
+  echo: false
+  # hides warnings in the output
+  warning: false
+# native julia engine
+engine: julia
+---
+
+# Title
+
+## Section Header
+
+Below is an executable code chunk.
+
+If this file were opened in an editor such as VSCode one could execute the `println(&quot;hello world&quot;)` Julia code and view the output, like in a notebook.
+
+```&lbrace;&lbrace;julia&rbrace;&rbrace;
+println(&quot;hello world&quot;)
+```</code></pre>
 <h2 id="environments" ><a href="#environments"> Environments</a></h2><div class="tldr"><p><strong>TLDR</strong>: Activate a local environment for each project with <code>]activate path</code>. Its details are stored in <code>Project.toml</code> and <code>Manifest.toml</code>. </p>
 </div><p>As we have seen, Pkg.jl is the Julia equivalent of <code>pip</code> or <code>conda</code> for Python.
 It lets you <a href="https://pkgdocs.julialang.org/v1/managing-packages/">install packages</a> and <a href="https://pkgdocs.julialang.org/v1/environments/">manage environments</a> (collections of packages with specific versions).</p>
@@ -591,7 +645,7 @@ About to run: (^)(2, 64)
  It is often easiest to start by adding <code>ALL_MODULES_EXCEPT_MAIN</code> to the compiled list, and then selectively remove the modules you need to have interpreted.</p>
 </div>
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: July 28, 2024. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: August 26, 2024. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
