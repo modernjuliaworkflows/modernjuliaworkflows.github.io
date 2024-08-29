@@ -237,7 +237,12 @@ In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allo
 Scientific software is often hard to grasp, and the code alone may not be very enlightening.
 Whether it is for package documentation or to write papers and books, you might want to interleave code with texts, formulas, images and so on.
 In addition to the [Pluto.jl](https://github.com/fonsp/Pluto.jl) and [Jupyter](https://jupyter.org/) notebooks, take a look at [Literate.jl](https://github.com/fredrikekre/Literate.jl) to enrich your code with comments and translate it to various formats.
-[Quarto](https://quarto.org/) is another cross-language notebook system that supports Python, R and Julia, while [Books.jl](https://github.com/JuliaBooks/Books.jl) is more relevant to draft long documents.
+[Books.jl](https://github.com/JuliaBooks/Books.jl) is relevant to draft long documents.
+
+[Quarto](https://quarto.org/) is an open-source scientific and technical publishing system that supports Python, R and Julia.
+Quarto can render markdown files (`.md`), Quarto markdown files (`.qmd`), and Jupyter Notebooks (`.ipynb`) into "documents (Word, PDF, presentations), web pages, blog posts, books, and more".
+Additionally, Quarto makes it easy to share or [publish](https://quarto.org/docs/publishing/) rendered content to Github Pages, Netlify, Confluence, Hugging Face Spaces, among others.
+[Quarto Pub](https://quartopub.com/) "is a free publishing service for content created with Quarto" and "is ideal for blogs, course or project websites, books, presentations, and personal hobby sites."
 
 ## Versions and registration
 
