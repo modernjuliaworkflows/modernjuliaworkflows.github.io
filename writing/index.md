@@ -333,7 +333,7 @@ Below is an executable code chunk.
 
 If this file were opened in an editor such as VSCode one could execute the `println("hello world")` Julia code and view the output, like in a notebook.
 
-```{{julia}}
+```{julia}
 println("hello world")
 ```
 ````
