@@ -240,9 +240,9 @@ In addition to the [Pluto.jl](https://github.com/fonsp/Pluto.jl) and [Jupyter](h
 [Books.jl](https://github.com/JuliaBooks/Books.jl) is relevant to draft long documents.
 
 [Quarto](https://quarto.org/) is an open-source scientific and technical publishing system that supports Python, R and Julia.
-Quarto can render markdown files (`.md`), Quarto markdown files (`.qmd`), and Jupyter Notebooks (`.ipynb`) into "documents (Word, PDF, presentations), web pages, blog posts, books, and more".
+Quarto can render markdown files (`.md`), Quarto markdown files (`.qmd`), and Jupyter Notebooks (`.ipynb`) into documents (Word, PDF, presentations), web pages, blog posts, books, [and more](https://quarto.org/docs/output-formats/all-formats.html).
 Additionally, Quarto makes it easy to share or [publish](https://quarto.org/docs/publishing/) rendered content to Github Pages, Netlify, Confluence, Hugging Face Spaces, among others.
-[Quarto Pub](https://quartopub.com/) "is a free publishing service for content created with Quarto" and "is ideal for blogs, course or project websites, books, presentations, and personal hobby sites."
+[Quarto Pub](https://quartopub.com/) is a free publishing service for content created with Quarto.
 
 ## Versions and registration
 
