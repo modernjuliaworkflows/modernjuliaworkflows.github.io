@@ -114,3 +114,10 @@ recognized as Ruby code. Since we don't have any Ruby code in MJW, this is a qui
 TODO: remove when not required in Xranklin.
 */
 .language-ruby::before {content: "Julia";}
+
+/* Custom CSS required to display the docs|stable badge on the landing page */
+img[alt=badge] {
+  height: 1em;
+  width: auto;
+  display: inline;
+}

@@ -33,4 +33,4 @@ But at least you will know where to look in case you have a specific question.
 
 Many of the links you will see point to [GitHub](https://github.com/) repositories for Julia packages.
 When you click them, they will take you to a page called `README.md` that contains a brief description of the package, sometimes insufficient for actual use.
-You can usually find more thorough documentation by looking for a blue badge called [`docs|stable`](https://img.shields.io/badge/docs-stable-blue.svg) at the top of the page.
+You can usually find more thorough documentation by clicking on a blue badge called `docs|stable` looking like this ![badge](https://img.shields.io/badge/docs-stable-blue.svg) at the top of the `README`.
