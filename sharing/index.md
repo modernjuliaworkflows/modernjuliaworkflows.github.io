@@ -58,13 +58,13 @@ julia> using Pkg
 julia> Pkg.develop(path="MyAwesomePackage")
 ```
 
-```!using-awesome2
+```!using-awesome1
 #hideall
 using Pkg
 Pkg.develop(path=sitepath("MyAwesomePackage"))  # ignore sitepath
 ```
 
-```>using-awesome3
+```>using-awesome2
 using MyAwesomePackage
 ```
 
