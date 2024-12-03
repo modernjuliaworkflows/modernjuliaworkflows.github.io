@@ -33,10 +33,17 @@ Do not insert any files like `README.md`, `.gitignore` or `LICENSE.md`, this wil
 Indeed, we can leverage [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl) to automate package creation (like `]generate` from Pkg.jl but on steroids).
 The following code gives you a basic file structure to start with:
 
-```>pkgtemplates
+```>pkgtemplates1
 using PkgTemplates
-dir = Utils.path(:site)  # replace with the folder of your choice
-t = Template(dir=dir, user="myuser", interactive=false);  
+t = Template(user="myuser", interactive=false);  
+```
+
+```!pkgtemplates2
+#hideall
+t = Template(dir=Utils.path(:site), user="myuser", interactive=false);
+```
+
+```>pkgtemplates3
 t("MyAwesomePackage")
 ```
 
@@ -45,11 +52,22 @@ The rest of this post will explain to you what each part of this folder does, an
 
 To work on the package further, we develop it into the current environment and import it:
 
-```>using-awesome
+```julia-repl
+julia> using Pkg
+
+julia> Pkg.develop(path="MyAwesomePackage")
+```
+
+```!using-awesome2
+#hideall
 using Pkg
 Pkg.develop(path=sitepath("MyAwesomePackage"))  # ignore sitepath
+```
+
+```>using-awesome3
 using MyAwesomePackage
 ```
+
 
 ## GitHub Actions
 
