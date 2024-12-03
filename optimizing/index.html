@@ -144,10 +144,10 @@ Because code needs to be compiled before it can be run, you should first run a f
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Inaccurate, note the &gt;99% compilation time
-0.028455 seconds (48.49 k allocations: 3.214 MiB, 99.96% compilation time)
+0.028451 seconds (70.36 k allocations: 3.389 MiB, 99.91% compilation time)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Accurate
-0.000003 seconds (1 allocation: 16 bytes)
+0.000005 seconds (1 allocation: 16 bytes)
 </code></pre>
 <p>Using <code>@time</code> is quick but it has flaws, because your function is only measured once.
 That measurement might have been influenced by other things going on in your computer at the same time.
@@ -158,10 +158,10 @@ Additionally, by using <code>$</code> to <a href="https://juliaci.github.io/Benc
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs(v);
-95.640 ns (1 allocation: 16 bytes)
+98.726 ns (1 allocation: 16 bytes)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs($v);
-60.774 ns (0 allocations: 0 bytes)
+60.469 ns (0 allocations: 0 bytes)
 </code></pre>
 <p>In more complex settings, you might need to construct variables in a <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases">setup phase</a> that is run before each sample.
 This can be useful to generate a new random input every time, instead of always using the same input.</p>
@@ -171,7 +171,7 @@ This can be useful to generate a new random input every time, instead of always 
     A = rand(1000, 1000); # use semi-colons between setup lines
     b = rand(1000)
 );
-149.968 μs (1 allocation: 7.94 KiB)
+150.201 μs (3 allocations: 7.88 KiB)
 </code></pre>
 <p>For better visualization, the <code>@benchmark</code> macro shows performance histograms:</p>
 <div class="advanced"><p><strong>Advanced</strong>: Certain computations may be <a href="(https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)">optimized away by the compiler</a> before the benchmark takes place.
@@ -252,9 +252,12 @@ Locals
   v<span class="sgr36">::Vector{Any}</span>
 Body<span class="sgr91"><span class="sgr1">::Any</span></span>
 <span class="sgr90">1 ─</span>      (v = Base.vect())
-<span class="sgr90">│  </span>      Main.__FRANKLIN_1579807.push!(v, x)
-<span class="sgr90">│  </span> %3 = Main.__FRANKLIN_1579807.sum(v)<span class="sgr91"><span class="sgr1">::Any</span></span>
-<span class="sgr90">└──</span>      return %3
+<span class="sgr90">│  </span> %2 = Main.__FRANKLIN_1579807.push!<span class="sgr36">::Core.Const(push!)</span>
+<span class="sgr90">│  </span> %3 = v<span class="sgr36">::Vector{Any}</span>
+<span class="sgr90">│  </span>      (%2)(%3, x)
+<span class="sgr90">│  </span> %5 = v<span class="sgr36">::Vector{Any}</span>
+<span class="sgr90">│  </span> %6 = Main.__FRANKLIN_1579807.sum(%5)<span class="sgr91"><span class="sgr1">::Any</span></span>
+<span class="sgr90">└──</span>      return %6
 </code></pre>
 <p>Unfortunately, <code>@code_warntype</code> is limited to one function body: calls to other functions are not expanded, which makes deeper type instabilities easy to miss.
 That is where <a href="https://github.com/aviatesk/JET.jl">JET.jl</a> can help: it provides <a href="https://aviatesk.github.io/JET.jl/stable/optanalysis/">optimization analysis</a> aimed primarily at finding type instabilities.
@@ -262,36 +265,30 @@ While <a href="https://aviatesk.github.io/JET.jl/stable/optanalysis/#optanalysis
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using JET
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @report_opt put_in_vec_and_sum(1)
-═════ 6 possible errors found ═════
+═════ 4 possible errors found ═════
 ┌ put_in_vec_and_sum(x::Int64) @ Main.__FRANKLIN_1579807 ./string:4
-│┌ sum(a::Vector{Any}) @ Base ./reducedim.jl:1010
-││┌ sum(a::Vector{Any}; dims::Colon, kw::@Kwargs{}) @ Base ./reducedim.jl:1010
-│││┌ _sum(a::Vector{Any}, ::Colon) @ Base ./reducedim.jl:1014
-││││┌ _sum(a::Vector{Any}, ::Colon; kw::@Kwargs{}) @ Base ./reducedim.jl:1014
-│││││┌ _sum(f::typeof(identity), a::Vector{Any}, ::Colon) @ Base ./reducedim.jl:1015
-││││││┌ _sum(f::typeof(identity), a::Vector{Any}, ::Colon; kw::@Kwargs{}) @ Base ./reducedim.jl:1015
-│││││││┌ mapreduce(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{Any}) @ Base ./reducedim.jl:357
-││││││││┌ mapreduce(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{Any}; dims::Colon, init::Base._InitialValue) @ Base ./reducedim.jl:357
-│││││││││┌ _mapreduce_dim(f::typeof(identity), op::typeof(Base.add_sum), ::Base._InitialValue, A::Vector{Any}, ::Colon) @ Base ./reducedim.jl:365
-││││││││││┌ _mapreduce(f::typeof(identity), op::typeof(Base.add_sum), ::IndexLinear, A::Vector{Any}) @ Base ./reduce.jl:447
+│┌ sum(a::Vector{Any}) @ Base ./reducedim.jl:982
+││┌ sum(a::Vector{Any}; dims::Colon, kw::@Kwargs{}) @ Base ./reducedim.jl:982
+│││┌ _sum(a::Vector{Any}, ::Colon) @ Base ./reducedim.jl:986
+││││┌ _sum(a::Vector{Any}, ::Colon; kw::@Kwargs{}) @ Base ./reducedim.jl:986
+│││││┌ _sum(f::typeof(identity), a::Vector{Any}, ::Colon) @ Base ./reducedim.jl:987
+││││││┌ _sum(f::typeof(identity), a::Vector{Any}, ::Colon; kw::@Kwargs{}) @ Base ./reducedim.jl:987
+│││││││┌ mapreduce(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{Any}) @ Base ./reducedim.jl:329
+││││││││┌ mapreduce(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{Any}; dims::Colon, init::Base._InitialValue) @ Base ./reducedim.jl:329
+│││││││││┌ _mapreduce_dim(f::typeof(identity), op::typeof(Base.add_sum), ::Base._InitialValue, A::Vector{Any}, ::Colon) @ Base ./reducedim.jl:337
+││││││││││┌ _mapreduce(f::typeof(identity), op::typeof(Base.add_sum), ::IndexLinear, A::Vector{Any}) @ Base ./reduce.jl:444
 │││││││││││┌ mapreduce_impl(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{Any}, ifirst::Int64, ilast::Int64) @ Base ./reduce.jl:277
-││││││││││││┌ mapreduce_impl(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{…}, ifirst::Int64, ilast::Int64, blksize::Int64) @ Base ./reduce.jl:257
-│││││││││││││ runtime dispatch detected: Base.mapreduce_first(f::typeof(identity), op::typeof(Base.add_sum), %3::Any)::Any
-││││││││││││└────────────────────
 ││││││││││││┌ mapreduce_impl(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{…}, ifirst::Int64, ilast::Int64, blksize::Int64) @ Base ./reduce.jl:262
-│││││││││││││ runtime dispatch detected: op::typeof(Base.add_sum)(%9::Any, %11::Any)::Any
+│││││││││││││ runtime dispatch detected: op::typeof(Base.add_sum)(%91::Any, %110::Any)::Any
 ││││││││││││└────────────────────
 ││││││││││││┌ mapreduce_impl(f::typeof(identity), op::typeof(Base.add_sum), A::Vector{…}, ifirst::Int64, ilast::Int64, blksize::Int64) @ Base ./reduce.jl:273
-│││││││││││││ runtime dispatch detected: op::typeof(Base.add_sum)(%69::Any, %71::Any)::Any
+│││││││││││││ runtime dispatch detected: op::typeof(Base.add_sum)(%187::Any, %189::Any)::Any
 ││││││││││││└────────────────────
-││││││││││┌ _mapreduce(f::typeof(identity), op::typeof(Base.add_sum), ::IndexLinear, A::Vector{Any}) @ Base ./reduce.jl:435
-│││││││││││ runtime dispatch detected: Base.mapreduce_first(f::typeof(identity), op::typeof(Base.add_sum), %10::Any)::Any
+││││││││││┌ _mapreduce(f::typeof(identity), op::typeof(Base.add_sum), ::IndexLinear, A::Vector{Any}) @ Base ./reduce.jl:437
+│││││││││││ runtime dispatch detected: op::typeof(Base.add_sum)(%97::Any, %115::Any)::Any
 ││││││││││└────────────────────
 ││││││││││┌ _mapreduce(f::typeof(identity), op::typeof(Base.add_sum), ::IndexLinear, A::Vector{Any}) @ Base ./reduce.jl:440
-│││││││││││ runtime dispatch detected: op::typeof(Base.add_sum)(%15::Any, %16::Any)::Any
-││││││││││└────────────────────
-││││││││││┌ _mapreduce(f::typeof(identity), op::typeof(Base.add_sum), ::IndexLinear, A::Vector{Any}) @ Base ./reduce.jl:443
-│││││││││││ runtime dispatch detected: op::typeof(Base.add_sum)(%18::Any, %25::Any)::Any
+│││││││││││ runtime dispatch detected: op::typeof(Base.add_sum)(%118::Any, %139::Any)::Any
 ││││││││││└────────────────────
 </code></pre>
 <div class="vscode"><p><strong>VSCode</strong>: The Julia extension features a <a href="https://www.julia-vscode.org/docs/stable/userguide/linter/">static linter</a>, and runtime diagnostics with JET can be automated to run periodically on your codebase and show any problems detected.</p>
@@ -450,7 +447,7 @@ sx = SA[1, 2, 3] # SA constructs an SArray
 Iteration and memoization utilities are also provided by packages like <a href="https://github.com/JuliaCollections/IterTools.jl">IterTools.jl</a> and <a href="https://github.com/JuliaCollections/Memoize.jl">Memoize.jl</a>.</p>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 12, 2024. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: December 03, 2024. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
