@@ -27,6 +27,15 @@
     object-fit: scale-down;
 }
 
+/* Custom CSS required to display the docs|stable badge on the landing page */
+img[alt=badge] {
+  height: 1em;
+  width: auto;
+  display: inline;
+  margin: 0;
+  padding: 0 0.5ex;
+}
+
 /* ==================================================================
     Admonitions
 ================================================================== */
@@ -115,9 +124,3 @@ TODO: remove when not required in Xranklin.
 */
 .language-ruby::before {content: "Julia";}
 
-/* Custom CSS required to display the docs|stable badge on the landing page */
-img[alt=badge] {
-  height: 1em;
-  width: auto;
-  display: inline;
-}
