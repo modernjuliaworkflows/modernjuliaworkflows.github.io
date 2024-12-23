@@ -144,7 +144,7 @@ Because code needs to be compiled before it can be run, you should first run a f
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Inaccurate, note the &gt;99% compilation time
-0.028451 seconds (70.36 k allocations: 3.389 MiB, 99.91% compilation time)
+0.027499 seconds (70.36 k allocations: 3.389 MiB, 99.92% compilation time)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Accurate
 0.000005 seconds (1 allocation: 16 bytes)
@@ -158,10 +158,10 @@ Additionally, by using <code>$</code> to <a href="https://juliaci.github.io/Benc
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs(v);
-98.726 ns (1 allocation: 16 bytes)
+98.428 ns (1 allocation: 16 bytes)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs($v);
-60.469 ns (0 allocations: 0 bytes)
+60.774 ns (0 allocations: 0 bytes)
 </code></pre>
 <p>In more complex settings, you might need to construct variables in a <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases">setup phase</a> that is run before each sample.
 This can be useful to generate a new random input every time, instead of always using the same input.</p>
@@ -171,7 +171,7 @@ This can be useful to generate a new random input every time, instead of always 
     A = rand(1000, 1000); # use semi-colons between setup lines
     b = rand(1000)
 );
-150.201 μs (3 allocations: 7.88 KiB)
+137.556 μs (3 allocations: 7.88 KiB)
 </code></pre>
 <p>For better visualization, the <code>@benchmark</code> macro shows performance histograms:</p>
 <div class="advanced"><p><strong>Advanced</strong>: Certain computations may be <a href="(https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)">optimized away by the compiler</a> before the benchmark takes place.
@@ -447,7 +447,7 @@ sx = SA[1, 2, 3] # SA constructs an SArray
 Iteration and memoization utilities are also provided by packages like <a href="https://github.com/JuliaCollections/IterTools.jl">IterTools.jl</a> and <a href="https://github.com/JuliaCollections/Memoize.jl">Memoize.jl</a>.</p>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: December 03, 2024. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: December 23, 2024. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 

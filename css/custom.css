@@ -27,6 +27,15 @@
     object-fit: scale-down;
 }
 
+/* Custom CSS required to display the docs|stable badge on the landing page */
+img[alt=badge] {
+  height: 1em;
+  width: auto;
+  display: inline;
+  margin: 0;
+  padding: 0 0.5ex;
+}
+
 /* ==================================================================
     Admonitions
 ================================================================== */
@@ -114,3 +123,4 @@ recognized as Ruby code. Since we don't have any Ruby code in MJW, this is a qui
 TODO: remove when not required in Xranklin.
 */
 .language-ruby::before {content: "Julia";}
+
