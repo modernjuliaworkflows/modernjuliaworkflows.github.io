@@ -737,7 +737,8 @@ Using the toolbar at the top of the editor, you can then _continue_, _step over_
 The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.
 
 The debugger can be [sped up](https://www.julia-vscode.org/docs/dev/userguide/debugging/#Settings-to-speed-up-the-debugger) by selectively compiling modules that you will not need to step into via the `+` symbol at the bottom of the debugging pane.
-It is often easiest to start by adding `ALL_MODULES_EXCEPT_MAIN` to the compiled list, and then selectively remove the modules you need to have interpreted.
+It is often easiest to start by adding `ALL_MODULES_EXCEPT_MAIN` to the compiled list, and then selectively remove the modules you need to have interpreted
+by typing their name into the same `+` menu but with a `-` sign in front e.g. `-MyModule`.
 }
 
 <!-- Clean up -->
