@@ -204,7 +204,7 @@ Pkg.jl allows you to:</p>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/writing/Manifest.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.5</span>
 Precompiling project...
-    247.7 ms  ✓ Example
+    242.6 ms  ✓ Example
   1 dependency successfully precompiled in 0 seconds
 </code></pre>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(writing) pkg&gt;</span></span> status
@@ -641,10 +641,11 @@ About to run: (^)(2, 64)
  Using the toolbar at the top of the editor, you can then <em>continue</em>, <em>step over</em>, <em>step into</em> and <em>step out</em> of your code.
  The debugger will open a pane showing information about the code such as local variables inside of the current function, their current values and the full call stack.</p>
 <p> The debugger can be <a href="https://www.julia-vscode.org/docs/dev/userguide/debugging/#Settings-to-speed-up-the-debugger">sped up</a> by selectively compiling modules that you will not need to step into via the <code>+</code> symbol at the bottom of the debugging pane.
- It is often easiest to start by adding <code>ALL_MODULES_EXCEPT_MAIN</code> to the compiled list, and then selectively remove the modules you need to have interpreted.</p>
+ It is often easiest to start by adding <code>ALL_MODULES_EXCEPT_MAIN</code> to the compiled list, and then selectively remove the modules you need to have interpreted
+ by typing their name into the same <code>+</code> menu but with a <code>-</code> sign in front e.g. <code>-MyModule</code>.</p>
 </div>
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: December 23, 2024. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: January 16, 2025. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
