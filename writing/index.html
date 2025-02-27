@@ -196,7 +196,7 @@ Pkg.jl allows you to:</p>
 <p>As an illustration, we download the package Example.jl inside our current environment:</p>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(writing) pkg&gt;</span></span> add Example
 <span class="sgr33"><span class="sgr1">┌ Warning: </span></span>The Pkg REPL mode is intended for interactive use only, and should not be used from scripts. It is recommended to use the functional API instead.
-<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ Pkg.REPLMode /opt/hostedtoolcache/julia/1.11.2/x64/share/julia/stdlib/v1.11/Pkg/src/REPLMode/REPLMode.jl:388</span>
+<span class="sgr33"><span class="sgr1">└ </span></span><span class="sgr90">@ Pkg.REPLMode /opt/hostedtoolcache/julia/1.11.3/x64/share/julia/stdlib/v1.11/Pkg/src/REPLMode/REPLMode.jl:388</span>
 <span class="sgr32"><span class="sgr1">   Resolving</span></span> package versions...
 <span class="sgr32"><span class="sgr1">   Installed</span></span> Example ─ v0.5.5
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/writing/Project.toml`
@@ -204,7 +204,7 @@ Pkg.jl allows you to:</p>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/writing/Manifest.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.5</span>
 Precompiling project...
-    242.6 ms  ✓ Example
+    259.8 ms  ✓ Example
   1 dependency successfully precompiled in 0 seconds
 </code></pre>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(writing) pkg&gt;</span></span> status
@@ -448,19 +448,19 @@ More generally, the startup file allows you to define your own favorite helper f
 Any[Bool, Signed, Unsigned]
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> length(methodswith(Integer))
-717
+726
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @which exp(1)
 exp(x::Real) @ Base.Math math.jl:1528
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> apropos(&quot;matrix exponential&quot;)
-Base.exp
 Base.:^
+Base.exp
 </code></pre>
 <p>When you ask for help on a Julia forum, you might want to include your local Julia information:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> versioninfo()
-Julia Version 1.11.2
-Commit 5e9a32e7af2 (2024-12-01 20:02 UTC)
+Julia Version 1.11.3
+Commit d63adeda50d (2025-01-21 19:42 UTC)
 Build Info:
   Official https://julialang.org/ release
 Platform Info:
@@ -645,7 +645,7 @@ About to run: (^)(2, 64)
  by typing their name into the same <code>+</code> menu but with a <code>-</code> sign in front e.g. <code>-MyModule</code>.</p>
 </div>
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: January 16, 2025. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: February 27, 2025. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
