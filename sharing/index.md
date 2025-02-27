@@ -27,7 +27,7 @@ GitHub is a platform for collaborative software development, based on the versio
 If you are unfamiliar with these technologies, check out the [GitHub documentation](https://docs.github.com/en/get-started/quickstart).
 
 The first step is therefore [creating](https://github.com/new) an empty GitHub repository.
-You should try to follow [package naming guidelines](https://pkgdocs.julialang.org/v1/creating-packages/#Package-naming-guidelines) and add a ".jl" extension at the end, like so: "MyAwesomePackage.jl".
+You should try to follow [package naming rules](https://pkgdocs.julialang.org/v1/creating-packages/#Package-naming-rules) and add a ".jl" extension at the end, like so: "MyAwesomePackage.jl".
 Do not insert any files like `README.md`, `.gitignore` or `LICENSE.md`, this will be done for you in the next step.
 
 Indeed, we can leverage [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl) to automate package creation (like `]generate` from Pkg.jl but on steroids).
