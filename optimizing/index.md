@@ -164,6 +164,7 @@ isconcretetype(Vector) # Shorthand for `Vector{T} where T`
 isconcretetype(Vector{Real})
 isconcretetype(eltype(Vector{Real}))
 isconcretetype(Vector{Int64})
+isconcretetype(eltype(Vector{Int64}))
 ```
 
 \advanced{
