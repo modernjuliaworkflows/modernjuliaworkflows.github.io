@@ -144,10 +144,10 @@ Because code needs to be compiled before it can be run, you should first run a f
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Inaccurate, note the &gt;99% compilation time
-0.025862 seconds (70.37 k allocations: 3.389 MiB, 99.93% compilation time)
+0.024843 seconds (70.37 k allocations: 3.389 MiB, 99.95% compilation time)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Accurate
-0.000005 seconds (1 allocation: 16 bytes)
+0.000004 seconds (1 allocation: 16 bytes)
 </code></pre>
 <p>Using <code>@time</code> is quick but it has flaws, because your function is only measured once.
 That measurement might have been influenced by other things going on in your computer at the same time.
@@ -158,10 +158,10 @@ Additionally, by using <code>$</code> to <a href="https://juliaci.github.io/Benc
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs(v);
-98.726 ns (1 allocation: 16 bytes)
+99.043 ns (1 allocation: 16 bytes)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs($v);
-60.468 ns (0 allocations: 0 bytes)
+60.459 ns (0 allocations: 0 bytes)
 </code></pre>
 <p>In more complex settings, you might need to construct variables in a <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases">setup phase</a> that is run before each sample.
 This can be useful to generate a new random input every time, instead of always using the same input.</p>
@@ -171,7 +171,7 @@ This can be useful to generate a new random input every time, instead of always 
     A = rand(1000, 1000); # use semi-colons between setup lines
     b = rand(1000)
 );
-142.616 μs (3 allocations: 7.88 KiB)
+141.424 μs (3 allocations: 7.88 KiB)
 </code></pre>
 <p>For better visualization, the <code>@benchmark</code> macro shows performance histograms:</p>
 <div class="advanced"><p><strong>Advanced</strong>: Certain computations may be <a href="(https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)">optimized away by the compiler</a> before the benchmark takes place.
@@ -226,6 +226,9 @@ true
 false
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> isconcretetype(Vector{Int64})
+true
+
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> isconcretetype(eltype(Vector{Int64}))
 true
 </code></pre>
 <div class="advanced"><p><strong>Advanced</strong>: <code>Vector&lbrace;Real&rbrace;</code> is concrete despite <code>Real</code> being abstract for <a href="https://docs.julialang.org/en/v1/manual/types/#man-parametric-composite-types">subtle typing reasons</a> but it will still be slow in practice because the type of its elements is abstract.</p>
