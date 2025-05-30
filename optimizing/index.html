@@ -144,10 +144,10 @@ Because code needs to be compiled before it can be run, you should first run a f
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Inaccurate, note the &gt;99% compilation time
-0.030086 seconds (70.37 k allocations: 3.395 MiB, 99.91% compilation time)
+0.025862 seconds (70.37 k allocations: 3.389 MiB, 99.93% compilation time)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Accurate
-0.000006 seconds (1 allocation: 16 bytes)
+0.000005 seconds (1 allocation: 16 bytes)
 </code></pre>
 <p>Using <code>@time</code> is quick but it has flaws, because your function is only measured once.
 That measurement might have been influenced by other things going on in your computer at the same time.
@@ -158,10 +158,10 @@ Additionally, by using <code>$</code> to <a href="https://juliaci.github.io/Benc
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs(v);
-98.725 ns (1 allocation: 16 bytes)
+98.726 ns (1 allocation: 16 bytes)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs($v);
-60.469 ns (0 allocations: 0 bytes)
+60.468 ns (0 allocations: 0 bytes)
 </code></pre>
 <p>In more complex settings, you might need to construct variables in a <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases">setup phase</a> that is run before each sample.
 This can be useful to generate a new random input every time, instead of always using the same input.</p>
@@ -171,7 +171,7 @@ This can be useful to generate a new random input every time, instead of always 
     A = rand(1000, 1000); # use semi-colons between setup lines
     b = rand(1000)
 );
-141.434 μs (3 allocations: 7.88 KiB)
+142.616 μs (3 allocations: 7.88 KiB)
 </code></pre>
 <p>For better visualization, the <code>@benchmark</code> macro shows performance histograms:</p>
 <div class="advanced"><p><strong>Advanced</strong>: Certain computations may be <a href="(https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)">optimized away by the compiler</a> before the benchmark takes place.
@@ -380,9 +380,9 @@ The helpful <a href="https://juliafolds2.github.io/OhMyThreads.jl/stable/transla
 <p>If the latency of spinning up new threads becomes a bottleneck, check out <a href="https://github.com/JuliaSIMD/Polyester.jl">Polyester.jl</a> for very lightweight threads that are quicker to start.</p>
 <p>If you're on Linux, you should consider using <a href="https://github.com/carstenbauer/ThreadPinning.jl">ThreadPinning.jl</a> to pin your Julia threads to CPU cores to obtain stable and optimal performance. The package can also be used to visualize where the Julia threads are running on your system (see <code>threadinfo()</code>).</p>
 <div class="advanced"><p><strong>Advanced</strong>: Some widely used parallel programming packages like <a href="https://github.com/JuliaSIMD/LoopVectorization.jl">LoopVectorization.jl</a> (which also powers <a href="https://github.com/JuliaLinearAlgebra/Octavian.jl">Octavian.jl</a>) or <a href="https://github.com/tkf/ThreadsX.jl">ThreadsX.jl</a> are no longer maintained.</p>
-</div><h3 id="distributed_computing" ><a href="#distributed_computing"> Distributed computing</a></h3><p>Julia's multiprocessing and distributed relies on the standard library <code>Distributed</code>.
-The main difference with multi-threading is that data isn't shared between worker processes.
-Once Julia is started, processes can be added with <code>addprocs</code>, and their can be queried with <code>nworkers</code>.</p>
+</div><h3 id="distributed_computing" ><a href="#distributed_computing"> Distributed computing</a></h3><p>Julia's multiprocessing and distributed computing relies on the standard library <code>Distributed</code>.
+The main difference compared to multi-threading is that data isn't shared between worker processes.
+Once Julia is started, processes can be added with <code>addprocs</code>, and they can be queried with <code>nworkers</code>.</p>
 <p>The macro <code>Distributed.@distributed</code> is a <em>syntactic</em> equivalent for <code>Threads.@threads</code>.
 Hence, we can use <code>@distributed</code> to parallelise a for loop as before, but we have to additionally deal with sharing and recombining the <code>results</code> array.
 We can delegate this responsibility to the standard library <code>SharedArrays</code>.
@@ -447,7 +447,7 @@ sx = SA[1, 2, 3] # SA constructs an SArray
 Iteration and memoization utilities are also provided by packages like <a href="https://github.com/JuliaCollections/IterTools.jl">IterTools.jl</a> and <a href="https://github.com/JuliaCollections/Memoize.jl">Memoize.jl</a>.</p>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: February 27, 2025. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: May 30, 2025. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
