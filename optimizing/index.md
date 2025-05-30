@@ -372,9 +372,9 @@ Some widely used parallel programming packages like [LoopVectorization.jl](https
 
 ### Distributed computing
 
-Julia's multiprocessing and distributed relies on the standard library `Distributed`.
-The main difference with multi-threading is that data isn't shared between worker processes.
-Once Julia is started, processes can be added with `addprocs`, and their can be queried with `nworkers`.
+Julia's multiprocessing and distributed computing relies on the standard library `Distributed`.
+The main difference compared to multi-threading is that data isn't shared between worker processes.
+Once Julia is started, processes can be added with `addprocs`, and they can be queried with `nworkers`.
 
 The macro `Distributed.@distributed` is a _syntactic_ equivalent for `Threads.@threads`.
 Hence, we can use `@distributed` to parallelise a for loop as before, but we have to additionally deal with sharing and recombining the `results` array.
