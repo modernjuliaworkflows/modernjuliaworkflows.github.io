@@ -48,9 +48,20 @@ t("MyAwesomePackage")
 ```
 
 Then, you simply need to push this new folder to the remote repository <https://github.com/myuser/MyAwesomePackage.jl>, and you're ready to go.
+
+The steps described above, including creation of a GitHub repo and pushing your project to it, can also be comfortably done with the help of [PackageMaker.jl](https://github.com/Eben60/PackageMaker.jl), which is a GUI wrap around [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl) with a couple features of it's own.
+
 The rest of this post will explain to you what each part of this folder does, and how to bend them to your will.
 
-To work on the package further, we develop it into the current environment and import it:
+To work on the package further, we switch to it's environment or "develop" it into the current one, and then import it:
+
+```julia-repl
+julia> using Pkg # remember, you can equivalently do all that from the pkg REPL after pressing ]
+
+julia> Pkg.activate(path="MyAwesomePackage") 
+```
+
+or 
 
 ```julia-repl
 julia> using Pkg
@@ -67,6 +78,8 @@ Pkg.develop(path=sitepath("MyAwesomePackage"))  # ignore sitepath
 ```>using-awesome2
 using MyAwesomePackage
 ```
+
+
 
 
 ## GitHub Actions

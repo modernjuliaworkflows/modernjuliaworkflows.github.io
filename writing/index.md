@@ -355,8 +355,8 @@ Once in an environment, the packages you `]add` will be listed in two files `som
 * `Manifest.toml` contains the exact versions of all direct and indirect dependencies
 
 If you haven't entered any local project, packages will be installed in the default environment, called `@v1.X` after the active version of Julia (note the `@` before the name).
-Packages installed that way are available no matter which local environment is active, because of "environment stacking".
-It is therefore recommended to keep the default environment very light, containing only essential development tools.
+Packages installed that way are available no matter which local environment is active, because of "environment [stacking](https://docs.julialang.org/en/v1/manual/code-loading/#Environment-stacks)".
+It is recommended to keep the default environment very light to avoid dependencies conflicts. It should contain only essential development tools.
 
 \vscode{
 
@@ -380,7 +380,7 @@ Once your code base grows beyond a few scripts, you will want to [create a packa
 The first advantage is that you don't need to specify the path of every file: `using MyPackage: myfunc` is enough to get access to the names you define.
 Furthermore, you can specify versions for your package and its dependencies, making your code easier and safer to reuse.
 
-To create a new package locally, the easy way is to use `]generate` (we will discuss a more sophisticated workflow in the next blog post).
+To create a new package locally, one easy way is to use `]generate`. We will discuss more sophisticated workflows, including a [GUI tool](https://github.com/Eben60/PackageMaker.jl), in the next blog post.
 
 ```>generate-package
 Pkg.generate(sitepath("MyPackage"));  # ignore sitepath
@@ -428,7 +428,7 @@ Whenever you edit a source file and hit save, the REPL will update its state acc
 
 \vscode{
 
-The Julia extension imports Revise.jl by default when it starts a REPL.
+The Julia extension imports Revise.jl by default when it starts a REPL, provided it is installed in the default environment.
 
 }
 
@@ -461,6 +461,8 @@ Pkg.develop(path="./MyPackage")
 using MyPackage
 MyPackage.myfunc()
 ```
+
+For the common case of dependencies needed for interactive work only, [shared](https://pkgdocs.julialang.org/v1/environments/#Shared-environments)/[stacked](https://docs.julialang.org/en/v1/manual/code-loading/#Environment-stacks) environments is another practicable solution. [ShareAdd.jl](https://github.com/Eben60/ShareAdd.jl) can help you in using and managing these. See also it's [documentation](https://eben60.github.io/ShareAdd.jl/) for some explanations on how it works.
 
 }
 
