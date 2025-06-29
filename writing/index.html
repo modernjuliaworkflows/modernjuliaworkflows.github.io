@@ -204,7 +204,7 @@ Pkg.jl allows you to:</p>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/writing/Manifest.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.5</span>
 Precompiling project...
-    235.1 ms  ✓ Example
+    226.2 ms  ✓ Example
   1 dependency successfully precompiled in 0 seconds
 </code></pre>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(writing) pkg&gt;</span></span> status
@@ -349,8 +349,8 @@ Another option is to directly start Julia inside an environment, with the comman
 <li><code>Manifest.toml</code> contains the exact versions of all direct and indirect dependencies</li>
 </ul>
 <p>If you haven't entered any local project, packages will be installed in the default environment, called <code>@v1.X</code> after the active version of Julia (note the <code>@</code> before the name).
-Packages installed that way are available no matter which local environment is active, because of "environment stacking".
-It is therefore recommended to keep the default environment very light, containing only essential development tools.</p>
+Packages installed that way are available no matter which local environment is active, because of "environment <a href="https://docs.julialang.org/en/v1/manual/code-loading/#Environment-stacks">stacking</a>".
+It is recommended to keep the default environment very light to avoid dependencies conflicts. It should contain only essential development tools.</p>
 <div class="vscode"><p><strong>VSCode</strong>: You can configure the <a href="https://www.julia-vscode.org/docs/stable/userguide/env/">environment</a> in which a VSCode Julia REPL opens.
  Just click the <code>Julia env: ...</code> button at the bottom.
  Note however that the Julia version itself will always be the default one from <code>juliaup</code>.</p>
@@ -359,7 +359,7 @@ It is therefore recommended to keep the default environment very light, containi
 </div><p>Once your code base grows beyond a few scripts, you will want to <a href="https://pkgdocs.julialang.org/v1/creating-packages/">create a package</a> of your own.
 The first advantage is that you don't need to specify the path of every file: <code>using MyPackage: myfunc</code> is enough to get access to the names you define.
 Furthermore, you can specify versions for your package and its dependencies, making your code easier and safer to reuse.</p>
-<p>To create a new package locally, the easy way is to use <code>]generate</code> (we will discuss a more sophisticated workflow in the next blog post).</p>
+<p>To create a new package locally, one easy way is to use <code>]generate</code>. We will discuss more sophisticated workflows, including a graphical tool, in the next blog post.</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> Pkg.generate(sitepath(&quot;MyPackage&quot;));  # ignore sitepath
 <span class="sgr32"><span class="sgr1">  Generating</span></span>  project MyPackage:
     ~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyPackage/Project.toml
@@ -397,7 +397,7 @@ That is why <a href="https://github.com/timholy/Revise.jl">Revise.jl</a> exists.
 In fact, it is used by so many Julia developers that some wish it were part of the core language: you can read its <a href="https://timholy.github.io/Revise.jl/stable/">documentation</a> for more details.
 If you start every REPL session by importing Revise.jl, then all the other packages you import after that will have their code tracked.
 Whenever you edit a source file and hit save, the REPL will update its state accordingly.</p>
-<div class="vscode"><p><strong>VSCode</strong>: The Julia extension imports Revise.jl by default when it starts a REPL.</p>
+<div class="vscode"><p><strong>VSCode</strong>: The Julia extension imports Revise.jl by default when it starts a REPL, provided it is installed in the default environment.</p>
 </div><p>The only remaining question is: in which environment should you work?
 In general, you can work within the environment defined by your package, and add all the dependencies you need there.
 To summarize, this is how you get started:</p>
@@ -419,6 +419,8 @@ MyPackage.myfunc()</code></pre>
  using MyPackage
  MyPackage.myfunc()
  </code></pre>
+<p> For the common case of dependencies needed for interactive work only, <a href="https://pkgdocs.julialang.org/v1/environments/#Shared-environments">shared</a> or <a href="https://docs.julialang.org/en/v1/manual/code-loading/#Environment-stacks">stacked</a> environments are another practical solution.
+ <a href="https://github.com/Eben60/ShareAdd.jl">ShareAdd.jl</a> can help you in using and managing these (see its documentation).</p>
 </div><h2 id="configuration" ><a href="#configuration"> Configuration</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use the startup file to import packages as soon as Julia starts. </p>
 </div><p>Julia accepts <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#command-line-interface">startup flags</a> to handle settings such as the number of threads available or the environment in which it launches.
 In addition, most Julia developers also have a <a href="https://docs.julialang.org/en/v1/manual/command-line-interface/#Startup-file">startup file</a> which is run automatically every time the language is started.
@@ -645,7 +647,7 @@ About to run: (^)(2, 64)
  by typing their name into the same <code>+</code> menu but with a <code>-</code> sign in front e.g. <code>-MyModule</code>.</p>
 </div>
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: May 30, 2025. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: June 29, 2025. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
