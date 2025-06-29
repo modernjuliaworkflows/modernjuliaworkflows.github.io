@@ -49,7 +49,7 @@ t("MyAwesomePackage")
 
 Then, you simply need to push this new folder to the remote repository <https://github.com/myuser/MyAwesomePackage.jl>, and you're ready to go.
 
-The steps described above, including creation of a GitHub repo and pushing your project to it, can also be comfortably done with the help of [PackageMaker.jl](https://github.com/Eben60/PackageMaker.jl), which is a GUI wrap around [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl) with a couple features of it's own.
+The steps described above, including creation of a GitHub repo and pushing your project to it, can also be comfortably done with the help of [PackageMaker.jl](https://github.com/Eben60/PackageMaker.jl), which is a graphical wrapper around [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl) with a couple features of its own.
 
 The rest of this post will explain to you what each part of this folder does, and how to bend them to your will.
 
@@ -78,8 +78,6 @@ Pkg.develop(path=sitepath("MyAwesomePackage"))  # ignore sitepath
 ```>using-awesome2
 using MyAwesomePackage
 ```
-
-
 
 
 ## GitHub Actions

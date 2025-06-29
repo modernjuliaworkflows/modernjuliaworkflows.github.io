@@ -380,7 +380,7 @@ Once your code base grows beyond a few scripts, you will want to [create a packa
 The first advantage is that you don't need to specify the path of every file: `using MyPackage: myfunc` is enough to get access to the names you define.
 Furthermore, you can specify versions for your package and its dependencies, making your code easier and safer to reuse.
 
-To create a new package locally, one easy way is to use `]generate`. We will discuss more sophisticated workflows, including a [GUI tool](https://github.com/Eben60/PackageMaker.jl), in the next blog post.
+To create a new package locally, one easy way is to use `]generate`. We will discuss more sophisticated workflows, including a graphical tool, in the next blog post.
 
 ```>generate-package
 Pkg.generate(sitepath("MyPackage"));  # ignore sitepath
@@ -462,7 +462,8 @@ using MyPackage
 MyPackage.myfunc()
 ```
 
-For the common case of dependencies needed for interactive work only, [shared](https://pkgdocs.julialang.org/v1/environments/#Shared-environments)/[stacked](https://docs.julialang.org/en/v1/manual/code-loading/#Environment-stacks) environments is another practicable solution. [ShareAdd.jl](https://github.com/Eben60/ShareAdd.jl) can help you in using and managing these. See also it's [documentation](https://eben60.github.io/ShareAdd.jl/) for some explanations on how it works.
+For the common case of dependencies needed for interactive work only, [shared](https://pkgdocs.julialang.org/v1/environments/#Shared-environments) or [stacked](https://docs.julialang.org/en/v1/manual/code-loading/#Environment-stacks) environments are another practical solution.
+[ShareAdd.jl](https://github.com/Eben60/ShareAdd.jl) can help you in using and managing these (see its documentation).
 
 }
 
