@@ -36,7 +36,7 @@ With this in mind, after you're done with the current page, you should read the 
 
 ## Measurements
 
-\tldr{Use BenchmarkTools.jl's `@benchmark` with a setup phase to get the most accurate idea of your code's performance. Use Chairmarks.jl as a faster alternative.}
+\tldr{Use Chairmarks.jl's `@be` with a setup phase to get the most accurate idea of your code's performance.}
 
 The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints the measured runtime and allocations.
 Because code needs to be compiled before it can be run, you should first run a function without timing it so it can be compiled, and then time it:
@@ -54,20 +54,20 @@ Using `@time` is quick but it has flaws, because your function is only measured 
 That measurement might have been influenced by other things going on in your computer at the same time.
 In general, running the same block of code multiple times is a safer measurement method, because it diminishes the probability of only observing an outlier.
 
-### BenchmarkTools
+### Chairmarks
 
-[BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl) is the most popular package for repeated measurements on function executions.
-Similarly to `@time`, BenchmarkTools offers `@btime` which can be used in exactly the same way but will run the code multiple times and provide an average.
-Additionally, by using `$` to [interpolate external values](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Interpolating-values-into-benchmark-expressions), you remove the overhead caused by global variables.
+[Chairmarks.jl](https://github.com/LilithHafner/Chairmarks.jl) is the latest and greatest benchmarking suite used to make fast and accurate timing measurements.
+Chairmarks offers `@b` (for "benchmark") which can be used in exactly the same way as `@time` but will run the code multiple times and provide a minimum execution time.
+Alternatively, Chairmarks also provides `@be` to run the benchmark and output all of its statistics.
 
 ```>$-example
-using BenchmarkTools
-@btime sum_abs(v);
-@btime sum_abs($v);
+using Chairmarks
+@b sum_abs(v)
+@be sum_abs(v)
 ```
 
-In more complex settings, you might need to construct variables in a [setup phase](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases) that is run before each sample.
-This can be useful to generate a new random input every time, instead of always using the same input.
+Chairmarks supports a pipeline syntax with optional `init`, `setup`, `teardown`, and `keywords` arguments for more extensive control over the benchmarking process.
+For example, you could write the following to benchmark a matrix multiplication function for one second excluding time spent creating the arrays.
 
 ```>setup-example
 my_matmul(A, b) = A * b;
@@ -75,16 +75,15 @@ my_matmul(A, b) = A * b;
     A = rand(1000, 1000); # use semi-colons between setup lines
     b = rand(1000)
 );
+# Needs fixed
 ```
 
-For better visualization, the `@benchmark` macro shows performance histograms:
+For better visualization, [PrettyChairmarks.jl](https://github.com/astrozot/PrettyChairmarks.jl) shows performance histograms.
 
 \advanced{
 Certain computations may be [optimized away by the compiler]((https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)) before the benchmark takes place.
 If you observe suspiciously fast performance, especially below the nanosecond scale, this is very likely to have happened.
 }
-
-[Chairmarks.jl](https://github.com/LilithHafner/Chairmarks.jl) offers an alternative to BenchmarkTools.jl, promising faster benchmarking while attempting to maintain high accuracy and using an alternative syntax based on pipelines.
 
 ### Benchmark suites
 
@@ -97,9 +96,12 @@ Several packages exist for this purpose:
 
 ### Other tools
 
-BenchmarkTools.jl works fine for relatively short and simple blocks of code (microbenchmarking).
+Chairmarks.jl works fine for relatively short and simple blocks of code (microbenchmarking).
 To find bottlenecks in a larger program, you should rather use a [profiler](#profiling) or the package [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl).
 It allows you to label different sections of your code, then time them and display a table of grouped by label.
+
+[BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl) was the previous standard for benchmarking in Julia. It is still widely used today.
+However, it is slower than Chairmarks and requires interpolating variables into the benchmarked expressions with `$`.
 
 Finally, if you know a loop is slow and you'll need to wait for it to be done, you can use [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl) or [ProgressLogging.jl](https://github.com/JuliaLogging/ProgressLogging.jl) to track its progress.
 
@@ -141,7 +143,7 @@ To integrate profile visualisations into environments like Jupyter and Pluto, us
 No matter which tool you use, if your code is too fast to collect samples, you may need to run it multiple times in a loop.
 
 \advanced{
-    To visualize memory allocation profiles, use PProf.jl or VSCode's `@profview_allocs`. 
+    To visualize memory allocation profiles, use PProf.jl or VSCode's `@profview_allocs`.
     A known issue with the allocation profiler is that it is not able to determine the type of every object allocated, instead `Profile.Allocs.UnknownType` is shown instead.
     Inspecting the call graph can help identify which types are responsible for the allocations.
 }
@@ -386,7 +388,7 @@ However, in order for all workers to know about a function or module, we have to
 using Distributed
 
 # Add additional workers then load code on the workers
-addprocs(3) 
+addprocs(3)
 @everywhere using SharedArrays
 @everywhere f(x) = 3x^2
 
