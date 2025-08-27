@@ -58,7 +58,7 @@ The Chairmarks.jl package provides convenient syntax to do just that.
 ### Chairmarks
 
 [Chairmarks.jl](https://github.com/LilithHafner/Chairmarks.jl) is the latest and greatest benchmarking suite used to make fast and accurate timing measurements.
-Chairmarks offers `@b` (for "benchmark") which can be used in exactly the same way as `@time` but will run the code multiple times and provide a minimum execution time.
+Chairmarks offers `@b` (for "benchmark") which can be used in the same way as `@time` but will run the code multiple times and provide a minimum execution time.
 Alternatively, Chairmarks also provides `@be` to run the benchmark and output all of its statistics.
 
 ```>chairmarks-example
