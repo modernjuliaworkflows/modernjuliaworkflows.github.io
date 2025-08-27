@@ -53,6 +53,7 @@ using BenchmarkTools
 Using `@time` is quick but it has flaws, because your function is only measured once.
 That measurement might have been influenced by other things going on in your computer at the same time.
 In general, running the same block of code multiple times is a safer measurement method, because it diminishes the probability of only observing an outlier.
+The Chairmarks.jl package provides convenient syntax to do just that.
 
 ### Chairmarks
 
@@ -60,25 +61,28 @@ In general, running the same block of code multiple times is a safer measurement
 Chairmarks offers `@b` (for "benchmark") which can be used in exactly the same way as `@time` but will run the code multiple times and provide a minimum execution time.
 Alternatively, Chairmarks also provides `@be` to run the benchmark and output all of its statistics.
 
-```>$-example
+```>chairmarks-example
 using Chairmarks
 @b sum_abs(v)
 @be sum_abs(v)
 ```
 
 Chairmarks supports a pipeline syntax with optional `init`, `setup`, `teardown`, and `keywords` arguments for more extensive control over the benchmarking process.
-For example, you could write the following to benchmark a matrix multiplication function for one second excluding time spent creating the arrays.
+The `sum_abs` function could also be benchmarked using pipeline syntax as below.
 
-```>setup-example
-my_matmul(A, b) = A * b;
-@btime my_matmul(A, b) setup=(
-    A = rand(1000, 1000); # use semi-colons between setup lines
-    b = rand(1000)
-);
-# Needs fixed
+```>pipeline-example-simple
+@be v sum_abs
 ```
 
-For better visualization, [PrettyChairmarks.jl](https://github.com/astrozot/PrettyChairmarks.jl) shows performance histograms.
+For a more complicated example, you could write the following to benchmark a matrix multiplication function for one second, excluding the time spent to *setup* the arrays.
+
+```>pipeline-example-complex
+my_matmul(A, b) = A * b;
+@be (A=rand(1000,1000), b=rand(1000)) my_matmul(_.A, _.b) seconds=1
+```
+
+See the [Chairmarks documentation](https://chairmarks.lilithhafner.com/) for more details on benchmarking options.
+For better visualization, [PrettyChairmarks.jl](https://github.com/astrozot/PrettyChairmarks.jl) shows performance histograms alongside the numerical results.
 
 \advanced{
 Certain computations may be [optimized away by the compiler]((https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)) before the benchmark takes place.
