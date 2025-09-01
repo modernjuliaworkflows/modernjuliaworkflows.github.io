@@ -57,9 +57,9 @@ The Chairmarks.jl package provides convenient syntax to do just that.
 
 ### Chairmarks
 
-[Chairmarks.jl](https://github.com/LilithHafner/Chairmarks.jl) is the latest and greatest benchmarking suite used to make fast and accurate timing measurements.
+[Chairmarks.jl](https://github.com/LilithHafner/Chairmarks.jl) is the latest benchmarking toolkit, designed to make fast and accurate timing measurements.
 Chairmarks offers `@b` (for "benchmark") which can be used in the same way as `@time` but will run the code multiple times and provide a minimum execution time.
-Alternatively, Chairmarks also provides `@be` to run the benchmark and output all of its statistics.
+Alternatively, Chairmarks also provides `@be` to run the same benchmark and output all of its statistics.
 
 ```>chairmarks-example
 using Chairmarks
@@ -104,8 +104,8 @@ Chairmarks.jl works fine for relatively short and simple blocks of code (microbe
 To find bottlenecks in a larger program, you should rather use a [profiler](#profiling) or the package [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl).
 It allows you to label different sections of your code, then time them and display a table of grouped by label.
 
-[BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl) was the previous standard for benchmarking in Julia. It is still widely used today.
-However, it is slower than Chairmarks and requires interpolating variables into the benchmarked expressions with `$`.
+[BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl) is the older standard for benchmarking in Julia. It is still widely used today.
+However, its default parameters run benchmarks for longer than Chairmarks, and it requires interpolating variables into the benchmarked expressions with `$`.
 
 Finally, if you know a loop is slow and you'll need to wait for it to be done, you can use [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl) or [ProgressLogging.jl](https://github.com/JuliaLogging/ProgressLogging.jl) to track its progress.
 
