@@ -85,7 +85,7 @@ See the [Chairmarks documentation](https://chairmarks.lilithhafner.com/) for mor
 For better visualization, [PrettyChairmarks.jl](https://github.com/astrozot/PrettyChairmarks.jl) shows performance histograms alongside the numerical results.
 
 \advanced{
-Certain computations may be [optimized away by the compiler]((https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)) before the benchmark takes place.
+No matter the benchmarking tool used, certain computations may be [optimized away by the compiler]((https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)) before the benchmark takes place.
 If you observe suspiciously fast performance, especially below the nanosecond scale, this is very likely to have happened.
 }
 
