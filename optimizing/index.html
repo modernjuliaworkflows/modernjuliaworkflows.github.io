@@ -134,7 +134,7 @@ Why is it bad?
 Because the type of a global variable can change outside of the body of a function, so it causes type instabilities wherever it is used.
 Those type instabilities in turn lead to more heap allocations.</p>
 <p>With this in mind, after you're done with the current page, you should read the <a href="https://docs.julialang.org/en/v1/manual/performance-tips/">official performance tips</a>: they contain some useful advice which is not repeated here for space reasons.</p>
-<h2 id="measurements" ><a href="#measurements"> Measurements</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use BenchmarkTools.jl's <code>@benchmark</code> with a setup phase to get the most accurate idea of your code's performance. Use Chairmarks.jl as a faster alternative. </p>
+<h2 id="measurements" ><a href="#measurements"> Measurements</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use Chairmarks.jl's <code>@be</code> with a setup phase to get the most accurate idea of your code's performance. </p>
 </div><p>The simplest way to measure how fast a piece of code runs is to use the <code>@time</code> macro, which returns the result of the code and prints the measured runtime and allocations.
 Because code needs to be compiled before it can be run, you should first run a function without timing it so it can be compiled, and then time it:</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> sum_abs(vec) = sum(abs(x) for x in vec);
@@ -144,49 +144,112 @@ Because code needs to be compiled before it can be run, you should first run a f
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Inaccurate, note the &gt;99% compilation time
-0.024939 seconds (70.37 k allocations: 3.389 MiB, 99.93% compilation time)
+0.025687 seconds (70.56 k allocations: 3.407 MiB, 99.94% compilation time)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Accurate
 0.000004 seconds (1 allocation: 16 bytes)
 </code></pre>
 <p>Using <code>@time</code> is quick but it has flaws, because your function is only measured once.
 That measurement might have been influenced by other things going on in your computer at the same time.
-In general, running the same block of code multiple times is a safer measurement method, because it diminishes the probability of only observing an outlier.</p>
-<h3 id="benchmarktools" ><a href="#benchmarktools"> BenchmarkTools</a></h3><p><a href="https://github.com/JuliaCI/BenchmarkTools.jl">BenchmarkTools.jl</a> is the most popular package for repeated measurements on function executions.
-Similarly to <code>@time</code>, BenchmarkTools offers <code>@btime</code> which can be used in exactly the same way but will run the code multiple times and provide an average.
-Additionally, by using <code>$</code> to <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Interpolating-values-into-benchmark-expressions">interpolate external values</a>, you remove the overhead caused by global variables.</p>
-<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
+In general, running the same block of code multiple times is a safer measurement method, because it diminishes the probability of only observing an outlier.
+The Chairmarks.jl package provides convenient syntax to do just that.</p>
+<h3 id="chairmarks" ><a href="#chairmarks"> Chairmarks</a></h3><p><a href="https://github.com/LilithHafner/Chairmarks.jl">Chairmarks.jl</a> is the latest benchmarking toolkit, designed to make fast and accurate timing measurements.
+Chairmarks offers <code>@b</code> (for "benchmark") which can be used in the same way as <code>@time</code> but will run the code multiple times and provide a minimum execution time.
+Alternatively, Chairmarks also provides <code>@be</code> to run the same benchmark and output all of its statistics.</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Chairmarks
+ERROR: ArgumentError: Package Chairmarks not found in current path.
+- Run `import Pkg; Pkg.add(&quot;Chairmarks&quot;)` to install the Chairmarks package.
+Stacktrace:
+  [1] macro expansion
+    @ ./loading.jl:2296 [inlined]
+  [2] macro expansion
+    @ ./lock.jl:273 [inlined]
+  [3] __require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:2271
+  [4] #invoke_in_world#3
+    @ ./essentials.jl:1089 [inlined]
+  [5] invoke_in_world
+    @ ./essentials.jl:1086 [inlined]
+  [6] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:2260
+  [7] eval
+    @ ./boot.jl:430 [inlined]
+  [8] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)
+    @ Base ./loading.jl:2734
+  [9] include_string
+    @ ./loading.jl:2718 [inlined]
+ [10] #69
+    @ ~/.julia/packages/Xranklin/6wt1L/src/context/code/eval.jl:91 [inlined]
+ [11] (::IOCapture.var&quot;#5#9&quot;{DataType, Xranklin.var&quot;#69#70&quot;{Module, String}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()
+    @ IOCapture ~/.julia/packages/IOCapture/Y5rEA/src/IOCapture.jl:170
+ [12] with_logstate(f::IOCapture.var&quot;#5#9&quot;{DataType, Xranklin.var&quot;#69#70&quot;{Module, String}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}}, logstate::Base.CoreLogging.LogState)
+    @ Base.CoreLogging ./logging/logging.jl:524
+ [13] with_logger(f::Function, logger::Base.CoreLogging.ConsoleLogger)
+    @ Base.CoreLogging ./logging/logging.jl:635
+ [14] capture(f::Xranklin.var&quot;#69#70&quot;{Module, String}; rethrow::Type, color::Bool, passthrough::Bool, capture_buffer::IOBuffer, io_context::Vector{Any})
+    @ IOCapture ~/.julia/packages/IOCapture/Y5rEA/src/IOCapture.jl:167
+ [15] _attempt_eval
+    @ ~/.julia/packages/Xranklin/6wt1L/src/context/code/eval.jl:90 [inlined]
+ [16] eval_nb_cell(mdl::Module, code::String; cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/context/code/eval.jl:73
+ [17] eval_nb_cell
+    @ ~/.julia/packages/Xranklin/6wt1L/src/context/code/eval.jl:45 [inlined]
+ [18] _eval_code_cell(mdl::Module, code::String, cell_name::String, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/context/code/notebook_code.jl:169
+ [19] eval_code_cell!(lc::Xranklin.LocalContext, cell_code::SubString{String}, cell_name::String; imgdir_html::String, imgdir_latex::String, force::Bool, indep::Bool, repl_mode::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/context/code/notebook_code.jl:126
+ [20] eval_code_cell!
+    @ ~/.julia/packages/Xranklin/6wt1L/src/context/code/notebook_code.jl:21 [inlined]
+ [21] _eval_repl_code(io::IOBuffer, ci::Xranklin.CodeInfo, lc::Xranklin.LocalContext; tohtml::Bool)
+    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/convert/markdown/rules/code.jl:388
+ [22] _eval_repl_code
+    @ ~/.julia/packages/Xranklin/6wt1L/src/convert/markdown/rules/code.jl:352 [inlined]
+ [23] html_repl_code(ci::Xranklin.CodeInfo, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/convert/markdown/rules/code.jl:332
+ [24] html_code_block(b::FranklinParser.Block, lc::Xranklin.LocalContext)
+    @ Xranklin ~/.julia/packages/Xranklin/6wt1L/src/convert/markdown/rules/code.jl:257
 
-<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs(v);
-99.264 ns (1 allocation: 16 bytes)
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @b sum_abs(v)
+ERROR: UndefVarError: `@b` not defined in `Main.__FRANKLIN_1579807`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
 
-<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs($v);
-60.468 ns (0 allocations: 0 bytes)
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @be sum_abs(v)
+ERROR: UndefVarError: `@be` not defined in `Main.__FRANKLIN_1579807`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
 </code></pre>
-<p>In more complex settings, you might need to construct variables in a <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases">setup phase</a> that is run before each sample.
-This can be useful to generate a new random input every time, instead of always using the same input.</p>
+<p>Chairmarks supports a pipeline syntax with optional <code>init</code>, <code>setup</code>, <code>teardown</code>, and <code>keywords</code> arguments for more extensive control over the benchmarking process.
+The <code>sum_abs</code> function could also be benchmarked using pipeline syntax as below.</p>
+<pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> @be v sum_abs
+ERROR: UndefVarError: `@be` not defined in `Main.__FRANKLIN_1579807`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
+</code></pre>
+<p>For a more complicated example, you could write the following to benchmark a matrix multiplication function for one second, excluding the time spent to <em>setup</em> the arrays.</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> my_matmul(A, b) = A * b;
 
-<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime my_matmul(A, b) setup=(
-    A = rand(1000, 1000); # use semi-colons between setup lines
-    b = rand(1000)
-);
-144.399 μs (3 allocations: 7.88 KiB)
+<span class="sgr32"><span class="sgr1">julia&gt;</span></span> @be (A=rand(1000,1000), b=rand(1000)) my_matmul(_.A, _.b) seconds=1
+ERROR: UndefVarError: `@be` not defined in `Main.__FRANKLIN_1579807`
+Suggestion: check for spelling errors or missing imports.
+Stacktrace:
 </code></pre>
-<p>For better visualization, the <code>@benchmark</code> macro shows performance histograms:</p>
-<div class="advanced"><p><strong>Advanced</strong>: Certain computations may be <a href="(https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)">optimized away by the compiler</a> before the benchmark takes place.
+<p>See the <a href="https://chairmarks.lilithhafner.com/">Chairmarks documentation</a> for more details on benchmarking options.
+For better visualization, <a href="https://github.com/astrozot/PrettyChairmarks.jl">PrettyChairmarks.jl</a> shows performance histograms alongside the numerical results.</p>
+<div class="advanced"><p><strong>Advanced</strong>: No matter the benchmarking tool used, certain computations may be <a href="(https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)">optimized away by the compiler</a> before the benchmark takes place.
  If you observe suspiciously fast performance, especially below the nanosecond scale, this is very likely to have happened.</p>
-</div><p><a href="https://github.com/LilithHafner/Chairmarks.jl">Chairmarks.jl</a> offers an alternative to BenchmarkTools.jl, promising faster benchmarking while attempting to maintain high accuracy and using an alternative syntax based on pipelines.</p>
-<h3 id="benchmark_suites" ><a href="#benchmark_suites"> Benchmark suites</a></h3><p>While we previously discussed the importance of documenting breaking changes in packages using <a href="/sharing/index.md#versions-and-registration">semantic versioning</a>, regressions in performance can also be vital to track.
+</div><h3 id="benchmark_suites" ><a href="#benchmark_suites"> Benchmark suites</a></h3><p>While we previously discussed the importance of documenting breaking changes in packages using <a href="/sharing/index.md#versions-and-registration">semantic versioning</a>, regressions in performance can also be vital to track.
 Several packages exist for this purpose:</p>
 <ul>
 <li><a href="https://github.com/JuliaCI/PkgBenchmark.jl">PkgBenchmark.jl</a> and its unmaintained but functional CI wrapper <a href="https://github.com/tkf/BenchmarkCI.jl">BenchmarkCI.jl</a></li>
 <li><a href="https://github.com/MilesCranmer/AirspeedVelocity.jl">AirSpeedVelocity.jl</a></li>
 <li><a href="https://github.com/awadell1/PkgJogger.jl">PkgJogger.jl</a></li>
 </ul>
-<h3 id="other_tools" ><a href="#other_tools"> Other tools</a></h3><p>BenchmarkTools.jl works fine for relatively short and simple blocks of code (microbenchmarking).
+<h3 id="other_tools" ><a href="#other_tools"> Other tools</a></h3><p>Chairmarks.jl works fine for relatively short and simple blocks of code (microbenchmarking).
 To find bottlenecks in a larger program, you should rather use a <a href="#profiling">profiler</a> or the package <a href="https://github.com/KristofferC/TimerOutputs.jl">TimerOutputs.jl</a>.
 It allows you to label different sections of your code, then time them and display a table of grouped by label.</p>
+<p><a href="https://github.com/JuliaCI/BenchmarkTools.jl">BenchmarkTools.jl</a> is the older standard for benchmarking in Julia. It is still widely used today.
+However, its default parameters run benchmarks for longer than Chairmarks, and it requires interpolating variables into the benchmarked expressions with <code>$</code>.</p>
 <p>Finally, if you know a loop is slow and you'll need to wait for it to be done, you can use <a href="https://github.com/timholy/ProgressMeter.jl">ProgressMeter.jl</a> or <a href="https://github.com/JuliaLogging/ProgressLogging.jl">ProgressLogging.jl</a> to track its progress.</p>
 <h2 id="profiling" ><a href="#profiling"> Profiling</a></h2><div class="tldr"><p><strong>TLDR</strong>: Profiling can identify performance bottlenecks at function level, and graphical tools such as ProfileView.jl are the best way to use it. </p>
 </div><h3 id="sampling" ><a href="#sampling"> Sampling</a></h3><p>Whereas a benchmark measures the overall performance of some code, a profiler breaks it down function by function to identify bottlenecks.
@@ -203,7 +266,7 @@ Here we only demonstrate the former:</p>
 <div class="vscode"><p><strong>VSCode</strong>: Calling <code>@profview do_work(some_input)</code> in the integrated Julia REPL will open an interactive flame graph, similar to ProfileView.jl but without requiring a separate package.</p>
 </div><p>To integrate profile visualisations into environments like Jupyter and Pluto, use <a href="https://github.com/kimikage/ProfileSVG.jl">ProfileSVG.jl</a> or <a href="https://github.com/pfitzseb/ProfileCanvas.jl">ProfileCanvas.jl</a>, whose outputs can be embedded into a notebook.</p>
 <p>No matter which tool you use, if your code is too fast to collect samples, you may need to run it multiple times in a loop.</p>
-<div class="advanced"><p><strong>Advanced</strong>: To visualize memory allocation profiles, use PProf.jl or VSCode's <code>@profview_allocs</code>. 
+<div class="advanced"><p><strong>Advanced</strong>: To visualize memory allocation profiles, use PProf.jl or VSCode's <code>@profview_allocs</code>.
  A known issue with the allocation profiler is that it is not able to determine the type of every object allocated, instead <code>Profile.Allocs.UnknownType</code> is shown instead.
  Inspecting the call graph can help identify which types are responsible for the allocations.</p>
 </div><h3 id="external_profilers" ><a href="#external_profilers"> External profilers</a></h3><p>Apart from the built-in <code>Profile</code> standard library, there are a few external profilers that you can use including <a href="https://www.intel.com/content/www/us/en/developer/tools/oneapi/vtune-profiler.html">Intel VTune</a> (in combination with <a href="https://github.com/JuliaPerf/IntelITT.jl">IntelITT.jl</a>), <a href="https://developer.nvidia.com/nsight-systems">NVIDIA Nsight Systems</a> (in combination with <a href="https://github.com/JuliaGPU/NVTX.jl">NVTX.jl</a>), and <a href="https://docs.julialang.org/en/v1/devdocs/external_profilers/#Tracy-Profiler">Tracy</a>.</p>
@@ -393,7 +456,7 @@ However, in order for all workers to know about a function or module, we have to
 <pre><code class="julia">using Distributed
 
 # Add additional workers then load code on the workers
-addprocs(3) 
+addprocs(3)
 @everywhere using SharedArrays
 @everywhere f(x) = 3x^2
 
@@ -450,7 +513,7 @@ sx = SA[1, 2, 3] # SA constructs an SArray
 Iteration and memoization utilities are also provided by packages like <a href="https://github.com/JuliaCollections/IterTools.jl">IterTools.jl</a> and <a href="https://github.com/JuliaCollections/Memoize.jl">Memoize.jl</a>.</p>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: June 29, 2025. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 09, 2025. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
