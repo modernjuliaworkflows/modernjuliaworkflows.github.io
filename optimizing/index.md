@@ -144,6 +144,8 @@ using ProfileView
 
 To integrate profile visualisations into environments like Jupyter and Pluto, use [ProfileSVG.jl](https://github.com/kimikage/ProfileSVG.jl) or [ProfileCanvas.jl](https://github.com/pfitzseb/ProfileCanvas.jl), whose outputs can be embedded into a notebook.
 
+For sharing profiles with others (e.g., on Slack or Discourse), [StatProfilerHTML.jl](https://github.com/tkluck/StatProfilerHTML.jl) is particularly useful as it generates self-contained HTML files that can be zipped and shared, allowing others to inspect the profiling results interactively without needing Julia installed.
+
 No matter which tool you use, if your code is too fast to collect samples, you may need to run it multiple times in a loop.
 
 \advanced{
