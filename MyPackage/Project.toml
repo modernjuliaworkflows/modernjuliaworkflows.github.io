@@ -1,4 +1,4 @@
 name = "MyPackage"
-uuid = "ad28b055-8875-430f-b98d-a6bba6a25046"
+uuid = "f2d486fb-21c6-4331-9cb9-99f15a99241b"
 authors = ["myusername <myusername@modernjuliaworkflows.github>"]
 version = "0.1.0"
