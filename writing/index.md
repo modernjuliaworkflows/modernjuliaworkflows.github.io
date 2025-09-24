@@ -529,6 +529,7 @@ versioninfo()
 
 The following packages can give you even more interactive power:
 
+* [About.jl](https://github.com/tecosaur/About.jl) to look for detailed information about a function, type, value, or something else entirely.
 * [InteractiveCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl) to look for a precise implementation of a function.
 * [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl) to navigate through stacktraces.
 * [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl) to extend InteractiveUtils.jl
