@@ -137,7 +137,7 @@ The following code gives you a basic file structure to start with:</p>
 <span class="sgr32"><span class="sgr1">  No Changes</span></span> to `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/Project.toml`
 <span class="sgr32"><span class="sgr1">  No Changes</span></span> to `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/Manifest.toml`
 Precompiling project...
-    241.1 ms  ✓ MyAwesomePackage
+    239.6 ms  ✓ MyAwesomePackage
   1 dependency successfully precompiled in 0 seconds
 <span class="sgr36"><span class="sgr1">        Info</span></span> We haven&#39;t cleaned this depot up for a bit, running Pkg.gc()...
 <span class="sgr32"><span class="sgr1">      Active</span></span> manifest files: 4 found
@@ -181,7 +181,7 @@ Test Passed
     @test_throws MethodError sqrt(&quot;abc&quot;)
 end;
 <span class="sgr1">Test Summary:  | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
-Invalid inputs | <span class="sgr32">   2  </span><span class="sgr36">    2  </span>0.2s
+Invalid inputs | <span class="sgr32">   2  </span><span class="sgr36">    2  </span>0.3s
 </code></pre>
 <p>Such tests belong in <code>test/runtests.jl</code>, and they are executed with the <code>]test</code> command (in the REPL's Pkg mode).
 Unit testing may seem rather naive, or even superfluous, but as your code grows more complex, it becomes easier to break something without noticing.
@@ -233,10 +233,10 @@ You can either use it in report mode (with a nice <a href="https://www.julia-vsc
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using JET, MyAwesomePackage
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> JET.report_package(MyAwesomePackage)
-[toplevel-info] virtualized the context of Main (took 0.02 sec)
+[toplevel-info] virtualized the context of Main (took 0.021 sec)
 [toplevel-info] entered into /home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl
-[toplevel-info]  exited from /home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl (took 0.016 sec)
-[toplevel-info] analyzed 0 top-level definitions (took 0.004 sec)
+[toplevel-info]  exited from /home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl (took 0.017 sec)
+[toplevel-info] analyzed 0 top-level definitions (took 0.006 sec)
 JET.JETToplevelResult{JET.JETAnalyzer{JET.BasicPass}, Base.Pairs{Symbol, Any, NTuple{4, Symbol}, @NamedTuple{concretization_patterns::Vector{Symbol}, analyze_from_definitions::Bool, toplevel_logger::IOContext{Base.PipeEndpoint}, ignore_missing_comparison::Bool}}}(JET.JETAnalyzer{JET.BasicPass}(JET.AnalyzerState(0x00000000000068f0, Core.Compiler.InferenceResult[], Core.Compiler.InferenceParams(3, 4, 8, 32, 3, true, true, false, true, false), Core.Compiler.OptimizationParams(true, 100, 1000, 250, 20, 32, true, false, false), IdDict{Core.Compiler.InferenceResult, JET.AnalysisResult}(), JET.InferenceErrorReport[], nothing, Bool[], JET.__toplevelmod__, Dict{Int64, Symbol}(), nothing, 0), JET.AnalysisCache(IdDict{Core.MethodInstance, Core.CodeInstance}()), JET.BasicPass(), Core.Compiler.CachedMethodTable{Core.Compiler.OverlayMethodTable}(0 entries), JET.JETAnalyzerConfig(true)), JET.VirtualProcessResult(Set([&quot;/home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl&quot;]), String[], Set(Module[Main.var&quot;##JETVirtualModule#232&quot;, Main.var&quot;##JETVirtualModule#232&quot;.MyAwesomePackage]), JET.ToplevelErrorReport[], JET.InferenceErrorReport[], Type[], Main =&gt; Main.var&quot;##JETVirtualModule#232&quot;), &quot;JETAnalyzer: \&quot;/home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl\&quot;&quot;, Base.Pairs{Symbol, Any, NTuple{4, Symbol}, @NamedTuple{concretization_patterns::Vector{Symbol}, analyze_from_definitions::Bool, toplevel_logger::IOContext{Base.PipeEndpoint}, ignore_missing_comparison::Bool}}(:concretization_patterns =&gt; [:x_], :analyze_from_definitions =&gt; true, :toplevel_logger =&gt; IOContext(Base.PipeEndpoint(RawFD(-1) closed, 0 bytes waiting)), :ignore_missing_comparison =&gt; true))
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> JET.test_package(MyAwesomePackage)
@@ -335,7 +335,7 @@ Working together on a software project has its own set of challenges, which are 
 Of course, collaboration goes both ways: if you find a Julia package you really like, you are more than welcome to <a href="https://julialang.org/contribute/">contribute</a> as well, for example by opening issues or submitting pull requests.</p>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 22, 2025. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 24, 2025. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
