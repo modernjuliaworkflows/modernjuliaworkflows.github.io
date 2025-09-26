@@ -98,6 +98,8 @@ Several packages exist for this purpose:
 - [AirSpeedVelocity.jl](https://github.com/MilesCranmer/AirspeedVelocity.jl)
 - [PkgJogger.jl](https://github.com/awadell1/PkgJogger.jl)
 
+For tracking time-to-first-X (TTFX) performance across different Julia versions and package updates, [Julia-TTFX-Snippets](https://github.com/tecosaur/Julia-TTFX-Snippets) provides a collection of TTFX workloads specifically designed for longitudinal performance testing of Julia packages.
+
 ### Other tools
 
 Chairmarks.jl works fine for relatively short and simple blocks of code (microbenchmarking).
@@ -106,6 +108,8 @@ It allows you to label different sections of your code, then time them and displ
 
 [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl) is the older standard for benchmarking in Julia. It is still widely used today.
 However, its default parameters run benchmarks for longer than Chairmarks, and it requires interpolating variables into the benchmarked expressions with `$`.
+
+For command-line benchmarking outside of Julia, [hyperfine](https://github.com/sharkdp/hyperfine) is an excellent tool for timing the execution of entire Julia scripts or comparing different implementations at the process level.
 
 Finally, if you know a loop is slow and you'll need to wait for it to be done, you can use [ProgressMeter.jl](https://github.com/timholy/ProgressMeter.jl) or [ProgressLogging.jl](https://github.com/JuliaLogging/ProgressLogging.jl) to track its progress.
 
@@ -282,6 +286,10 @@ Note that every method that is called will be compiled, no matter how far down t
 To see if the intended calls were compiled correctly or diagnose other problems related to precompilation, use [SnoopCompile.jl](https://github.com/timholy/SnoopCompile.jl).
 This is especially important for writers of registered Julia packages, as it allows you to diagnose recompilation that happens due to invalidation.
 
+For alternative approaches to precompilation, [PrecompileSignatures.jl](https://github.com/rikhuijzer/PrecompileSignatures.jl) can generate precompile directives by reading method signatures, which can be especially useful when you want to ensure specific method combinations are precompiled.
+
+For managing precompilation after Julia version updates, [PrecompileAfterUpdate.jl](https://github.com/roflmaostc/PrecompileAfterUpdate.jl) can precompile your recent environments automatically after a Julia version update, saving you time when switching between Julia versions.
+
 ### Package compilation
 
 To reduce the time that packages take to load, you can use [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl) to generate a custom version of Julia, called a sysimage, with its own standard library.
@@ -321,6 +329,9 @@ An alternative way to compile a shareable app or library that doesn't need to co
 The biggest tradeoff of not compiling a sysimage, is that Julia's garbage collector is no longer included, so all heap allocations must be managed manually, and all code compiled _must_ be type-stable.
 To get around this limitation, you can use static equivalents of dynamic types, such as a `StaticArray` ([StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl)) instead of an `Array` or a `StaticString` (StaticTools.jl), use `malloc` and `free` from StaticTools.jl directly, or use arena allocators with [Bumper.jl](https://github.com/MasonProtter/Bumper.jl).
 The README of StaticCompiler.jl contains a more [detailed guide](https://github.com/tshort/StaticCompiler.jl?tab=readme-ov-file#guide-for-package-authors) on how to prepare code to be compiled.
+
+For more advanced compilation workflows, [JuliaC.jl](https://github.com/JuliaLang/JuliaC.jl) provides tools for compiling and bundling Julia binaries with trimmed dependencies, particularly useful for creating minimal deployments.
+[BaseCompiler.jl](https://github.com/JuliaLang/BaseCompiler.jl) offers a placeholder implementation of Julia's compiler standard library with native package switching capabilities.
 
 }
 
