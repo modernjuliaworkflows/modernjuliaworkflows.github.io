@@ -259,6 +259,12 @@ julia> using Pluto
 julia> Pluto.run()
 ```
 
+\advanced{
+
+For enhanced notebook-style development outside of the traditional notebook interfaces, [CodeCells.jl](https://github.com/MasonProtter/CodeCells.jl) provides code cell functionality that can be integrated into other development workflows, bridging the gap between notebook-style development and traditional script editing.
+
+}
+
 ## Markdown
 
 \tldr{Markdown is also a good fit for literate programming, and Quarto is an alternative to notebooks.}
@@ -533,6 +539,8 @@ The following packages can give you even more interactive power:
 * [InteractiveCodeSearch.jl](https://github.com/tkf/InteractiveCodeSearch.jl) to look for a precise implementation of a function.
 * [InteractiveErrors.jl](https://github.com/MichaelHatherly/InteractiveErrors.jl) to navigate through stacktraces.
 * [CodeTracking.jl](https://github.com/timholy/CodeTracking.jl) to extend InteractiveUtils.jl
+* [ShowCode.jl](https://github.com/tkf/ShowCode.jl) for exploring and visualizing Julia code, helping you understand the structure and flow of complex codebases.
+* [PrintTypeTree.jl](https://github.com/qiaojunfeng/PrintTypeTree.jl) to print Julia type hierarchy trees, which is useful for understanding type relationships and debugging type-related issues.
 
 }
 
