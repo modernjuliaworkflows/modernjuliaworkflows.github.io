@@ -137,7 +137,7 @@ The following code gives you a basic file structure to start with:</p>
 <span class="sgr32"><span class="sgr1">  No Changes</span></span> to `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/Project.toml`
 <span class="sgr32"><span class="sgr1">  No Changes</span></span> to `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/Manifest.toml`
 Precompiling project...
-    239.6 ms  ✓ MyAwesomePackage
+    257.1 ms  ✓ MyAwesomePackage
   1 dependency successfully precompiled in 0 seconds
 <span class="sgr36"><span class="sgr1">        Info</span></span> We haven&#39;t cleaned this depot up for a bit, running Pkg.gc()...
 <span class="sgr32"><span class="sgr1">      Active</span></span> manifest files: 4 found
@@ -181,7 +181,7 @@ Test Passed
     @test_throws MethodError sqrt(&quot;abc&quot;)
 end;
 <span class="sgr1">Test Summary:  | <span class="sgr32">Pass  </span><span class="sgr36">Total  </span>Time</span>
-Invalid inputs | <span class="sgr32">   2  </span><span class="sgr36">    2  </span>0.3s
+Invalid inputs | <span class="sgr32">   2  </span><span class="sgr36">    2  </span>0.2s
 </code></pre>
 <p>Such tests belong in <code>test/runtests.jl</code>, and they are executed with the <code>]test</code> command (in the REPL's Pkg mode).
 Unit testing may seem rather naive, or even superfluous, but as your code grows more complex, it becomes easier to break something without noticing.
@@ -205,7 +205,8 @@ For interactive testing work, use <a href="https://github.com/JuliaTesting/TestE
 It is a good indicator of the exhaustiveness of your test suite, albeit not sufficient.
 <a href="https://about.codecov.io/">Codecov</a> is a website that provides easy visualization of this coverage, and many Julia packages use it.
 It is available as a PkgTemplates.jl plugin, but you have to perform an <a href="https://docs.codecov.com/docs/adding-the-codecov-token">additional configuration step</a> on the repo for Codecov to communicate with it.</p>
-<h2 id="style" ><a href="#style"> Style</a></h2><p>To make your code easy to read, it is essential to follow a consistent set of guidelines.
+<div class="advanced"><p><strong>Advanced</strong>: For local coverage analysis, <a href="https://github.com/JuliaCI/LocalCoverage.jl">LocalCoverage.jl</a> provides trivial functions for working with coverage locally without requiring external services.</p>
+</div><h2 id="style" ><a href="#style"> Style</a></h2><p>To make your code easy to read, it is essential to follow a consistent set of guidelines.
 The official <a href="https://docs.julialang.org/en/v1/manual/style-guide/">style guide</a> is very short, so most people use third party style guides like <a href="https://github.com/JuliaDiff/BlueStyle">BlueStyle</a> or <a href="https://github.com/SciML/SciMLStyle">SciMLStyle</a>.</p>
 <p><a href="https://github.com/domluna/JuliaFormatter.jl">JuliaFormatter.jl</a> is an automated formatter for Julia files which can help you enforce the style guide of your choice.
 Just add a file <code>.JuliaFormatter.toml</code> at the root of your repository, containing a single line like</p>
@@ -233,10 +234,10 @@ You can either use it in report mode (with a nice <a href="https://www.julia-vsc
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using JET, MyAwesomePackage
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> JET.report_package(MyAwesomePackage)
-[toplevel-info] virtualized the context of Main (took 0.021 sec)
+[toplevel-info] virtualized the context of Main (took 0.02 sec)
 [toplevel-info] entered into /home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl
 [toplevel-info]  exited from /home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl (took 0.017 sec)
-[toplevel-info] analyzed 0 top-level definitions (took 0.006 sec)
+[toplevel-info] analyzed 0 top-level definitions (took 0.004 sec)
 JET.JETToplevelResult{JET.JETAnalyzer{JET.BasicPass}, Base.Pairs{Symbol, Any, NTuple{4, Symbol}, @NamedTuple{concretization_patterns::Vector{Symbol}, analyze_from_definitions::Bool, toplevel_logger::IOContext{Base.PipeEndpoint}, ignore_missing_comparison::Bool}}}(JET.JETAnalyzer{JET.BasicPass}(JET.AnalyzerState(0x00000000000068f0, Core.Compiler.InferenceResult[], Core.Compiler.InferenceParams(3, 4, 8, 32, 3, true, true, false, true, false), Core.Compiler.OptimizationParams(true, 100, 1000, 250, 20, 32, true, false, false), IdDict{Core.Compiler.InferenceResult, JET.AnalysisResult}(), JET.InferenceErrorReport[], nothing, Bool[], JET.__toplevelmod__, Dict{Int64, Symbol}(), nothing, 0), JET.AnalysisCache(IdDict{Core.MethodInstance, Core.CodeInstance}()), JET.BasicPass(), Core.Compiler.CachedMethodTable{Core.Compiler.OverlayMethodTable}(0 entries), JET.JETAnalyzerConfig(true)), JET.VirtualProcessResult(Set([&quot;/home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl&quot;]), String[], Set(Module[Main.var&quot;##JETVirtualModule#232&quot;, Main.var&quot;##JETVirtualModule#232&quot;.MyAwesomePackage]), JET.ToplevelErrorReport[], JET.InferenceErrorReport[], Type[], Main =&gt; Main.var&quot;##JETVirtualModule#232&quot;), &quot;JETAnalyzer: \&quot;/home/runner/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/__site/MyAwesomePackage/src/MyAwesomePackage.jl\&quot;&quot;, Base.Pairs{Symbol, Any, NTuple{4, Symbol}, @NamedTuple{concretization_patterns::Vector{Symbol}, analyze_from_definitions::Bool, toplevel_logger::IOContext{Base.PipeEndpoint}, ignore_missing_comparison::Bool}}(:concretization_patterns =&gt; [:x_], :analyze_from_definitions =&gt; true, :toplevel_logger =&gt; IOContext(Base.PipeEndpoint(RawFD(-1) closed, 0 bytes waiting)), :ignore_missing_comparison =&gt; true))
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> JET.test_package(MyAwesomePackage)
@@ -245,6 +246,8 @@ Test Passed
 <p>Note that both Aqua.jl and JET.jl might pick up false positives: refer to their respective documentations for ways to make them less sensitive.</p>
 <p>Finally, <a href="https://github.com/ericphanson/ExplicitImports.jl">ExplicitImports.jl</a> can help you get rid of generic imports to specify where each of the names in your package comes from.
 This is a good practice and makes your code more robust to name conflicts between dependencies.</p>
+<div class="advanced"><p><strong>Advanced</strong>: For additional code quality tools, consider <a href="https://github.com/RelationalAI-oss/ReLint.jl">ReLint.jl</a>, which provides another linter for Julia code with different rules and checks compared to JET.jl.</p>
+</div><p>You can also use <a href="https://github.com/pre-commit/pre-commit">pre-commit</a> to set up hooks that automatically run code quality checks before each commit, ensuring consistent code standards across your project.</p>
 <h2 id="documentation" ><a href="#documentation"> Documentation</a></h2><p>Even if your code does everything it is supposed to, it will be useless to others (and pretty soon to yourself) without proper documentation.
 Adding <a href="https://docs.julialang.org/en/v1/manual/documentation/">docstrings</a> everywhere needs to become a second nature.
 This way, readers and users of your code can query them through the REPL help mode.
@@ -286,6 +289,7 @@ The only thing left to do is to <a href="https://documenter.juliadocs.org/stable
 Whether it is for package documentation or to write papers and books, you might want to interleave code with texts, formulas, images and so on.
 In addition to the <a href="https://github.com/fonsp/Pluto.jl">Pluto.jl</a> and <a href="https://jupyter.org/">Jupyter</a> notebooks, take a look at <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a> to enrich your code with comments and translate it to various formats.
 <a href="https://github.com/JuliaBooks/Books.jl">Books.jl</a> is relevant to draft long documents.</p>
+<p>For enhanced Pluto.jl workflows, <a href="https://github.com/mossr/PlutoPapers.jl">PlutoPapers.jl</a> provides interactive and LaTeX-styled papers directly within Pluto notebooks, bridging the gap between computational documents and publication-ready papers.</p>
 <p><a href="https://quarto.org/">Quarto</a> is an open-source scientific and technical publishing system that supports Python, R and Julia.
 Quarto can render markdown files (<code>.md</code>), Quarto markdown files (<code>.qmd</code>), and Jupyter Notebooks (<code>.ipynb</code>) into documents (Word, PDF, presentations), web pages, blog posts, books, <a href="https://quarto.org/docs/output-formats/all-formats.html">and more</a>.
 Additionally, Quarto makes it easy to share or <a href="https://quarto.org/docs/publishing/">publish</a> rendered content to Github Pages, Netlify, Confluence, Hugging Face Spaces, among others.
@@ -335,7 +339,7 @@ Working together on a software project has its own set of challenges, which are 
 Of course, collaboration goes both ways: if you find a Julia package you really like, you are more than welcome to <a href="https://julialang.org/contribute/">contribute</a> as well, for example by opening issues or submitting pull requests.</p>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 24, 2025. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: October 08, 2025. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 

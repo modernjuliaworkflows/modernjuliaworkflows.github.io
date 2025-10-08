@@ -204,7 +204,7 @@ Pkg.jl allows you to:</p>
 <span class="sgr32"><span class="sgr1">    Updating</span></span> `~/work/modernjuliaworkflows.github.io/modernjuliaworkflows.github.io/writing/Manifest.toml`
   <span class="sgr90">[7876af07] </span><span class="sgr92">+ Example v0.5.5</span>
 Precompiling project...
-    262.2 ms  ✓ Example
+    237.0 ms  ✓ Example
   1 dependency successfully precompiled in 0 seconds
 </code></pre>
 <pre><code class="julia-repl"><span class="sgr34"><span class="sgr1">(writing) pkg&gt;</span></span> status
@@ -283,7 +283,8 @@ Unlike Jupyter notebooks, Pluto notebooks are</p>
 <pre><code class="julia-repl">julia&gt; using Pluto
 
 julia&gt; Pluto.run()</code></pre>
-<h2 id="markdown" ><a href="#markdown"> Markdown</a></h2><div class="tldr"><p><strong>TLDR</strong>: Markdown is also a good fit for literate programming, and Quarto is an alternative to notebooks. </p>
+<div class="advanced"><p><strong>Advanced</strong>: For enhanced notebook-style development outside of the traditional notebook interfaces, <a href="https://github.com/MasonProtter/CodeCells.jl">CodeCells.jl</a> provides code cell functionality that can be integrated into other development workflows, bridging the gap between notebook-style development and traditional script editing.</p>
+</div><h2 id="markdown" ><a href="#markdown"> Markdown</a></h2><div class="tldr"><p><strong>TLDR</strong>: Markdown is also a good fit for literate programming, and Quarto is an alternative to notebooks. </p>
 </div><p><a href="https://www.markdownguide.org/">Markdown</a> is a markup language used to add formatting elements to plaintext text files.</p>
 <h3 id="plain_text_markdown" ><a href="#plain_text_markdown"> Plain Text Markdown</a></h3><p>Plain text markdown files, which have the <code>.md</code> extension, are not used for interactive programming, meaning one cannot run code written in the file.
 As a result, plain text markdown files are usually rendered into a final product by other software.</p>
@@ -467,9 +468,9 @@ Build Info:
   Official https://julialang.org/ release
 Platform Info:
   OS: Linux (x86_64-linux-gnu)
-  CPU: 4 × Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz
+  CPU: 4 × AMD EPYC 7763 64-Core Processor
   WORD_SIZE: 64
-  LLVM: libLLVM-16.0.6 (ORCJIT, icelake-server)
+  LLVM: libLLVM-16.0.6 (ORCJIT, znver3)
 Threads: 1 default, 0 interactive, 1 GC (on 4 virtual cores)
 Environment:
   JULIA_PRE = 
@@ -648,7 +649,7 @@ About to run: (^)(2, 64)
  by typing their name into the same <code>+</code> menu but with a <code>-</code> sign in front e.g. <code>-MyModule</code>.</p>
 </div>
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 24, 2025. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: October 08, 2025. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 

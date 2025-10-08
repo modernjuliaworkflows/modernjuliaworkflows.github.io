@@ -144,10 +144,10 @@ Because code needs to be compiled before it can be run, you should first run a f
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Inaccurate, note the &gt;99% compilation time
-0.027092 seconds (70.56 k allocations: 3.406 MiB, 99.91% compilation time)
+0.025798 seconds (70.56 k allocations: 3.406 MiB, 99.94% compilation time)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Accurate
-0.000007 seconds (1 allocation: 16 bytes)
+0.000006 seconds (1 allocation: 16 bytes)
 </code></pre>
 <p>Using <code>@time</code> is quick but it has flaws, because your function is only measured once.
 That measurement might have been influenced by other things going on in your computer at the same time.
@@ -245,11 +245,13 @@ Several packages exist for this purpose:</p>
 <li><a href="https://github.com/MilesCranmer/AirspeedVelocity.jl">AirSpeedVelocity.jl</a></li>
 <li><a href="https://github.com/awadell1/PkgJogger.jl">PkgJogger.jl</a></li>
 </ul>
+<p>For tracking time-to-first-X (TTFX) performance across different Julia versions and package updates, <a href="https://github.com/tecosaur/Julia-TTFX-Snippets">Julia-TTFX-Snippets</a> provides a collection of TTFX workloads specifically designed for longitudinal performance testing of Julia packages.</p>
 <h3 id="other_tools" ><a href="#other_tools"> Other tools</a></h3><p>Chairmarks.jl works fine for relatively short and simple blocks of code (microbenchmarking).
 To find bottlenecks in a larger program, you should rather use a <a href="#profiling">profiler</a> or the package <a href="https://github.com/KristofferC/TimerOutputs.jl">TimerOutputs.jl</a>.
 It allows you to label different sections of your code, then time them and display a table of grouped by label.</p>
 <p><a href="https://github.com/JuliaCI/BenchmarkTools.jl">BenchmarkTools.jl</a> is the older standard for benchmarking in Julia. It is still widely used today.
 However, its default parameters run benchmarks for longer than Chairmarks, and it requires interpolating variables into the benchmarked expressions with <code>$</code>.</p>
+<p>For command-line benchmarking outside of Julia, <a href="https://github.com/sharkdp/hyperfine">hyperfine</a> is an excellent tool for timing the execution of entire Julia scripts or comparing different implementations at the process level.</p>
 <p>Finally, if you know a loop is slow and you'll need to wait for it to be done, you can use <a href="https://github.com/timholy/ProgressMeter.jl">ProgressMeter.jl</a> or <a href="https://github.com/JuliaLogging/ProgressLogging.jl">ProgressLogging.jl</a> to track its progress.</p>
 <h2 id="profiling" ><a href="#profiling"> Profiling</a></h2><div class="tldr"><p><strong>TLDR</strong>: Profiling can identify performance bottlenecks at function level, and graphical tools such as ProfileView.jl are the best way to use it. </p>
 </div><h3 id="sampling" ><a href="#sampling"> Sampling</a></h3><p>Whereas a benchmark measures the overall performance of some code, a profiler breaks it down function by function to identify bottlenecks.
@@ -399,6 +401,8 @@ end</code></pre>
 <p>Note that every method that is called will be compiled, no matter how far down the call stack or which module it comes from.
 To see if the intended calls were compiled correctly or diagnose other problems related to precompilation, use <a href="https://github.com/timholy/SnoopCompile.jl">SnoopCompile.jl</a>.
 This is especially important for writers of registered Julia packages, as it allows you to diagnose recompilation that happens due to invalidation.</p>
+<p>For alternative approaches to precompilation, <a href="https://github.com/rikhuijzer/PrecompileSignatures.jl">PrecompileSignatures.jl</a> can generate precompile directives by reading method signatures, which can be especially useful when you want to ensure specific method combinations are precompiled.</p>
+<p>For managing precompilation after Julia version updates, <a href="https://github.com/roflmaostc/PrecompileAfterUpdate.jl">PrecompileAfterUpdate.jl</a> can precompile your recent environments automatically after a Julia version update, saving you time when switching between Julia versions.</p>
 <h3 id="package_compilation" ><a href="#package_compilation"> Package compilation</a></h3><p>To reduce the time that packages take to load, you can use <a href="https://github.com/JuliaLang/PackageCompiler.jl">PackageCompiler.jl</a> to generate a custom version of Julia, called a sysimage, with its own standard library.
 As packages in the standard library are already compiled, any <code>using</code> or <code>import</code> statement involving them is almost instant.</p>
 <p>Once PackageCompiler.jl is added to your global environment, activate a local environment for which you want to generate a sysimage, ensure all of the packages you want to compile are in its <code>Project.toml</code>, and run <code>create_sysimage</code> as in the example below.
@@ -420,6 +424,7 @@ Unfortunately, the process of compiling and sharing a standalone executable or c
  The biggest tradeoff of not compiling a sysimage, is that Julia's garbage collector is no longer included, so all heap allocations must be managed manually, and all code compiled <em>must</em> be type-stable.
  To get around this limitation, you can use static equivalents of dynamic types, such as a <code>StaticArray</code> (<a href="https://github.com/JuliaArrays/StaticArrays.jl">StaticArrays.jl</a>) instead of an <code>Array</code> or a <code>StaticString</code> (StaticTools.jl), use <code>malloc</code> and <code>free</code> from StaticTools.jl directly, or use arena allocators with <a href="https://github.com/MasonProtter/Bumper.jl">Bumper.jl</a>.
  The README of StaticCompiler.jl contains a more <a href="https://github.com/tshort/StaticCompiler.jl?tab=readme-ov-file#guide-for-package-authors">detailed guide</a> on how to prepare code to be compiled.</p>
+<p> For more advanced compilation workflows, <a href="https://github.com/JuliaLang/JuliaC.jl">JuliaC.jl</a> provides tools for compiling and bundling Julia binaries with trimmed dependencies, particularly useful for creating minimal deployments.</p>
 </div><h2 id="parallelism" ><a href="#parallelism"> Parallelism</a></h2><div class="tldr"><p><strong>TLDR</strong>: Use <code>Threads</code> or OhMyThreads.jl on a single machine, <code>Distributed</code> or MPI.jl on a computing cluster. GPU-compatible code is easy to write and run. </p>
 </div><p>Code can be made to run faster through parallel execution with <a href="https://docs.julialang.org/en/v1/manual/multi-threading/">multithreading</a> (shared-memory parallelism) or <a href="https://docs.julialang.org/en/v1/manual/distributed-computing/">multiprocessing / distributed computing</a>.
 Many common operations such as maps and reductions can be trivially parallelised through either method by using their respective Julia packages (e.g <code>pmap</code> from Distributed.jl and <code>tmap</code> from OhMyThreads.jl).
@@ -514,7 +519,7 @@ sx = SA[1, 2, 3] # SA constructs an SArray
 Iteration and memoization utilities are also provided by packages like <a href="https://github.com/JuliaCollections/IterTools.jl">IterTools.jl</a> and <a href="https://github.com/JuliaCollections/Memoize.jl">Memoize.jl</a>.</p>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: September 24, 2025. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: October 08, 2025. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
