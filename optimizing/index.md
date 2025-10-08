@@ -331,7 +331,6 @@ To get around this limitation, you can use static equivalents of dynamic types, 
 The README of StaticCompiler.jl contains a more [detailed guide](https://github.com/tshort/StaticCompiler.jl?tab=readme-ov-file#guide-for-package-authors) on how to prepare code to be compiled.
 
 For more advanced compilation workflows, [JuliaC.jl](https://github.com/JuliaLang/JuliaC.jl) provides tools for compiling and bundling Julia binaries with trimmed dependencies, particularly useful for creating minimal deployments.
-[BaseCompiler.jl](https://github.com/JuliaLang/BaseCompiler.jl) offers a placeholder implementation of Julia's compiler standard library with native package switching capabilities.
 
 }
 

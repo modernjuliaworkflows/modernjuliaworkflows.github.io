@@ -212,9 +212,10 @@ This is a good practice and makes your code more robust to name conflicts betwee
 \advanced{
 
 For additional code quality tools, consider [ReLint.jl](https://github.com/RelationalAI-oss/ReLint.jl), which provides another linter for Julia code with different rules and checks compared to JET.jl.
-You can also use [pre-commit](https://github.com/pre-commit/pre-commit) to set up hooks that automatically run code quality checks before each commit, ensuring consistent code standards across your project.
 
 }
+
+You can also use [pre-commit](https://github.com/pre-commit/pre-commit) to set up hooks that automatically run code quality checks before each commit, ensuring consistent code standards across your project.
 
 ## Documentation
 
@@ -322,10 +323,6 @@ To register your package, check out the [general registry](https://github.com/Ju
 The [Registrator.jl](https://github.com/JuliaRegistries/Registrator.jl) bot can help you automate the process.
 Another handy bot, provided by default with PkgTemplates.jl, is [TagBot](https://github.com/JuliaRegistries/TagBot): it automatically tags new versions of your package following each registry release.
 If you have performed the [necessary SSH configuration](https://documenter.juliadocs.org/stable/man/hosting/#travis-ssh), TagBot will also trigger documentation website builds following each release.
-
-For more advanced release management workflows, you might want to explore tools from other ecosystems that work well with Julia:
-[semantic-release](https://github.com/semantic-release/semantic-release) provides fully automated version management and package publishing, while [release-please](https://github.com/googleapis/release-please) can generate release PRs based on conventional commit specifications.
-[JuliaRegisterChangelog](https://github.com/alex180500/JuliaRegisterChangelog) specifically combines automatic changelog generation with Julia package registration.
 
 \advanced{
 
