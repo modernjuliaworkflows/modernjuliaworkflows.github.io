@@ -259,6 +259,12 @@ julia> using Pluto
 julia> Pluto.run()
 ```
 
+\advanced{
+
+For enhanced notebook-style development outside of the traditional notebook interfaces, [CodeCells.jl](https://github.com/MasonProtter/CodeCells.jl) provides code cell functionality that can be integrated into other development workflows, bridging the gap between notebook-style development and traditional script editing.
+
+}
+
 ## Markdown
 
 \tldr{Markdown is also a good fit for literate programming, and Quarto is an alternative to notebooks.}

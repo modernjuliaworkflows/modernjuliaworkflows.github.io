@@ -146,6 +146,12 @@ It is a good indicator of the exhaustiveness of your test suite, albeit not suff
 [Codecov](https://about.codecov.io/) is a website that provides easy visualization of this coverage, and many Julia packages use it.
 It is available as a PkgTemplates.jl plugin, but you have to perform an [additional configuration step](https://docs.codecov.com/docs/adding-the-codecov-token) on the repo for Codecov to communicate with it.
 
+\advanced{
+
+For local coverage analysis, [LocalCoverage.jl](https://github.com/JuliaCI/LocalCoverage.jl) provides trivial functions for working with coverage locally without requiring external services.
+
+}
+
 ## Style
 
 To make your code easy to read, it is essential to follow a consistent set of guidelines.
@@ -202,6 +208,14 @@ Note that both Aqua.jl and JET.jl might pick up false positives: refer to their 
 
 Finally, [ExplicitImports.jl](https://github.com/ericphanson/ExplicitImports.jl) can help you get rid of generic imports to specify where each of the names in your package comes from.
 This is a good practice and makes your code more robust to name conflicts between dependencies.
+
+\advanced{
+
+For additional code quality tools, consider [ReLint.jl](https://github.com/RelationalAI-oss/ReLint.jl), which provides another linter for Julia code with different rules and checks compared to JET.jl.
+
+}
+
+You can also use [pre-commit](https://github.com/pre-commit/pre-commit) to set up hooks that automatically run code quality checks before each commit, ensuring consistent code standards across your project.
 
 ## Documentation
 
@@ -267,6 +281,8 @@ Scientific software is often hard to grasp, and the code alone may not be very e
 Whether it is for package documentation or to write papers and books, you might want to interleave code with texts, formulas, images and so on.
 In addition to the [Pluto.jl](https://github.com/fonsp/Pluto.jl) and [Jupyter](https://jupyter.org/) notebooks, take a look at [Literate.jl](https://github.com/fredrikekre/Literate.jl) to enrich your code with comments and translate it to various formats.
 [Books.jl](https://github.com/JuliaBooks/Books.jl) is relevant to draft long documents.
+
+For enhanced Pluto.jl workflows, [PlutoPapers.jl](https://github.com/mossr/PlutoPapers.jl) provides interactive and LaTeX-styled papers directly within Pluto notebooks, bridging the gap between computational documents and publication-ready papers.
 
 [Quarto](https://quarto.org/) is an open-source scientific and technical publishing system that supports Python, R and Julia.
 Quarto can render markdown files (`.md`), Quarto markdown files (`.qmd`), and Jupyter Notebooks (`.ipynb`) into documents (Word, PDF, presentations), web pages, blog posts, books, [and more](https://quarto.org/docs/output-formats/all-formats.html).
