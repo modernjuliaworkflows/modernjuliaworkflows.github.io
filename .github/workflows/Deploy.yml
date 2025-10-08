@@ -19,3 +19,4 @@ jobs:
         with:
           DEPLOY: ${{ github.event_name == 'push' }}
           DEPLOY_BRANCH: 'gh-pages'
+          JULIA_VERSION: '1.11'
