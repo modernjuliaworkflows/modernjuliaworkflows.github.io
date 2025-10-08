@@ -36,7 +36,7 @@ With this in mind, after you're done with the current page, you should read the 
 
 ## Measurements
 
-\tldr{Use Chairmarks.jl's `@be` with a setup phase to get the most accurate idea of your code's performance.}
+\tldr{Use BenchmarkTools.jl or Chairmarks.jl with a setup phase to get the most accurate idea of your code's performance.}
 
 The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints the measured runtime and allocations.
 Because code needs to be compiled before it can be run, you should first run a function without timing it so it can be compiled, and then time it:
@@ -45,7 +45,6 @@ Because code needs to be compiled before it can be run, you should first run a f
 sum_abs(vec) = sum(abs(x) for x in vec);
 v = rand(100);
 
-using BenchmarkTools
 @time sum_abs(v); # Inaccurate, note the >99% compilation time
 @time sum_abs(v); # Accurate
 ```
@@ -53,41 +52,65 @@ using BenchmarkTools
 Using `@time` is quick but it has flaws, because your function is only measured once.
 That measurement might have been influenced by other things going on in your computer at the same time.
 In general, running the same block of code multiple times is a safer measurement method, because it diminishes the probability of only observing an outlier.
-The Chairmarks.jl package provides convenient syntax to do just that.
+The BenchmarkTools.jl and Chairmarks.jl packages both provide convenient syntax to do just that.
+
+\advanced{
+No matter the benchmarking tool used, certain computations may be [optimized away by the compiler]((https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)) before the benchmark takes place.
+If you observe suspiciously fast performance, especially below the nanosecond scale, this is very likely to have happened.
+}
+
+### BenchmarkTools
+
+[BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl) is the most popular package for repeated measurements on function executions.
+Similarly to `@time`, BenchmarkTools offers `@btime` which can be used in exactly the same way but will run the code multiple times and provide an average.
+Additionally, by using `$` to [interpolate external values](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Interpolating-values-into-benchmark-expressions), you remove the overhead caused by global variables.
+
+```>$-example
+using BenchmarkTools
+@btime sum_abs(v);
+@btime sum_abs($v);
+```
+
+In more complex settings, you might need to construct variables in a [setup phase](https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases) that is run before each sample.
+This can be useful to generate a new random input every time, instead of always using the same input.
+
+```>setup-example
+my_matmul(A, b) = A * b;
+@btime my_matmul(A, b) setup=(
+    A = rand(1000, 1000); # use semi-colons between setup lines
+    b = rand(1000)
+);
+```
+
+For better visualization, the `@benchmark` macro shows performance histograms.
 
 ### Chairmarks
 
-[Chairmarks.jl](https://github.com/LilithHafner/Chairmarks.jl) is the latest benchmarking toolkit, designed to make fast and accurate timing measurements.
+[Chairmarks.jl](https://github.com/LilithHafner/Chairmarks.jl) is a later benchmarking toolkit with a slightly different design and syntax.
 Chairmarks offers `@b` (for "benchmark") which can be used in the same way as `@time` but will run the code multiple times and provide a minimum execution time.
 Alternatively, Chairmarks also provides `@be` to run the same benchmark and output all of its statistics.
 
 ```>chairmarks-example
 using Chairmarks
 @b sum_abs(v)
-@be sum_abs(v)
 ```
 
 Chairmarks supports a pipeline syntax with optional `init`, `setup`, `teardown`, and `keywords` arguments for more extensive control over the benchmarking process.
 The `sum_abs` function could also be benchmarked using pipeline syntax as below.
 
 ```>pipeline-example-simple
-@be v sum_abs
+@b v sum_abs
 ```
 
 For a more complicated example, you could write the following to benchmark a matrix multiplication function for one second, excluding the time spent to *setup* the arrays.
 
 ```>pipeline-example-complex
 my_matmul(A, b) = A * b;
-@be (A=rand(1000,1000), b=rand(1000)) my_matmul(_.A, _.b) seconds=1
+@b (A=rand(1000,1000), b=rand(1000)) my_matmul(_.A, _.b) seconds=1
 ```
 
 See the [Chairmarks documentation](https://chairmarks.lilithhafner.com/) for more details on benchmarking options.
 For better visualization, [PrettyChairmarks.jl](https://github.com/astrozot/PrettyChairmarks.jl) shows performance histograms alongside the numerical results.
-
-\advanced{
-No matter the benchmarking tool used, certain computations may be [optimized away by the compiler]((https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)) before the benchmark takes place.
-If you observe suspiciously fast performance, especially below the nanosecond scale, this is very likely to have happened.
-}
 
 ### Benchmark suites
 
@@ -102,12 +125,8 @@ For tracking time-to-first-X (TTFX) performance across different Julia versions 
 
 ### Other tools
 
-Chairmarks.jl works fine for relatively short and simple blocks of code (microbenchmarking).
 To find bottlenecks in a larger program, you should rather use a [profiler](#profiling) or the package [TimerOutputs.jl](https://github.com/KristofferC/TimerOutputs.jl).
 It allows you to label different sections of your code, then time them and display a table of grouped by label.
-
-[BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl) is the older standard for benchmarking in Julia. It is still widely used today.
-However, its default parameters run benchmarks for longer than Chairmarks, and it requires interpolating variables into the benchmarked expressions with `$`.
 
 For command-line benchmarking outside of Julia, [hyperfine](https://github.com/sharkdp/hyperfine) is an excellent tool for timing the execution of entire Julia scripts or comparing different implementations at the process level.
 
