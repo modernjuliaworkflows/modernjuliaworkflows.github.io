@@ -346,12 +346,13 @@ println("hello world")
 
 ## Environments
 
-\tldr{Activate a local environment for each project with `]activate path`. Its details are stored in `Project.toml` and `Manifest.toml`.}
+\tldr{Activate a local environment for each project with `]activate path`. Its details are stored in `path/Project.toml` and `path/Manifest.toml`.}
 
 As we have seen, Pkg.jl is the Julia equivalent of `pip` or `conda` for Python.
 It lets you [install packages](https://pkgdocs.julialang.org/v1/managing-packages/) and [manage environments](https://pkgdocs.julialang.org/v1/environments/) (collections of packages with specific versions).
 
 You can activate an environment from the Pkg REPL by specifying its path `]activate somepath`.
+You create new environments simply by activating a path that does not contain an environment. The necessary files are created automatically once you `]add` packages.
 Typically, you would do `]activate .` to activate the environment in the current directory.
 Another option is to directly start Julia inside an environment, with the command line option `julia --project=somepath`.
 
@@ -360,9 +361,10 @@ Once in an environment, the packages you `]add` will be listed in two files `som
 * `Project.toml` contains general project information (name of the package, unique id, authors) and direct dependencies with version bounds.
 * `Manifest.toml` contains the exact versions of all direct and indirect dependencies
 
-If you haven't entered any local project, packages will be installed in the default environment, called `@v1.X` after the active version of Julia (note the `@` before the name).
+If you haven't activated any local project, packages will be installed in the default environment, called `@v1.X` after the active version of Julia (note the `@` before the name).
 Packages installed that way are available no matter which local environment is active, because of "environment [stacking](https://docs.julialang.org/en/v1/manual/code-loading/#Environment-stacks)".
-It is recommended to keep the default environment very light to avoid dependencies conflicts. It should contain only essential development tools.
+It is recommended to keep the default environment very light to avoid dependency conflicts. It should contain only essential development tools. 
+Create a separate local environment for each of your projects to contain the dependencies specific to that project.
 
 \vscode{
 
