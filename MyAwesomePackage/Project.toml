@@ -1,10 +1,10 @@
 name = "MyAwesomePackage"
-uuid = "68928f80-daa7-4b0b-a0a2-844cad0c126c"
+uuid = "0aac561b-a6c6-46ba-a487-a05333f38547"
 authors = ["myusername <myusername@modernjuliaworkflows.github> and contributors"]
 version = "1.0.0-DEV"
 
 [compat]
-julia = "1.6.7"
+julia = "1.10.10"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

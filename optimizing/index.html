@@ -142,7 +142,7 @@ Because code needs to be compiled before it can be run, you should first run a f
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> v = rand(100);
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Inaccurate, note the &gt;99% compilation time
-0.033517 seconds (70.55 k allocations: 3.403 MiB, 99.92% compilation time)
+0.028848 seconds (70.55 k allocations: 3.404 MiB, 99.91% compilation time)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @time sum_abs(v); # Accurate
 0.000006 seconds (1 allocation: 16 bytes)
@@ -157,12 +157,196 @@ The BenchmarkTools.jl and Chairmarks.jl packages both provide convenient syntax 
 Similarly to <code>@time</code>, BenchmarkTools offers <code>@btime</code> which can be used in exactly the same way but will run the code multiple times and provide an average.
 Additionally, by using <code>$</code> to <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Interpolating-values-into-benchmark-expressions">interpolate external values</a>, you remove the overhead caused by global variables.</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using BenchmarkTools
+<span class="sgr91"><span class="sgr1">ERROR: </span></span>LoadError: ArgumentError: Package Tables [bd369af6-aec1-5ad0-b16a-f7cc5008161c] is required but does not seem to be installed:
+ - Run `Pkg.instantiate()` to install all recorded dependencies.
+
+Stacktrace:
+  [1] <span class="sgr1">_require(</span><span class="sgr90">pkg</span>::Base.PkgId, <span class="sgr90">env</span>::String<span class="sgr1">)</span>
+<span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2515</span></span>
+  [2] <span class="sgr1">__require_prelocked(</span><span class="sgr90">uuidkey</span>::Base.PkgId, <span class="sgr90">env</span>::String<span class="sgr1">)</span>
+<span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2388</span></span>
+  [3] <span class="sgr1">#invoke_in_world#3</span>
+<span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:1089</span> [inlined]</span>
+  [4] <span class="sgr1">invoke_in_world</span>
+<span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:1086</span> [inlined]</span>
+  [5] <span class="sgr1">_require_prelocked(</span><span class="sgr90">uuidkey</span>::Base.PkgId, <span class="sgr90">env</span>::String<span class="sgr1">)</span>
+<span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2375</span></span>
+  [6] <span class="sgr1">macro expansion</span>
+<span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">loading.jl:2314</span> [inlined]</span>
+  [7] <span class="sgr1">macro expansion</span>
+<span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">lock.jl:273</span> [inlined]</span>
+  [8] <span class="sgr1">__require(</span><span class="sgr90">into</span>::Module, <span class="sgr90">mod</span>::Symbol<span class="sgr1">)</span>
+<span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2271</span></span>
+  [9] <span class="sgr1">#invoke_in_world#3</span>
+<span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:1089</span> [inlined]</span>
+ [10] <span class="sgr1">invoke_in_world</span>
+<span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:1086</span> [inlined]</span>
+ [11] <span class="sgr1">require(</span><span class="sgr90">into</span>::Module, <span class="sgr90">mod</span>::Symbol<span class="sgr1">)</span>
+<span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2260</span></span>
+ [12] <span class="sgr1">include</span>
+<span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">Base.jl:562</span> [inlined]</span>
+ [13] <span class="sgr1">include_package_for_output(</span><span class="sgr90">pkg</span>::Base.PkgId, <span class="sgr90">input</span>::String, <span class="sgr90">depot_path</span>::Vector<span class="sgr90">{String}</span>, <span class="sgr90">dl_load_path</span>::Vector<span class="sgr90">{String}</span>, <span class="sgr90">load_path</span>::Vector<span class="sgr90">{String}</span>, <span class="sgr90">concrete_deps</span>::Vector<span class="sgr90">{Pair{Base.PkgId, UInt128}}</span>, <span class="sgr90">source</span>::String<span class="sgr1">)</span>
+<span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2922</span></span>
+ [14] top-level scope
+<span class="sgr90">    @</span> <span class="sgr90"><span class="sgr4">stdin:6</span></span>
+in expression starting at /home/runner/.julia/packages/StructUtils/BDA5D/ext/StructUtilsTablesExt.jl:1
+in expression starting at stdin:6
+<span class="sgr91"><span class="sgr1">┌ Error: </span></span>Error during loading of extension StructUtilsTablesExt of StructUtils, use `Base.retry_load_extensions()` to retry.
+<span class="sgr91"><span class="sgr1">│ </span></span>  exception =
+<span class="sgr91"><span class="sgr1">│ </span></span>   1-element ExceptionStack:
+<span class="sgr91"><span class="sgr1">│ </span></span>   Failed to precompile StructUtilsTablesExt [06a1ca1f-7bc7-53d2-8cfe-f45bf2a4bdd3] to &quot;/home/runner/.julia/compiled/v1.11/StructUtilsTablesExt/jl_xeIIjM&quot;.
+<span class="sgr91"><span class="sgr1">│ </span></span>   Stacktrace:
+<span class="sgr91"><span class="sgr1">│ </span></span>     [1] <span class="sgr1">error(</span><span class="sgr90">s</span>::String<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">error.jl:35</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [2] <span class="sgr1">compilecache(</span><span class="sgr90">pkg</span>::Base.PkgId, <span class="sgr90">path</span>::String, <span class="sgr90">internal_stderr</span>::IO, <span class="sgr90">internal_stdout</span>::IO, <span class="sgr90">keep_loaded_modules</span>::Bool; <span class="sgr90">flags</span>::Cmd, <span class="sgr90">cacheflags</span>::Base.CacheFlags, <span class="sgr90">reasons</span>::Dict<span class="sgr90">{String, Int64}</span>, <span class="sgr90">loadable_exts</span>::Vector<span class="sgr90">{Base.PkgId}</span><span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:3215</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [3] <span class="sgr1">(::Base.var&quot;#1110#1111&quot;{Base.PkgId})()</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2579</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [4] <span class="sgr1">mkpidlock(</span><span class="sgr90">f</span>::Base.var&quot;#1110#1111&quot;<span class="sgr90">{Base.PkgId}</span>, <span class="sgr90">at</span>::String, <span class="sgr90">pid</span>::Int32; <span class="sgr90">kwopts</span>::@Kwargs<span class="sgr90">{stale_age::Int64, wait::Bool}</span><span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr36">FileWatching.Pidfile</span> <span class="sgr90">/opt/hostedtoolcache/julia/1.11.8/x64/share/julia/stdlib/v1.11/FileWatching/src/<span class="sgr4">pidfile.jl:95</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [5] <span class="sgr1">#mkpidlock#6</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">/opt/hostedtoolcache/julia/1.11.8/x64/share/julia/stdlib/v1.11/FileWatching/src/<span class="sgr4">pidfile.jl:90</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [6] <span class="sgr1">trymkpidlock(</span>::Function, ::Vararg<span class="sgr90">{Any}</span>; <span class="sgr90">kwargs</span>::@Kwargs<span class="sgr90">{stale_age::Int64}</span><span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr36">FileWatching.Pidfile</span> <span class="sgr90">/opt/hostedtoolcache/julia/1.11.8/x64/share/julia/stdlib/v1.11/FileWatching/src/<span class="sgr4">pidfile.jl:116</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [7] <span class="sgr1">#invokelatest#2</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:1057</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [8] <span class="sgr1">invokelatest</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:1052</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>     [9] <span class="sgr1">maybe_cachefile_lock(</span><span class="sgr90">f</span>::Base.var&quot;#1110#1111&quot;<span class="sgr90">{Base.PkgId}</span>, <span class="sgr90">pkg</span>::Base.PkgId, <span class="sgr90">srcpath</span>::String; <span class="sgr90">stale_age</span>::Int64<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:3739</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [10] <span class="sgr1">maybe_cachefile_lock</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">loading.jl:3736</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [11] <span class="sgr1">_require(</span><span class="sgr90">pkg</span>::Base.PkgId, <span class="sgr90">env</span>::Nothing<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2565</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [12] <span class="sgr1">__require_prelocked(</span><span class="sgr90">uuidkey</span>::Base.PkgId, <span class="sgr90">env</span>::Nothing<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2388</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [13] <span class="sgr1">#invoke_in_world#3</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:1089</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [14] <span class="sgr1">invoke_in_world</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:1086</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [15] <span class="sgr1">_require_prelocked</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">loading.jl:2375</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [16] <span class="sgr1">_require_prelocked</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">loading.jl:2374</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [17] <span class="sgr1">run_extension_callbacks(</span><span class="sgr90">extid</span>::Base.ExtensionId<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:1544</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [18] <span class="sgr1">run_extension_callbacks(</span><span class="sgr90">pkgid</span>::Base.PkgId<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:1576</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [19] <span class="sgr1">run_package_callbacks(</span><span class="sgr90">modkey</span>::Base.PkgId<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:1396</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [20] <span class="sgr1">_require_search_from_serialized(</span><span class="sgr90">pkg</span>::Base.PkgId, <span class="sgr90">sourcepath</span>::String, <span class="sgr90">build_id</span>::UInt128, <span class="sgr90">stalecheck</span>::Bool; <span class="sgr90">reasons</span>::Dict<span class="sgr90">{String, Int64}</span>, <span class="sgr90">DEPOT_PATH</span>::Vector<span class="sgr90">{String}</span><span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2065</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [21] <span class="sgr1">_require(</span><span class="sgr90">pkg</span>::Base.PkgId, <span class="sgr90">env</span>::String<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2527</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [22] <span class="sgr1">__require_prelocked(</span><span class="sgr90">uuidkey</span>::Base.PkgId, <span class="sgr90">env</span>::String<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2388</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [23] <span class="sgr1">#invoke_in_world#3</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:1089</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [24] <span class="sgr1">invoke_in_world</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:1086</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [25] <span class="sgr1">_require_prelocked(</span><span class="sgr90">uuidkey</span>::Base.PkgId, <span class="sgr90">env</span>::String<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2375</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [26] <span class="sgr1">macro expansion</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">loading.jl:2314</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [27] <span class="sgr1">macro expansion</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">lock.jl:273</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [28] <span class="sgr1">__require(</span><span class="sgr90">into</span>::Module, <span class="sgr90">mod</span>::Symbol<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2271</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [29] <span class="sgr1">#invoke_in_world#3</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:1089</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [30] <span class="sgr1">invoke_in_world</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">essentials.jl:1086</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [31] <span class="sgr1">require(</span><span class="sgr90">into</span>::Module, <span class="sgr90">mod</span>::Symbol<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2260</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [32] <span class="sgr1">eval</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">boot.jl:430</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [33] <span class="sgr1">include_string(</span><span class="sgr90">mapexpr</span>::typeof(REPL.softscope), <span class="sgr90">mod</span>::Module, <span class="sgr90">code</span>::String, <span class="sgr90">filename</span>::String<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">loading.jl:2775</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [34] <span class="sgr1">include_string</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">loading.jl:2759</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [35] <span class="sgr1">#69</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/context/code/<span class="sgr4">eval.jl:91</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [36] <span class="sgr1">(::IOCapture.var&quot;#5#9&quot;{DataType, Xranklin.var&quot;#69#70&quot;{Module, String}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}})()</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">IOCapture</span> <span class="sgr90">~/.julia/packages/IOCapture/Y5rEA/src/<span class="sgr4">IOCapture.jl:170</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [37] <span class="sgr1">with_logstate(</span><span class="sgr90">f</span>::IOCapture.var&quot;#5#9&quot;<span class="sgr90">{DataType, Xranklin.var&quot;#69#70&quot;{Module, String}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}, IOContext{Base.PipeEndpoint}}</span>, <span class="sgr90">logstate</span>::Base.CoreLogging.LogState<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base.CoreLogging</span> <span class="sgr90">./logging/<span class="sgr4">logging.jl:524</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [38] <span class="sgr1">with_logger(</span><span class="sgr90">f</span>::Function, <span class="sgr90">logger</span>::Base.CoreLogging.ConsoleLogger<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base.CoreLogging</span> <span class="sgr90">./logging/<span class="sgr4">logging.jl:635</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [39] <span class="sgr1">capture(</span><span class="sgr90">f</span>::Xranklin.var&quot;#69#70&quot;<span class="sgr90">{Module, String}</span>; <span class="sgr90">rethrow</span>::Type, <span class="sgr90">color</span>::Bool, <span class="sgr90">passthrough</span>::Bool, <span class="sgr90">capture_buffer</span>::IOBuffer, <span class="sgr90">io_context</span>::Vector<span class="sgr90">{Any}</span><span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr32">IOCapture</span> <span class="sgr90">~/.julia/packages/IOCapture/Y5rEA/src/<span class="sgr4">IOCapture.jl:167</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [40] <span class="sgr1">_attempt_eval</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/context/code/<span class="sgr4">eval.jl:90</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [41] <span class="sgr1">eval_nb_cell(</span><span class="sgr90">mdl</span>::Module, <span class="sgr90">code</span>::String; <span class="sgr90">cell_name</span>::String, <span class="sgr90">repl_mode</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/context/code/<span class="sgr4">eval.jl:73</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [42] <span class="sgr1">eval_nb_cell</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/context/code/<span class="sgr4">eval.jl:45</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [43] <span class="sgr1">_eval_code_cell(</span><span class="sgr90">mdl</span>::Module, <span class="sgr90">code</span>::String, <span class="sgr90">cell_name</span>::String, <span class="sgr90">repl_mode</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/context/code/<span class="sgr4">notebook_code.jl:169</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [44] <span class="sgr1">eval_code_cell!(</span><span class="sgr90">lc</span>::Xranklin.LocalContext, <span class="sgr90">cell_code</span>::SubString<span class="sgr90">{String}</span>, <span class="sgr90">cell_name</span>::String; <span class="sgr90">imgdir_html</span>::String, <span class="sgr90">imgdir_latex</span>::String, <span class="sgr90">force</span>::Bool, <span class="sgr90">indep</span>::Bool, <span class="sgr90">repl_mode</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/context/code/<span class="sgr4">notebook_code.jl:126</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [45] <span class="sgr1">eval_code_cell!</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/context/code/<span class="sgr4">notebook_code.jl:21</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [46] <span class="sgr1">_eval_repl_code(</span><span class="sgr90">io</span>::IOBuffer, <span class="sgr90">ci</span>::Xranklin.CodeInfo, <span class="sgr90">lc</span>::Xranklin.LocalContext; <span class="sgr90">tohtml</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/convert/markdown/rules/<span class="sgr4">code.jl:388</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [47] <span class="sgr1">_eval_repl_code</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/convert/markdown/rules/<span class="sgr4">code.jl:352</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [48] <span class="sgr1">html_repl_code(</span><span class="sgr90">ci</span>::Xranklin.CodeInfo, <span class="sgr90">lc</span>::Xranklin.LocalContext<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/convert/markdown/rules/<span class="sgr4">code.jl:332</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [49] <span class="sgr1">html_code_block(</span><span class="sgr90">b</span>::FranklinParser.Block, <span class="sgr90">lc</span>::Xranklin.LocalContext<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/convert/markdown/rules/<span class="sgr4">code.jl:257</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [50] top-level scope
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90"><span class="sgr4">none:1</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [51] <span class="sgr1">eval</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">./<span class="sgr4">boot.jl:430</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [52] <span class="sgr1">eval</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/<span class="sgr4">Xranklin.jl:1</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [53] <span class="sgr1">convert_block(</span><span class="sgr90">b</span>::FranklinParser.Block, <span class="sgr90">c</span>::Xranklin.LocalContext; <span class="sgr90">tohtml</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/convert/markdown/<span class="sgr4">md_core.jl:201</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [54] <span class="sgr1">convert_block</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/convert/markdown/<span class="sgr4">md_core.jl:189</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [55] <span class="sgr1">html</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/convert/markdown/<span class="sgr4">md_core.jl:203</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [56] <span class="sgr1">convert_md(</span><span class="sgr90">md</span>::SubString<span class="sgr90">{String}</span>, <span class="sgr90">c</span>::Xranklin.LocalContext; <span class="sgr90">tohtml</span>::Bool, <span class="sgr90">nop</span>::Bool, <span class="sgr90">error_backtracking_iteration</span>::Int64, <span class="sgr90">kw</span>::@Kwargs<span class="sgr90">{}</span><span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/convert/markdown/<span class="sgr4">md_core.jl:145</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [57] <span class="sgr1">convert_md</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/convert/markdown/<span class="sgr4">md_core.jl:20</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [58] <span class="sgr1">convert_md(</span><span class="sgr90">s</span>::String, <span class="sgr90">a</span>::Xranklin.LocalContext; <span class="sgr90">kw</span>::@Kwargs<span class="sgr90">{}</span><span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/convert/markdown/<span class="sgr4">md_core.jl:153</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [59] <span class="sgr1">convert_md</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/convert/markdown/<span class="sgr4">md_core.jl:153</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [60] <span class="sgr1">process_md_file_pass_1(</span><span class="sgr90">lc</span>::Xranklin.LocalContext, <span class="sgr90">fpath</span>::String; <span class="sgr90">allow_init_skip</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/process/md/<span class="sgr4">pass_1.jl:72</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [61] <span class="sgr1">process_md_file_pass_1</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/process/md/<span class="sgr4">pass_1.jl:19</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [62] <span class="sgr1">_md_loop_1(</span><span class="sgr90">gc</span>::Xranklin.GlobalContext<span class="sgr90">{Xranklin.LocalContext}</span>, <span class="sgr90">fp</span>::Pair<span class="sgr90">{String, String}</span>, <span class="sgr90">skip_dict</span>::Dict<span class="sgr90">{Pair{String, String}, Bool}</span>, <span class="sgr90">allow_init_skip</span>::Bool; <span class="sgr90">reproc</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/build/<span class="sgr4">full_pass.jl:347</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [63] <span class="sgr1">_md_loop_1</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/build/<span class="sgr4">full_pass.jl:337</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [64] <span class="sgr1">full_pass_markdown(</span><span class="sgr90">gc</span>::Xranklin.GlobalContext<span class="sgr90">{Xranklin.LocalContext}</span>, <span class="sgr90">watched</span>::Dict<span class="sgr90">{Pair{String, String}, Float64}</span>; <span class="sgr90">skip_files</span>::Vector<span class="sgr90">{Pair{String, String}}</span>, <span class="sgr90">allow_init_skip</span>::Bool, <span class="sgr90">final</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/build/<span class="sgr4">full_pass.jl:426</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [65] <span class="sgr1">full_pass_markdown</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/build/<span class="sgr4">full_pass.jl:388</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [66] <span class="sgr1">full_pass(</span><span class="sgr90">gc</span>::Xranklin.GlobalContext<span class="sgr90">{Xranklin.LocalContext}</span>, <span class="sgr90">watched_files</span>::Dict<span class="sgr90">{Symbol, Dict{Pair{String, String}, Float64}}</span>; <span class="sgr90">skip_files</span>::Vector<span class="sgr90">{Pair{String, String}}</span>, <span class="sgr90">initial_pass</span>::Bool, <span class="sgr90">config_changed</span>::Bool, <span class="sgr90">utils_changed</span>::Bool, <span class="sgr90">allow_no_index</span>::Bool, <span class="sgr90">final</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/build/<span class="sgr4">full_pass.jl:179</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [67] <span class="sgr1">serve(</span><span class="sgr90">d</span>::String; <span class="sgr90">dir</span>::String, <span class="sgr90">folder</span>::String, <span class="sgr90">clear</span>::Bool, <span class="sgr90">final</span>::Bool, <span class="sgr90">single</span>::Bool, <span class="sgr90">eval</span>::Bool, <span class="sgr90">nocode</span>::Bool, <span class="sgr90">threads</span>::Bool, <span class="sgr90">use_threads</span>::Bool, <span class="sgr90">prepath</span>::String, <span class="sgr90">prefix</span>::String, <span class="sgr90">base_url_prefix</span>::String, <span class="sgr90">allow_no_index</span>::Bool, <span class="sgr90">debug</span>::Bool, <span class="sgr90">cleanup</span>::Bool, <span class="sgr90">skip</span>::Vector<span class="sgr90">{String}</span>, <span class="sgr90">port</span>::Int64, <span class="sgr90">host</span>::String, <span class="sgr90">launch</span>::Bool<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr33">Xranklin</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/build/<span class="sgr4">serve.jl:222</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [68] <span class="sgr1">serve</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/build/<span class="sgr4">serve.jl:58</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [69] <span class="sgr1">#build#317</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/.julia/packages/Xranklin/eTwhW/src/build/<span class="sgr4">serve.jl:337</span> [inlined]</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [70] top-level scope
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">~/work/_actions/tlienart/xranklin-build-action/main/<span class="sgr4">main.jl:68</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [71] <span class="sgr1">include(</span><span class="sgr90">mod</span>::Module, <span class="sgr90">_path</span>::String<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">Base.jl:562</span></span>
+<span class="sgr91"><span class="sgr1">│ </span></span>    [72] <span class="sgr1">exec_options(</span><span class="sgr90">opts</span>::Base.JLOptions<span class="sgr1">)</span>
+<span class="sgr91"><span class="sgr1">│ </span></span>   <span class="sgr90">    @</span> <span class="sgr90">Base</span> <span class="sgr90">./<span class="sgr4">client.jl:316</span></span>
+<span class="sgr91"><span class="sgr1">└ </span></span><span class="sgr90">@ Base loading.jl:1550</span>
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs(v);
-98.736 ns (1 allocation: 16 bytes)
+99.350 ns (1 allocation: 16 bytes)
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @btime sum_abs($v);
-60.468 ns (0 allocations: 0 bytes)
+61.062 ns (0 allocations: 0 bytes)
 </code></pre>
 <p>In more complex settings, you might need to construct variables in a <a href="https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Setup-and-teardown-phases">setup phase</a> that is run before each sample.
 This can be useful to generate a new random input every time, instead of always using the same input.</p>
@@ -172,7 +356,7 @@ This can be useful to generate a new random input every time, instead of always 
     A = rand(1000, 1000); # use semi-colons between setup lines
     b = rand(1000)
 );
-135.923 μs (3 allocations: 7.88 KiB)
+152.735 μs (3 allocations: 7.88 KiB)
 </code></pre>
 <p>For better visualization, the <code>@benchmark</code> macro shows performance histograms.</p>
 <h3 id="chairmarks" ><a href="#chairmarks"> Chairmarks</a></h3><p><a href="https://github.com/LilithHafner/Chairmarks.jl">Chairmarks.jl</a> is a later benchmarking toolkit with a slightly different design and syntax.
@@ -181,18 +365,18 @@ Alternatively, Chairmarks also provides <code>@be</code> to run the same benchma
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> using Chairmarks
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @b sum_abs(v)
-Chairmarks.Sample(290.0, 1.0087586206896553e-7, 1.0, 16.0, 0.0, 0.0, 0.0, 1.0)
+Chairmarks.Sample(256.0, 9.905078125e-8, 1.0, 16.0, 0.0, 0.0, 0.0, 1.0)
 </code></pre>
 <p>Chairmarks supports a pipeline syntax with optional <code>init</code>, <code>setup</code>, <code>teardown</code>, and <code>keywords</code> arguments for more extensive control over the benchmarking process.
 The <code>sum_abs</code> function could also be benchmarked using pipeline syntax as below.</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> @b v sum_abs
-Sample(evals=480, time=6.082083333333334e-8)
+Sample(evals=476, time=6.082773109243698e-8)
 </code></pre>
 <p>For a more complicated example, you could write the following to benchmark a matrix multiplication function for one second, excluding the time spent to <em>setup</em> the arrays.</p>
 <pre><code class="julia-repl"><span class="sgr32"><span class="sgr1">julia&gt;</span></span> my_matmul(A, b) = A * b;
 
 <span class="sgr32"><span class="sgr1">julia&gt;</span></span> @b (A=rand(1000,1000), b=rand(1000)) my_matmul(_.A, _.b) seconds=1
-Sample(time=0.00014102300000000002, allocs=3, bytes=8072)
+Sample(time=0.00013402000000000002, allocs=3, bytes=8072)
 </code></pre>
 <p>See the <a href="https://chairmarks.lilithhafner.com/">Chairmarks documentation</a> for more details on benchmarking options.
 For better visualization, <a href="https://github.com/astrozot/PrettyChairmarks.jl">PrettyChairmarks.jl</a> shows performance histograms alongside the numerical results.</p>
@@ -474,7 +658,7 @@ sx = SA[1, 2, 3] # SA constructs an SArray
 Iteration and memoization utilities are also provided by packages like <a href="https://github.com/JuliaCollections/IterTools.jl">IterTools.jl</a> and <a href="https://github.com/JuliaCollections/Memoize.jl">Memoize.jl</a>.</p>
 
   <div class="page-foot">
-    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: October 08, 2025. </br>
+    <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> G. Dalle, J. Smit, A. Hill. Last modified: January 03, 2026. </br>
     Website built with <a href="https://github.com/tlienart/Franklin.jl">Franklin.jl</a> and the <a href="https://julialang.org">Julia programming language</a>.
 </div>
 
