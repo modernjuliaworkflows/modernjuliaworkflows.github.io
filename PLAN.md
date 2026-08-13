@@ -1,0 +1,202 @@
+# Migration plan: Franklin/Xranklin → Zola
+
+Status: **planned** · Branch: `ah/zola-experiment` · Target: Zola ≥ 0.22 (giallo-based highlighting)
+
+## Goal
+
+Replace Xranklin with [Zola](https://www.getzola.org) as the static site generator while
+**keeping the executed REPL output** (all four modes: `julia>`, `help?>`, `pkg>`, `shell>`)
+and the existing authoring syntax for code fences. Syntax highlighting moves from
+client-side highlight.js to Zola's build-time highlighter.
+
+A proof of concept for the critical piece (a Julia preprocessor that replays Xranklin's
+executable fences and emits ANSI-colored HTML) was validated on 2026-08-13: all four REPL
+modes reproduce with the same `.sgrNN` span classes Xranklin emits today, via
+`REPL.helpmode`, `Pkg.REPLMode.pkgstr`, `Meta.parseall` + per-page module eval, and
+`ANSIColoredPrinters.HTMLPrinter`.
+
+## Architecture after migration
+
+```
+src/**/*.md        authored pages, unchanged fence syntax (```>name, ```?name, ```]name, ```;name, ```!name)
+   │
+   │  tools/preprocess/  (Julia: executes fences, expands \toc, ANSI→HTML)
+   ▼
+content/**/*.md    generated, gitignored
+   │
+   │  zola build   (templates/, sass/, static/, shortcodes, syntax highlighting, feed.xml)
+   ▼
+public/            deployed to gh-pages
+```
+
+Key properties:
+
+- Authored markdown keeps the exact Xranklin fence syntax — contributor-facing syntax does not change.
+- Everything Julia happens in one preprocessing step; Zola itself is a single binary with no plugins.
+- Named fences share state page-wide (one sandbox module per page), as today.
+- Each section keeps its own `Project.toml`/`Manifest.toml`, activated by `\activate{}`.
+
+## Accepted tradeoffs (decided)
+
+1. **Header anchors change.** Franklin ids like `#help_mode_(?)` become Zola slugs like
+   `#help-mode`. Inbound deep links from elsewhere will land at the top of the page
+   (no 404). Internal links are fixed during migration. If this ever hurts, the
+   preprocessor can stamp legacy ids later (`## Title {#old_id}`); explicitly deferred.
+2. **`MyPackage` / `MyAwesomePackage` are no longer deployed.** They are generated during
+   execution (PkgTemplates demo) and `Pkg.develop`ed by later fences, but nothing in the
+   content links to the deployed copies. They will be generated into a gitignored
+   `_workdir/` used only during preprocessing.
+3. **Unused Franklin machinery is dropped**, not ported: tag pages (`tag.html`,
+   `{{taglist}}` — no page defines tags), demo hfuns in `utils.jl` (`hfun_bar`,
+   `hfun_m1fill`, `lx_baz`).
+4. **Per-page "Last modified" footer** becomes a build date (Tera `now()`), or is dropped —
+   Zola has no built-in git-based lastmod. Reviewer call in Commit 2.
+
+---
+
+## Commit 1 — Add the preprocessor (`tools/preprocess/`)
+
+Pure addition; touches nothing else. This is the commit that deserves the most review time.
+
+- [ ] Create Julia project `tools/preprocess/` (deps: `IOCapture`, `ANSIColoredPrinters`;
+      stdlibs `REPL`, `Pkg`, `Markdown`, `Logging`, `TOML`).
+- [ ] CLI: `julia --project=tools/preprocess tools/preprocess/main.jl src content`
+      with `--only src/writing/index.md` for fast local iteration.
+- [ ] Port the validated PoC with these semantics:
+  - Fence regex `^```([!>?\];])(\S*)$` — names must allow `$` (`optimizing` has a
+    fence named `>$-example`), `-`, alphanumerics.
+  - One fresh module per page; fences evaluated in document order; `ans` updated after
+    every julia-mode expression; trailing-`;` and `nothing` suppress result display;
+    `:limit => true, :displaysize => (24, 80)` for array truncation parity.
+  - Mode dispatch: `>` julia (`Meta.parseall` split, per-expression source echo),
+    `?` help (`REPL.helpmode`), `]` pkg (`Pkg.REPLMode.pkgstr`, prompt from
+    `Base.active_project()`), `;` shell (`sh -c`, captured), `!` plain
+    (`include_string`, honor `# hideall`).
+  - Errors render like the REPL instead of failing the build (the `sqrt(-1)` and JET
+    examples rely on this); log an end-of-run summary of pages with erroring fences.
+  - `\activate{}` → `Pkg.activate(pagedir); Pkg.instantiate()`, restored after the page.
+  - `sitepath(...)` shim resolving into gitignored `_workdir/`.
+  - `\toc` → generate a Markdown TOC from `##` headings (mintoclevel = maxtoclevel = 2
+    today), using **Zola's** slugify rules so links match the ids Zola generates.
+  - Static (non-executed) ` ```julia-repl ` fences are also routed through the ANSI
+    renderer, colorizing prompts, so hand-written and executed REPL blocks look identical
+    (this also sidesteps needing a `julia-repl` grammar for Zola).
+  - Output for executed fences: `<pre class="julia-repl ansi">…</pre>` raw HTML with
+    `.sgrNN` spans (identical classes to current Xranklin output).
+  - Suppress Pkg's "REPL mode is intended for interactive use" warning via a
+    `Logging` filter.
+- [ ] Tests: fixture page exercising every mode + golden-file comparison
+      (`tools/preprocess/test/`). Assert state sharing across named fences, `;`
+      suppression, error rendering, `# hideall`, `\toc` expansion.
+
+**Review focus:** eval semantics vs. current site (open `__site/writing/index.html` next
+to golden files); no hidden network/system effects beyond what fences themselves do.
+**Verify:** `julia --project=tools/preprocess -e 'using Pkg; Pkg.test()'`.
+**Size estimate:** ~350 lines src, ~150 lines test. The PoC covering the risky 60% exists.
+
+## Commit 2 — Zola scaffold (`config.toml`, `templates/`, `sass/`, `static/`)
+
+No content changes; the site is not yet buildable from real content (that's Commit 3).
+
+- [ ] `config.toml`: `base_url = "https://modernjuliaworkflows.org"`, title/description
+      from `config.md`, `generate_feeds = true`, `feed_filenames = ["feed.xml"]`
+      (preserves the current feed URL), `[markdown.highlighting]` with a theme choice
+      (Zola ≥ 0.22 giallo syntax — pin the Zola version, config keys changed in 0.22).
+- [ ] `templates/`: `base.html`, `page.html`, `index.html`, `404.html` (port of `404.md`'s
+      raw HTML), `feed.xml` (RSS 2.0 port of `_rss/head.xml` + `item.xml`),
+      `partials/sidebar.html`. Franklin hfun mapping:
+      `{{ispage /writing/*}}` → `{% if current_path is starting_with("/writing/") %}`,
+      `{{fill title}}` → `{{ page.title }}`, `{{insert ...}}` → `{% include ... %}`.
+- [ ] Shortcode templates `templates/shortcodes/{tldr,advanced,vscode}.html` reproducing
+      the current `<div class="tldr">**TLDR**: …</div>` structure (body shortcodes,
+      markdown-rendered).
+- [ ] `sass/` (or `static/css/`): copy `poole_hyde.css`, `franklin.css`, `custom.css`
+      as-is; add `ansi.scss` with the ~16 `.sgrNN` color rules (from
+      ANSIColoredPrinters' documented palette). Note: the current site ships **no** CSS
+      for `.sgr` spans — ANSI colors are dropped today — so this is a strict improvement.
+- [ ] `static/`: KaTeX from `_libs/katex` (math is used in `writing` and `optimizing`;
+      gate the include on a `[extra] math = true` front-matter flag). **Drop
+      highlight.js** — Zola highlights `julia`, `bash`, `toml` fences at build time.
+- [ ] `static/CNAME` with `modernjuliaworkflows.org` (no CNAME exists in the repo today;
+      confirm how the current gh-pages branch carries the custom domain before Commit 4).
+- [ ] `.gitignore`: `content/`, `_workdir/`, `public/`.
+- [ ] `Makefile` (or `justfile`): `preprocess`, `serve`, `build`, `clean`.
+
+**Review focus:** template output parity with `_layout/*.html`; CSS copied, not rewritten.
+**Verify:** `zola check` passes with a placeholder page; templates render.
+
+## Commit 3 — Migrate content to `src/`
+
+Mechanical by design — the diff should contain no prose changes.
+
+- [ ] `git mv writing sharing optimizing further src/…`; `git mv index.md src/index.md`.
+      Section `Project.toml`/`Manifest.toml` move along with their pages.
+      Zola URL mapping: `src/writing/index.md` → `content/writing/index.md` → `/writing/`
+      (URLs unchanged).
+- [ ] Convert the 60 `\tldr{…}` / `\advanced{…}` / `\vscode{…}` usages to
+      `{% tldr() %}…{% end %}` shortcode calls. **Not sed-able**: `\advanced{}` bodies
+      span paragraphs and contain fences/braces — use a small brace-matching script,
+      then read the full diff.
+- [ ] Front matter: keep `title` (already TOML `+++`), drop `ignore_cache`, add
+      `[extra] math = true` where needed.
+- [ ] Fix the one internal anchor link (`optimizing/index.md` → `](#profiling)`) to the
+      Zola slug.
+- [ ] Delete `404.md` (ported to a template in Commit 2).
+- [ ] Run `make preprocess && zola build` locally; eyeball each page against the live
+      site. Optional: `tools/check_parity.jl` diffing visible text extracted from old
+      `__site/` vs new `public/`.
+
+**Review focus:** confirm the diff is purely mechanical (`git diff --color-moved`,
+`--word-diff`); spot-check `\advanced{}` conversions for brace-matching mistakes.
+
+## Commit 4 — CI switchover (`.github/workflows/Deploy.yml`)
+
+- [ ] Replace `tlienart/xranklin-build-action` with:
+  1. `actions/checkout`
+  2. `julia-actions/setup-julia` (**1.11** — the section Manifests are resolved for 1.11)
+     + `julia-actions/cache`
+  3. Instantiate `tools/preprocess` + section envs; run the preprocessor
+  4. Install Zola pinned to `0.22.1` (e.g. `taiki-e/install-action` or release binary)
+  5. `zola build`
+  6. On `push` to `main` only: deploy `public/` to `gh-pages`
+     (e.g. `peaceiris/actions-gh-pages`); PRs build without deploying, as today.
+- [ ] Before merging: check whether the live `gh-pages` branch has a `CNAME`; make sure
+      `static/CNAME` (Commit 2) matches so the custom domain survives the first deploy.
+- [ ] Rollback path: revert this commit → the old action redeploys the Franklin site
+      (Franklin sources are still present until Commit 5).
+
+**Review focus:** deploy conditions (`push` vs `pull_request`), version pins, cache keys.
+**Verify:** green PR build; after merge, spot-check the live site + `feed.xml` + domain.
+
+## Commit 5 — Remove Franklin machinery, update docs
+
+Only after Commit 4 has deployed successfully.
+
+- [ ] Delete: `config.md`, `utils.jl`, `_layout/`, `_css/`, `_libs/`, `_rss/`,
+      root `Project.toml`/`Manifest.toml` (the Franklin env), `__site`/`__cache`
+      gitignore entries.
+- [ ] Update `README.md`: local dev is now `make preprocess && zola serve`.
+- [ ] Update `CONTRIBUTING.md`: replace the Franklin documentation pointer with a short
+      "executable code blocks" section documenting the (unchanged) fence syntax
+      (```` ```>name ````, `?`, `]`, `;`, `!`, `# hideall`, `\activate{}`, `\toc`)
+      and a link to Zola/Tera docs for templates.
+
+**Review focus:** `rg -i "franklin|xranklin|highlight\.js"` returns nothing;
+docs match reality.
+
+## Follow-ups (explicitly out of scope)
+
+- Strict mode: fail CI on *unexpected* fence errors (`# allowerror` marker on intentional ones).
+- Hide `sitepath(...)  # ignore sitepath` noise from rendered code (preprocessor rewrite).
+- Commit generated `content/` so docs-only PRs skip Julia entirely in CI.
+- Legacy anchor id stamping, if broken inbound links turn out to matter.
+
+## Risks
+
+| Risk | Mitigation |
+|---|---|
+| Preprocessor output subtly differs from Xranklin (spacing, truncation, prompts) | Golden tests in Commit 1; page-by-page eyeball in Commit 3; old site stays deployable until Commit 5 |
+| First gh-pages deploy drops the custom domain | CNAME check in Commit 4 before merge; `static/CNAME` in Commit 2 |
+| Zola 0.22 config/highlighting churn (giallo is new) | Pin `0.22.1` in CI and README; config keys are isolated in `config.toml` |
+| `\advanced{}` → shortcode conversion breaks on nested braces | Brace-matching script + full-diff read, not sed |
+| Feed URL/format regression for subscribers | Keep `/feed.xml` name; port RSS 2.0 template; validate with a feed checker in Commit 4 |
