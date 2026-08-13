@@ -1,6 +1,7 @@
 # Migration plan: Franklin/Xranklin → Zola
 
-Status: **planned** · Branch: `ah/zola-experiment` · Target: Zola ≥ 0.22 (giallo-based highlighting)
+Status: **Commits 1–2 done** · Branch: `ah/zola-experiment` · Target: Zola 0.23.3
+(giallo-based highlighting, Tera 2 with components, content is Tera-templated)
 
 ## Goal
 
@@ -20,11 +21,11 @@ modes reproduce with the same `.sgrNN` span classes Xranklin emits today, via
 ```
 src/**/*.md        authored pages, unchanged fence syntax (```>name, ```?name, ```]name, ```;name, ```!name)
    │
-   │  tools/preprocess/  (Julia: executes fences, ANSI→HTML)
+   │  tools/ZolaPreprocessor/  (Julia: executes fences, ANSI→HTML)
    ▼
 content/**/*.md    generated, gitignored
    │
-   │  zola build   (templates/, sass/, static/, shortcodes, syntax highlighting, feed.xml)
+   │  zola build   (zola.toml, templates/ incl. components, static/, highlighting, feed.xml)
    ▼
 public/            deployed to gh-pages
 ```
@@ -65,7 +66,7 @@ Key properties:
 
 ---
 
-## Commit 1 — Add the preprocessor (`tools/preprocess/`) — **done**
+## Commit 1 — Add the preprocessor (`tools/ZolaPreprocessor/`) — **done**
 
 Pure addition (plus two `.gitignore` entries for the directories the tool creates:
 `content/`, `_workdir/`). This is the commit that deserves the most review time.
@@ -73,9 +74,9 @@ Pure addition (plus two `.gitignore` entries for the directories the tool create
 Revised 2026-08-13 with reviewer feedback: the preprocessor implements no Xranklin
 commands at all (`\activate{}`, `\toc`, `sitepath`); it replaces them with conventions.
 
-- [x] Julia package `tools/preprocess/` (deps: `IOCapture`, `ANSIColoredPrinters`;
+- [x] Julia package `tools/ZolaPreprocessor/` (deps: `IOCapture`, `ANSIColoredPrinters`;
       stdlibs `REPL`, `Pkg`, `Logging`).
-- [x] CLI: `julia --project=tools/preprocess tools/preprocess/main.jl src content`
+- [x] CLI: `julia --project=tools/ZolaPreprocessor tools/ZolaPreprocessor/main.jl src content`
       with `--only src/writing/index.md` for fast local iteration and `--workdir`.
 - [x] Semantics:
   - Fence regex `^```([!>?\];])(\S*)$` — names must allow `$` (`optimizing` has a
@@ -108,71 +109,102 @@ commands at all (`\activate{}`, `\toc`, `sitepath`); it replaces them with conve
   - Pkg's "REPL mode is intended for interactive use" warning suppressed via a
     `Logging` filter.
 - [x] Tests: fixture page exercising every mode + reference-output comparison
-      (`tools/preprocess/test/`, regenerate with `test/update_references.jl`). Asserts state
+      (`tools/ZolaPreprocessor/test/`, regenerate with `test/update_references.jl`). Asserts state
       sharing across named fences, `;` suppression, error rendering, `# hideall`/`# hide`,
       shared page cwd, legacy-directive dropping, passthrough integrity.
 
 **Review focus:** eval semantics vs. current site (open `__site/writing/index.html` next
 to the reference output); no hidden network/system effects beyond what fences themselves do.
-**Verify:** `julia +1.11 --project=tools/preprocess -e 'using Pkg; Pkg.test()'`.
+**Verify:** `julia +1.11 --project=tools/ZolaPreprocessor -e 'using Pkg; Pkg.test()'`.
 
-## Commit 2 — Zola scaffold (`config.toml`, `templates/`, `sass/`, `static/`)
+## Commit 2 — Zola scaffold (`zola.toml`, `templates/`, `static/`) — **done**
 
 No content changes; the site is not yet buildable from real content (that's Commit 3).
+Built against **Zola 0.23.3** (decided 2026-08-13), which is a larger jump than the
+0.22 the plan originally targeted: Tera was updated to v2 (macros and shortcodes are
+gone, replaced by *components*), and **content markdown is itself Tera-templated** —
+components are invoked straight from markdown.
 
-- [ ] `config.toml`: `base_url = "https://modernjuliaworkflows.org"`, title/description
-      from `config.md`, `generate_feeds = true`, `feed_filenames = ["feed.xml"]`
-      (preserves the current feed URL), `[markdown.highlighting]` with a theme choice
-      (Zola ≥ 0.22 giallo syntax — pin the Zola version, config keys changed in 0.22).
-- [ ] `templates/`: `base.html`, `page.html`, `index.html`, `404.html` (port of `404.md`'s
-      raw HTML), `feed.xml` (RSS 2.0 port of `_rss/head.xml` + `item.xml`),
-      `partials/sidebar.html`. Franklin hfun mapping:
-      `{{ispage /writing/*}}` → `{% if current_path is starting_with("/writing/") %}`,
-      `{{fill title}}` → `{{ page.title }}`, `{{insert ...}}` → `{% include ... %}`.
-- [ ] TOC in `page.html` from Zola's native `page.toc` (levels 2–2, like today's
-      `mintoclevel`/`maxtoclevel`), replacing Franklin's in-content `\toc`. Position:
-      top of the article body (or sidebar) — reviewer call; an in-content TOC is not
-      possible in Zola (shortcodes can't access `page.toc`, getzola/zola#584).
-- [ ] Shortcode templates `templates/shortcodes/{tldr,advanced,vscode}.html` reproducing
-      the current `<div class="tldr">**TLDR**: …</div>` structure (body shortcodes,
-      markdown-rendered).
-- [ ] `sass/` (or `static/css/`): copy `poole_hyde.css`, `franklin.css`, `custom.css`
-      as-is; add `ansi.scss` with the ~16 `.sgrNN` color rules (from
-      ANSIColoredPrinters' documented palette). Note: the current site ships **no** CSS
-      for `.sgr` spans — ANSI colors are dropped today — so this is a strict improvement.
-- [ ] `static/`: KaTeX from `_libs/katex` (math is used in `writing` and `optimizing`;
-      gate the include on a `[extra] math = true` front-matter flag). **Drop
-      highlight.js** — Zola highlights `julia`, `bash`, `toml` fences at build time.
-- [ ] `static/CNAME` with `modernjuliaworkflows.org` (no CNAME exists in the repo today;
-      confirm how the current gh-pages branch carries the custom domain before Commit 4).
-- [ ] `.gitignore`: `public/` (`content/` and `_workdir/` were added in Commit 1).
-- [ ] `Makefile` (or `justfile`): `preprocess`, `serve`, `build`, `clean`.
+- [x] `zola.toml` (0.23 name for `config.toml`): base_url/title/description from
+      `config.md`, `generate_feeds = true`, `feed_filenames = ["feed.xml"]` (preserves
+      the current feed URL), `[markdown.highlighting]` with `theme = "github-dark"`
+      (same theme the highlight.js setup used; giallo's background `#24292E` is what
+      `ansi.css` matches) and `data_attr_position = "pre"` for the language chips.
+- [x] `templates/`: `base.html`, `page.html`, `index.html` (homepage = root section,
+      so the source page must be `src/_index.md`, not `src/index.md`), `404.html`,
+      `feed.xml` (valid RSS 2.0 with zero items — same effective content as the live
+      feed, which has been emitting Franklin `[FAILED: fd2rss …]` placeholders),
+      `partials/sidebar.html`.
+- [x] TOC: **sidebar** (reviewer call resolved). The sidebar's per-page section links
+      are now generated from `page.toc` via `get_page`/`get_section` instead of being
+      hardcoded, so anchors can't go stale; the in-content `\toc` is dropped without
+      replacement (it duplicated the sidebar). Active entry matched by exact
+      `current_path` equality (no sub-pages exist); guarded for the 404 page where
+      `current_path` is undefined.
+- [x] "Last modified" footer (reviewer call resolved): build date via Tera `now()`
+      ("Last built: …"), and the footer credits Zola instead of Franklin.
+- [x] Admonitions as Tera components in `templates/components.html` (Tera 2 removed
+      shortcodes): defined with `{% component tldr() %}…{% endcomponent tldr %}`,
+      invoked from markdown as `{% <tldr> %}…{% </tldr> %}`. Component output is
+      injected into the markdown source before the markdown pass, so the emitted
+      `<div class="tldr">` wraps the still-markdown body and the bold prefix merges
+      into the first body paragraph, exactly like Franklin's `\tldr{…}`.
+- [x] `static/css/`: `poole_hyde.css`, `franklin.css`, `custom.css` copied as-is
+      (originals stay in `_css/` until Commit 5 so Franklin remains deployable);
+      new `ansi.css` with the `.sgrNN` palette (VS Code terminal colors), dark
+      REPL-block background matching giallo's github-dark, code-block chrome
+      (radius/padding/font-size — the `.hljs` rules no longer apply), and language
+      chips via `pre[data-lang]::before`. Note: the current site ships **no** CSS for
+      `.sgr` spans — ANSI colors are dropped today — so this is a strict improvement.
+- [x] `static/libs/katex/` from `_libs/katex` (css, js, auto-render, fonts), gated on
+      a `[extra] math = true` front-matter flag (only `writing` needs it — the `$`
+      hits in `optimizing` are BenchmarkTools interpolation inside fences).
+      auto-render is configured with explicit `$`/`$$` delimiters because Franklin
+      used to rewrite `$…$` to `\(…\)` at build time and Zola passes it through
+      (code/pre tags are in auto-render's default ignore list). **highlight.js
+      dropped** — Zola highlights `julia`, `bash`, `toml` fences at build time.
+- [x] `static/assets/`: `favicon.png`, `logo.svg` (only assets actually referenced;
+      `hamburger.svg`, `logo.png` and `_assets/scripts/` are dead).
+- [x] `static/CNAME` = `modernjuliaworkflows.org` — verified 2026-08-13 that the live
+      `gh-pages` branch carries exactly this CNAME (Commit 4 checkbox resolved).
+- [x] `.gitignore`: `public/` (`content/` and `_workdir/` were added in Commit 1).
+- [x] `Makefile`: `preprocess`, `serve`, `build`, `check`, `test`, `clean`.
 
 **Review focus:** template output parity with `_layout/*.html`; CSS copied, not rewritten.
-**Verify:** `zola check` passes with a placeholder page; templates render.
+**Verify:** `zola build` + `zola check` pass with placeholder pages in the gitignored
+`content/` (five pages exercising components, fences, ANSI passthrough, math gating,
+404, feed); rendered structure matches Franklin's (`<div class="tldr"><p><strong>…`).
 
 ## Commit 3 — Migrate content to `src/`
 
 Mechanical by design — the diff should contain no prose changes.
 
-- [ ] `git mv writing sharing optimizing further src/…`; `git mv index.md src/index.md`.
-      Section `Project.toml`/`Manifest.toml` move along with their pages.
-      Zola URL mapping: `src/writing/index.md` → `content/writing/index.md` → `/writing/`
-      (URLs unchanged).
-- [ ] Convert the 60 `\tldr{…}` / `\advanced{…}` / `\vscode{…}` usages to
-      `{% tldr() %}…{% end %}` shortcode calls. **Not sed-able**: `\advanced{}` bodies
-      span paragraphs and contain fences/braces — use a small brace-matching script,
-      then read the full diff.
+- [ ] `git mv writing sharing optimizing further src/…`; `git mv index.md src/_index.md`
+      (underscore: the homepage is Zola's root *section* — a plain `src/index.md` would
+      land at `/index/`). Section `Project.toml`/`Manifest.toml` move along with their
+      pages. Zola URL mapping: `src/writing/index.md` → `content/writing/index.md` →
+      `/writing/` (URLs unchanged).
+- [ ] Convert the 60 `\tldr{…}` / `\advanced{…}` / `\vscode{…}` usages to Tera 2
+      component calls `{% <tldr> %}…{% </tldr> %}` (shortcodes no longer exist in
+      Zola 0.23). **Not sed-able**: `\advanced{}` bodies span paragraphs and contain
+      fences/braces — use a small brace-matching script, then read the full diff.
+- [ ] Content is Tera-templated in Zola 0.23: literal `{{`, `{%`, `{#` in generated
+      markdown would be parsed as Tera. The authored pages contain none (checked
+      2026-08-13), but executed REPL *output* could in principle print them — make the
+      preprocessor wrap its emitted `<pre>` blocks in `{% raw %}…{% endraw %}` (or
+      escape brace pairs) so fence output can never break the Zola build.
 - [ ] Front matter: keep `title` (already TOML `+++`), drop `ignore_cache`, add
-      `[extra] math = true` where needed.
+      `[extra] math = true` to `writing` (the only page with math).
 - [ ] Delete the `\activate{}` and `\toc` lines (activation is by convention now, the
-      TOC lives in the template; the preprocessor warns about leftovers).
+      TOC lives in the sidebar; the preprocessor warns about leftovers).
 - [ ] Rewrite the four fences using `sitepath(...)`/`Utils.path(:site)` to plain relative
       paths (`Pkg.generate("MyPackage")`, `Pkg.develop(path="MyAwesomePackage")`, ...) —
       they run in the page's scratch cwd now. The `# ignore sitepath` comments go away.
       The `;`-fence `ls ./writing` needs a rethink (its cwd is the scratch dir now).
-- [ ] Fix the one internal anchor link (`optimizing/index.md` → `](#profiling)`) to the
-      Zola slug.
+- [ ] Internal links: `](#profiling)` in `optimizing/index.md` already matches the Zola
+      slug (no change); fix `](/sharing/index.md#versions-and-registration)` to
+      `](/sharing/#versions-and-registration)`. Sidebar anchors need no work — they are
+      generated from `page.toc` since Commit 2.
 - [ ] Delete `404.md` (ported to a template in Commit 2).
 - [ ] Run `make preprocess && zola build` locally; eyeball each page against the live
       site. Optional: `tools/check_parity.jl` diffing visible text extracted from old
@@ -187,13 +219,14 @@ Mechanical by design — the diff should contain no prose changes.
   1. `actions/checkout`
   2. `julia-actions/setup-julia` (**1.11** — the section Manifests are resolved for 1.11)
      + `julia-actions/cache`
-  3. Instantiate `tools/preprocess` + section envs; run the preprocessor
-  4. Install Zola pinned to `0.22.1` (e.g. `taiki-e/install-action` or release binary)
+  3. Instantiate `tools/ZolaPreprocessor` + section envs; run the preprocessor
+  4. Install Zola pinned to `0.23.3` (e.g. `taiki-e/install-action` or release binary)
   5. `zola build`
   6. On `push` to `main` only: deploy `public/` to `gh-pages`
      (e.g. `peaceiris/actions-gh-pages`); PRs build without deploying, as today.
-- [ ] Before merging: check whether the live `gh-pages` branch has a `CNAME`; make sure
-      `static/CNAME` (Commit 2) matches so the custom domain survives the first deploy.
+- [x] CNAME: the live `gh-pages` branch carries `CNAME` = `modernjuliaworkflows.org`,
+      matching `static/CNAME` from Commit 2 (verified 2026-08-13) — the custom domain
+      survives the first deploy.
 - [ ] Rollback path: revert this commit → the old action redeploys the Franklin site
       (Franklin sources are still present until Commit 5).
 
@@ -207,12 +240,13 @@ Only after Commit 4 has deployed successfully.
 - [ ] Delete: `config.md`, `utils.jl`, `_layout/`, `_css/`, `_libs/`, `_rss/`,
       root `Project.toml`/`Manifest.toml` (the Franklin env), `__site`/`__cache`
       gitignore entries.
-- [ ] Update `README.md`: local dev is now `make preprocess && zola serve`.
+- [ ] Update `README.md`: local dev is now `make serve` (or `make preprocess` +
+      `zola serve`); Zola 0.23.3 and Julia 1.11 as prerequisites.
 - [ ] Update `CONTRIBUTING.md`: replace the Franklin documentation pointer with a short
       "executable code blocks" section documenting the (unchanged) fence syntax
       (```` ```>name ````, `?`, `]`, `;`, `!`, `# hideall`, `# hide`), the
-      Project.toml-next-to-page and scratch-cwd conventions, and a link to Zola/Tera
-      docs for templates.
+      `{% <tldr> %}` components, the Project.toml-next-to-page and scratch-cwd
+      conventions, and a link to Zola/Tera docs for templates.
 
 **Review focus:** `rg -i "franklin|xranklin|highlight\.js"` returns nothing;
 docs match reality.
@@ -229,7 +263,8 @@ docs match reality.
 |---|---|
 | Preprocessor output subtly differs from Xranklin (spacing, truncation, prompts) | Golden tests in Commit 1; page-by-page eyeball in Commit 3; old site stays deployable until Commit 5 |
 | Scratch-cwd convention changes what path-dependent fences print (`]status` paths, `;`-fences) | The four affected fences are rewritten and re-reviewed in Commit 3 |
-| First gh-pages deploy drops the custom domain | CNAME check in Commit 4 before merge; `static/CNAME` in Commit 2 |
-| Zola 0.22 config/highlighting churn (giallo is new) | Pin `0.22.1` in CI and README; config keys are isolated in `config.toml` |
-| `\advanced{}` → shortcode conversion breaks on nested braces | Brace-matching script + full-diff read, not sed |
+| First gh-pages deploy drops the custom domain | CNAME verified on `gh-pages` (2026-08-13); `static/CNAME` in Commit 2 |
+| Zola 0.23 churn (giallo highlighting, Tera 2 components, templated content) | Pin `0.23.3` in CI and README; config isolated in `zola.toml`; scaffold verified against 0.23.3 locally |
+| REPL output printing `{{`/`{%`/`{#` breaks Tera content templating | Preprocessor wraps emitted `<pre>` blocks in `{% raw %}` (Commit 3) |
+| `\advanced{}` → component conversion breaks on nested braces | Brace-matching script + full-diff read, not sed |
 | Feed URL/format regression for subscribers | Keep `/feed.xml` name; port RSS 2.0 template; validate with a feed checker in Commit 4 |

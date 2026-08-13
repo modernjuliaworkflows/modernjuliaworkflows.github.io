@@ -1,0 +1,24 @@
+# Zola configuration (https://www.getzola.org/documentation/getting-started/configuration/).
+# Requires Zola 0.23 (giallo-based highlighting keys, Tera 2 templates/components).
+base_url = "https://modernjuliaworkflows.org"
+title = "Modern Julia Workflows"
+description = "Blog posts on best practices for Julia development"
+default_language = "en"
+
+# Keep the feed at /feed.xml, the URL the Franklin site used.
+generate_feeds = true
+feed_filenames = ["feed.xml"]
+
+compile_sass = false
+build_search_index = false
+
+[markdown]
+# Fences are highlighted at build time; executed REPL fences arrive from
+# tools/ZolaPreprocessor as pre-rendered HTML and are styled by css/ansi.css.
+[markdown.highlighting]
+theme = "github-dark"
+# Put data-lang on the <pre> so CSS can render language label chips.
+data_attr_position = "pre"
+
+[extra]
+author = "G. Dalle, J. Smit, A. Hill"
