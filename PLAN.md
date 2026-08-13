@@ -1,6 +1,8 @@
 # Migration plan: Franklin/Xranklin → Zola
 
-Status: **Commits 1–3 done** · Branch: `ah/zola-experiment` · Target: Zola 0.23.3
+Status: **Commits 1–4 done** (full pipeline verified locally incl. build/serve/check;
+only the deploy step itself remains to be exercised by the first push to main) ·
+Branch: `ah/zola-experiment` · Target: Zola 0.23.3
 (giallo-based highlighting, Tera 2 with components, content is Tera-templated)
 
 ## Goal
@@ -238,26 +240,46 @@ harmless: exit code stays 0 and nothing leaks into `content/`.
 **Review focus:** confirm the diff is purely mechanical (`git diff --color-moved`,
 `--word-diff`); spot-check `\advanced{}` conversions for brace-matching mistakes.
 
-## Commit 4 — CI switchover (`.github/workflows/Deploy.yml`)
+## Commit 4 — CI switchover (`.github/workflows/Deploy.yml`) — **done**
 
-- [ ] Replace `tlienart/xranklin-build-action` with:
-  1. `actions/checkout`
-  2. `julia-actions/setup-julia` (**1.12** — the committed `tools/ZolaPreprocessor`
-     Manifest is resolved for 1.12) + `julia-actions/cache`
-  3. Instantiate `tools/ZolaPreprocessor` + section envs; run the preprocessor
-  4. Install Zola pinned to `0.23.3` (e.g. `taiki-e/install-action` or release binary)
+- [x] Replaced `tlienart/xranklin-build-action` with:
+  1. `actions/checkout@v4`
+  2. `julia-actions/setup-julia@v2` (**1.12** — the committed `tools/ZolaPreprocessor`
+     Manifest is resolved for 1.12) + `julia-actions/cache@v2`
+  3. Instantiate `tools/ZolaPreprocessor`; `make preprocess` (section envs are
+     instantiated per page by the preprocessor itself — no separate CI step)
+  4. Zola pinned to `0.23.3` via `taiki-e/install-action@v2` (verified the version
+     is in its `manifests/zola.json`)
   5. `zola build`
-  6. On `push` to `main` only: deploy `public/` to `gh-pages`
-     (e.g. `peaceiris/actions-gh-pages`); PRs build without deploying, as today.
-- [ ] Do **not** gate CI on `zola check`: it exits 1 on ~11 pre-existing broken
-      *external* links (dead example URLs, anchor drift on external sites, 403s),
-      so it would fail every build. Either skip it in CI, or set
-      `[link_checker] external_level = "warn"` in `zola.toml` so only *internal*
-      breakage fails the check.
+  6. On `push` to `main` only: deploy `public/` to `gh-pages` via
+     `peaceiris/actions-gh-pages@v4`; PRs build without deploying, as today.
+     Permissions narrowed from `write-all` to `contents: write`; the old
+     git-user-config step dropped (peaceiris commits as github-actions[bot]);
+     concurrency group added (PR runs cancel superseded runs, main deploys don't).
+- [x] `zola check` gating resolved by whitelisting the 11 known-broken external
+      links *individually* in `zola.toml`'s `[link_checker]` (reviewer call: no
+      blanket `external_level = "warn"`), so any *new* breakage — internal or
+      external — still fails the check. Each was curl-verified and categorized:
+      1 intentionally fake example URL (`github.com/myuser/`), 1 bot-blocking
+      403 (intel.com), 3 genuinely dead pages (julia-vscode sysimage docs,
+      `github.com/cpfiffer`, learnxinyminutes blame path), and anchor cases via
+      `skip_anchor_prefixes` (GitHub README anchors are checker false positives —
+      heading ids get a `user-content-` prefix; the julialang.org/downloads and
+      pkgdocs anchors are genuinely gone). `zola check` exits 0 locally (~3 min,
+      external links enforced). CI runs it after `zola build`, before deploy.
+      Note: fence *errors* still don't fail CI (preprocessor exits 0 by design;
+      strict mode stays a follow-up).
+- [x] Local verification of the full pipeline (reviewer call: don't defer to CI):
+      `zola build` + `zola serve` — all five routes plus `/feed.xml` return 200,
+      unknown paths 404; `.sgr` ANSI spans present on writing/sharing/optimizing
+      (further has no executed fences); KaTeX loaded only on `writing`; 18
+      language chips on writing; all 60 admonitions render with Franklin-parity
+      structure (`<div class="tldr"><p><strong>…`); no leftover Tera/Franklin
+      artifacts; `public/` contains `CNAME` + `feed.xml`.
 - [x] CNAME: the live `gh-pages` branch carries `CNAME` = `modernjuliaworkflows.org`,
       matching `static/CNAME` from Commit 2 (verified 2026-08-13) — the custom domain
       survives the first deploy.
-- [ ] Rollback path: revert this commit → the old action redeploys the Franklin site
+- [x] Rollback path: revert this commit → the old action redeploys the Franklin site
       (Franklin sources are still present until Commit 5).
 
 **Review focus:** deploy conditions (`push` vs `pull_request`), version pins, cache keys.

@@ -4,19 +4,44 @@ on:
     branches:
       - main
   pull_request:
+
+# One run per branch; never cancel a main deploy mid-run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  docs:
+  build:
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      contents: write # push the built site to gh-pages
     steps:
       - uses: actions/checkout@v4
-      - name: Set git user config
-        run: |
-          git config --global user.name "myusername"
-          git config --global user.email "myusername@modernjuliaworkflows.github"
-      - name: 🚀 Build and Deploy
-        uses: tlienart/xranklin-build-action@main
+      - uses: julia-actions/setup-julia@v2
         with:
-          DEPLOY: ${{ github.event_name == 'push' }}
-          DEPLOY_BRANCH: 'gh-pages'
-          JULIA_VERSION: '1.11'
+          # The committed tools/ZolaPreprocessor Manifest is resolved for 1.12.
+          version: '1.12'
+      - uses: julia-actions/cache@v2
+      - name: Instantiate the preprocessor
+        run: julia --project=tools/ZolaPreprocessor -e 'using Pkg; Pkg.instantiate()'
+      - name: Execute src/ into content/
+        # Section envs (src/*/Project.toml) are instantiated per page by the
+        # preprocessor itself; their Manifests are not committed.
+        run: make preprocess
+      - name: Install Zola
+        uses: taiki-e/install-action@v2
+        with:
+          tool: zola@0.23.3
+      - name: Build the site
+        run: zola build
+      - name: Check links
+        # Fails on any broken link not explicitly whitelisted in zola.toml's
+        # [link_checker] (known-dead pages, uncheckable GitHub README anchors).
+        run: zola check
+      - name: Deploy to gh-pages
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
