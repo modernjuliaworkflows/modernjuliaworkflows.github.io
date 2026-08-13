@@ -5,7 +5,9 @@ on:
       - main
   pull_request:
 
-# One run per branch; never cancel a main deploy mid-run.
+# One run per branch: superseded PR runs are cancelled, while pushes to main
+# queue behind the run in progress, so close-together commits can never cancel
+# or interleave with a deploy mid-run.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
@@ -14,7 +16,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # push the built site to gh-pages
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
@@ -38,10 +40,23 @@ jobs:
         # Fails on any broken link not explicitly whitelisted in zola.toml's
         # [link_checker] (known-dead pages, uncheckable GitHub README anchors).
         run: zola check
-      - name: Deploy to gh-pages
+      - name: Upload Pages artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: peaceiris/actions-gh-pages@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          publish_branch: gh-pages
+          path: ./public
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
