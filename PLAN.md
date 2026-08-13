@@ -115,7 +115,7 @@ commands at all (`\activate{}`, `\toc`, `sitepath`); it replaces them with conve
 
 **Review focus:** eval semantics vs. current site (open `__site/writing/index.html` next
 to the reference output); no hidden network/system effects beyond what fences themselves do.
-**Verify:** `julia +1.11 --project=tools/ZolaPreprocessor -e 'using Pkg; Pkg.test()'`.
+**Verify:** `julia +1.12 --project=tools/ZolaPreprocessor -e 'using Pkg; Pkg.test()'`.
 
 ## Commit 2 — Zola scaffold (`zola.toml`, `templates/`, `static/`) — **done**
 
@@ -202,14 +202,21 @@ Mechanical by design — the diff contains no prose changes.
 - [x] Internal links: `](/sharing/index.md#…)` → `](/sharing/#…)`; anchors verified
       against the built pages (`#versions-and-registration`, `#profiling`).
 - [x] Delete `404.md` (ported to a template in Commit 2).
-- [x] `make preprocess && zola build && zola check` pass. Heading-structure and prose
+- [x] `make preprocess && zola build` pass. Heading-structure and prose
       diff vs the live `__site/` shows only expected deltas: content drift since the
       last deploy (Chairmarks section, prose edits), help mode rendered as ANSI text,
-      `src/`-prefixed env paths, Julia 1.11 outputs, the new shell demo.
-      `zola check`'s broken-link findings are all pre-existing *external* URLs.
-- [x] `Makefile` runs the preprocessor with `--startup-file=no`: a `startup.jl` loading
-      Revise drags the default environment's JuliaInterpreter into the session, which
-      breaks live precompilation of the section envs' pinned JET (found the hard way).
+      `src/`-prefixed env paths, Julia 1.12 outputs, the new shell demo.
+      `zola check` **exits 1** on ~11 broken links — all pre-existing *external* URLs
+      (dead example links like `github.com/myuser/MyAwesomePackage.jl`, anchor drift
+      on julialang.org/GitHub READMEs, intel.com returning 403); internal links are
+      clean. Expected and not a build gate — see the Commit 4 note.
+- [x] ~~`Makefile` runs the preprocessor with `--startup-file=no`~~: a `startup.jl` loading
+      Revise used to drag the default environment's JuliaInterpreter into the session,
+      breaking live precompilation of the section envs' pinned JET (found the hard way
+      on 1.11 with JET 0.9). Obsolete since the 2026-08-13 move to Julia 1.12: JET 0.12
+      itself depends on Revise/JuliaInterpreter at their latest versions, so the default
+      environment and the section envs resolve identical versions and the flag was
+      dropped (verified: full `make preprocess` with the Revise startup.jl enabled).
 
 Known content-level wart (pre-existing, not a migration regression): the sharing page's
 `Aqua.test_all(MyAwesomePackage)` fence renders a failing `deps_compat` check (the
@@ -218,8 +225,15 @@ Franklin site renders an error for this fence too. Fixing it is a content change
 deliberately out of scope here.
 
 Note for Commit 4: the section `Manifest.toml`s are gitignored (local-only). The local
-copies were stale 1.10 resolves and had to be regenerated for 1.11; CI instantiates
-fresh from each `Project.toml`, so it needs no extra step beyond `Pkg.instantiate()`.
+copies are resolved for Julia 1.12 (2026-08-13: everything updated from the 1.11
+resolves — JET 0.9.20 → 0.12.1, Cthulhu 2 → 3, JuliaFormatter 2.4 → 2.12); CI
+instantiates fresh from each `Project.toml`, so it needs no extra step beyond
+`Pkg.instantiate()`. Julia 1.12 side effects handled in the same pass: JET 0.12
+removed `test_package`'s `target_defined_modules` config (now `target_modules`,
+`test/linting.jl`), help-mode output moved the indent outside the `.sgr36` span
+(references regenerated), and the optimizing page's `@code_warntype`/`@report_opt`
+fences emit a one-off world-age WARNING on stderr from dependency introspection —
+harmless: exit code stays 0 and nothing leaks into `content/`.
 
 **Review focus:** confirm the diff is purely mechanical (`git diff --color-moved`,
 `--word-diff`); spot-check `\advanced{}` conversions for brace-matching mistakes.
@@ -228,13 +242,18 @@ fresh from each `Project.toml`, so it needs no extra step beyond `Pkg.instantiat
 
 - [ ] Replace `tlienart/xranklin-build-action` with:
   1. `actions/checkout`
-  2. `julia-actions/setup-julia` (**1.11** — the section Manifests are resolved for 1.11)
-     + `julia-actions/cache`
+  2. `julia-actions/setup-julia` (**1.12** — the committed `tools/ZolaPreprocessor`
+     Manifest is resolved for 1.12) + `julia-actions/cache`
   3. Instantiate `tools/ZolaPreprocessor` + section envs; run the preprocessor
   4. Install Zola pinned to `0.23.3` (e.g. `taiki-e/install-action` or release binary)
   5. `zola build`
   6. On `push` to `main` only: deploy `public/` to `gh-pages`
      (e.g. `peaceiris/actions-gh-pages`); PRs build without deploying, as today.
+- [ ] Do **not** gate CI on `zola check`: it exits 1 on ~11 pre-existing broken
+      *external* links (dead example URLs, anchor drift on external sites, 403s),
+      so it would fail every build. Either skip it in CI, or set
+      `[link_checker] external_level = "warn"` in `zola.toml` so only *internal*
+      breakage fails the check.
 - [x] CNAME: the live `gh-pages` branch carries `CNAME` = `modernjuliaworkflows.org`,
       matching `static/CNAME` from Commit 2 (verified 2026-08-13) — the custom domain
       survives the first deploy.
@@ -252,7 +271,7 @@ Only after Commit 4 has deployed successfully.
       root `Project.toml`/`Manifest.toml` (the Franklin env), `__site`/`__cache`
       gitignore entries.
 - [ ] Update `README.md`: local dev is now `make serve` (or `make preprocess` +
-      `zola serve`); Zola 0.23.3 and Julia 1.11 as prerequisites.
+      `zola serve`); Zola 0.23.3 and Julia 1.12 as prerequisites.
 - [ ] Update `CONTRIBUTING.md`: replace the Franklin documentation pointer with a short
       "executable code blocks" section documenting the (unchanged) fence syntax
       (```` ```>name ````, `?`, `]`, `;`, `!`, `# hideall`, `# hide`), the

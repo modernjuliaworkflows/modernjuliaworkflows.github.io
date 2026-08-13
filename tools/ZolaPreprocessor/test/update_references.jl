@@ -3,10 +3,10 @@
 # to the committed expected output test/references/page.md. This script
 # regenerates that expected output after an intentional behavior change:
 #
-#     julia +1.11 --project=tools/ZolaPreprocessor tools/ZolaPreprocessor/test/update_references.jl
+#     julia +1.12 --project=tools/ZolaPreprocessor tools/ZolaPreprocessor/test/update_references.jl
 #
 # Review the diff before committing — every hunk is a deliberate change in
-# what the preprocessor emits. Use Julia 1.11: other versions may format
+# what the preprocessor emits. Use Julia 1.12: other versions may format
 # docstrings or errors slightly differently.
 using ZolaPreprocessor
 include(joinpath(@__DIR__, "common.jl"))

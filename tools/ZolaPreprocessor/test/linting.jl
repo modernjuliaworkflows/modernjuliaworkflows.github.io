@@ -18,6 +18,6 @@ using ZolaPreprocessor
         @test check_no_self_qualified_accesses(ZolaPreprocessor) === nothing
     end
     @testset "JET" begin
-        JET.test_package(ZolaPreprocessor; target_defined_modules = true)
+        JET.test_package(ZolaPreprocessor; target_modules = (ZolaPreprocessor,))
     end
 end

@@ -1,10 +1,7 @@
 name = "ZolaPreprocessor"
 uuid = "6baad647-a534-4edf-86c6-a371ed53b1b6"
-authors = ["Adrian Hill <gh@adrianhill.de>"]
 version = "0.1.0"
-
-[apps]
-zola-preprocess = {}
+authors = ["Adrian Hill <gh@adrianhill.de>"]
 
 [deps]
 ANSIColoredPrinters = "a4c015fc-c6ff-483c-b24f-f7ea428134e9"
@@ -18,12 +15,14 @@ ANSIColoredPrinters = "0.0.1"
 Aqua = "0.8"
 ExplicitImports = "1.9"
 IOCapture = "1.0.0"
-JET = "0.9, 0.10"
+JET = "0.12"
 Logging = "1.11"
-Pkg = "1.11"
+Pkg = "1.12"
 REPL = "1.11"
 Test = "1.11"
-julia = "1.11"
+julia = "1.12"
+
+[apps.zola-preprocess]
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"

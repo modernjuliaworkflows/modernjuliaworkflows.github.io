@@ -96,7 +96,7 @@ end
 
 {% raw %}
 <pre class="julia-repl ansi"><span class="sgr33"><span class="sgr1">help?&gt;</span></span> greet
-<span class="sgr36">  greet(name)</span>
+  <span class="sgr36">greet(name)</span>
 
   Print a greeting to <span class="sgr36">name</span>.
 </pre>
