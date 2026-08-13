@@ -111,7 +111,7 @@ Testing each part separately will increase the reliability of the software you w
 To test the arguments provided to the functions within your code (for instance their sign or value), avoid `@assert` (which can be deactivated) and use [ArgCheck.jl](https://github.com/jw3126/ArgCheck.jl) instead.
 {% </advanced> %}
 
-At some point, your package may require [test-specific dependencies](https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package).
+At some point, your package may require [test-specific dependencies](https://pkgdocs.julialang.org/v1/creating-packages/#Test-specific-dependencies).
 This often happens when you need to test compatibility with another package, on which you do not depend for the source code itself.
 Or it may simply be due to testing-specific packages like the ones we will encounter below.
 For interactive testing work, use [TestEnv.jl](https://github.com/JuliaTesting/TestEnv.jl) to activate the full test environment (faster than running `]test` repeatedly).

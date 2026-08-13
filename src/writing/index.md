@@ -55,7 +55,7 @@ Meanwhile, `juliaup` provides [various utilities](https://github.com/JuliaLang/j
 As a bonus, you no longer have to manually specify the path to your executable.
 This all works thanks to adaptive shortcuts called "channels", which allow you to access specific Julia versions without giving their exact number.
 
-For instance, the `release` channel will always point to the [current stable version](https://julialang.org/downloads/#current_stable_release), and the `lts` channel will always point to the [long-term support version](https://julialang.org/downloads/#long_term_support_release).
+For instance, the `release` channel will always point to the [current stable version](https://julialang.org/downloads/manual-downloads/#current_stable_release), and the `lts` channel will always point to the [long-term support version](https://julialang.org/downloads/manual-downloads/#long_term_support_release).
 Upon installation of `juliaup`, the current stable version of Julia is downloaded and selected as the default.
 
 {% <advanced> %}

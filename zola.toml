@@ -21,25 +21,18 @@ theme = "github-dark"
 data_attr_position = "pre"
 
 [link_checker]
-# Known-broken external links, whitelisted individually (verified 2026-08-13)
+# Known-broken external links, whitelisted individually (verified 2026-08-14)
 # so `zola check` still fails on any *new* breakage, external or internal.
 skip_prefixes = [
     # Intentionally fake example URL in the prose.
     "https://github.com/myuser/",
     # Real page; intel.com returns 403 to non-browser clients.
     "https://www.intel.com/",
-    # Genuinely dead (pre-existing content rot; fixing these is a content change):
-    "https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/",
-    "https://github.com/cpfiffer",
-    "https://github.com/adambard/learnxinyminutes-docs/blame/",
 ]
 skip_anchor_prefixes = [
     # GitHub prefixes heading ids with `user-content-`, so README anchors can
     # never be verified by the checker (the linked targets do exist).
     "https://github.com/",
-    # Genuine anchor drift: pages restructured after the links were written.
-    "https://julialang.org/downloads/",
-    "https://pkgdocs.julialang.org/",
 ]
 
 [extra]

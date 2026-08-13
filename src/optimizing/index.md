@@ -320,12 +320,6 @@ create_sysimage(packages_to_compile; sysimage_path="MySysimage.so")
 
 Once a sysimage is generated, it can be used with the command line flag: `julia --sysimage=path/to/sysimage`.
 
-{% <vscode> %}
-    The generation and loading of sysimages can be [streamlined with VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/).
-    By default, the command sequence `Task: Run Build Task` followed by `Julia: Build custom sysimage for current environment` will compile a sysimage containing all packages in the current environment, but additional details can be specified in a `/.vscode/JuliaSysimage.toml` file.
-    To automatically detect and use a custom sysimage, set `useCustomSysimage` to `true` in the application settings.
-{% </vscode> %}
-
 ### Static compilation
 
 [PackageCompiler.jl](https://github.com/JuliaLang/PackageCompiler.jl) also facilitates the creation of [apps](https://julialang.github.io/PackageCompiler.jl/stable/apps.html) and [libraries](https://julialang.github.io/PackageCompiler.jl/stable/libs.html) that can be shared to and run on machines that don't have Julia installed.
