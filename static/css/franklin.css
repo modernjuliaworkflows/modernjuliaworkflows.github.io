@@ -302,22 +302,6 @@ code {
 
 /* font-size: 90%; } */
 
-/* NOTE:
-The highlight.js (hljs) styling of Modern Julia Workflows is in _css/custom.css.
-The following commented-out code is the original Franklin CSS:
-
-.hljs {
-  font-size: var(--small);
-  line-height: 1.35em;
-  border-radius: 10px;
-}
-
-.hljs-meta { font-weight: bold;}
-
-.hljs-meta.shell_ {color: crimson;}
-.hljs-meta.prompt_ {color: rgb(25, 179, 51);}
-*/
-
 .code-output {
   background: var(--output-background);
   border: 1px dashed #dbdbdb;
