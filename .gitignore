@@ -1,5 +1,7 @@
 __cache/
 __site/
+content/
+_workdir/
 .DS_Store
 node_modules/
 package-lock.json
