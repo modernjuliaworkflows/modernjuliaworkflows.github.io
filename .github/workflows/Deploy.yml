@@ -27,7 +27,7 @@ jobs:
       - name: Execute src/ into content/
         # Section envs (src/*/Project.toml) are instantiated per page by the
         # preprocessor itself; their Manifests are not committed.
-        run: make preprocess
+        run: julia --project=tools/ZolaPreprocessor -m ZolaPreprocessor preprocess src content
       - name: Install Zola
         uses: taiki-e/install-action@v2
         with:

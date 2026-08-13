@@ -1,8 +1,12 @@
+using IOCapture: IOCapture
 using Test
 using ZolaPreprocessor
 using ZolaPreprocessor: EXEC_FENCE_RE
 
 include("common.jl")
+
+# Run the CLI entry point with output captured, returning its exit code.
+cli(args...) = IOCapture.capture(() -> ZolaPreprocessor.main(collect(String, args))).value
 
 @testset "ZolaPreprocessor" begin
     include("linting.jl")
@@ -15,6 +19,23 @@ include("common.jl")
         for line in ("```julia", "```julia-repl", "````markdown", "``` >x", "```bash",
                      "```julia @distributed-sum", "text", "")
             @test match(EXEC_FENCE_RE, line) === nothing
+        end
+    end
+
+    @testset "CLI dispatch" begin
+        @test cli("-h") == 0
+        @test cli() == 2
+        @test cli("frobnicate") == 2
+        @test cli("--bogus") == 2
+        @test cli("preprocess", "src-only") == 2
+        @test cli("build", "unexpected") == 2
+        @test cli("preprocess", "a", "b", "--", "--port", "1112") == 2
+        cd(mktempdir()) do
+            # No zola.toml here, so the Zola-backed commands bail out early.
+            @test cli("check") == 2
+            mkpath("content"); mkpath("public"); mkpath("_workdir")
+            @test cli("clean") == 0
+            @test !isdir("content") && !isdir("public") && !isdir("_workdir")
         end
     end
 

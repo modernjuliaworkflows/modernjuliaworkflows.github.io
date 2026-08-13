@@ -170,7 +170,10 @@ components are invoked straight from markdown.
 - [x] `static/CNAME` = `modernjuliaworkflows.org` — verified 2026-08-13 that the live
       `gh-pages` branch carries exactly this CNAME (Commit 4 checkbox resolved).
 - [x] `.gitignore`: `public/` (`content/` and `_workdir/` were added in Commit 1).
-- [x] `Makefile`: `preprocess`, `serve`, `build`, `check`, `test`, `clean`.
+- [x] ~~`Makefile`: `preprocess`, `serve`, `build`, `check`, `test`, `clean`~~:
+      replaced 2026-08-14 by subcommands of the app itself (`julia
+      --project=tools/ZolaPreprocessor -m ZolaPreprocessor <command>`); `serve`
+      also watches `src/` and re-preprocesses changed pages for live reload.
 
 **Review focus:** template output parity with `_layout/*.html`; CSS copied, not rewritten.
 **Verify:** `zola build` + `zola check` pass with placeholder pages in the gitignored
@@ -246,8 +249,9 @@ harmless: exit code stays 0 and nothing leaks into `content/`.
   1. `actions/checkout@v4`
   2. `julia-actions/setup-julia@v2` (**1.12** — the committed `tools/ZolaPreprocessor`
      Manifest is resolved for 1.12) + `julia-actions/cache@v2`
-  3. Instantiate `tools/ZolaPreprocessor`; `make preprocess` (section envs are
-     instantiated per page by the preprocessor itself — no separate CI step)
+  3. Instantiate `tools/ZolaPreprocessor`; `-m ZolaPreprocessor preprocess src
+     content` (section envs are instantiated per page by the preprocessor
+     itself — no separate CI step)
   4. Zola pinned to `0.23.3` via `taiki-e/install-action@v2` (verified the version
      is in its `manifests/zola.json`)
   5. `zola build`
@@ -292,8 +296,9 @@ Only after Commit 4 has deployed successfully.
 - [ ] Delete: `config.md`, `utils.jl`, `_layout/`, `_css/`, `_libs/`, `_rss/`,
       root `Project.toml`/`Manifest.toml` (the Franklin env), `__site`/`__cache`
       gitignore entries.
-- [ ] Update `README.md`: local dev is now `make serve` (or `make preprocess` +
-      `zola serve`); Zola 0.23.3 and Julia 1.12 as prerequisites.
+- [ ] Update `README.md`: local dev is now `julia --project=tools/ZolaPreprocessor
+      -m ZolaPreprocessor serve` (preprocesses, runs `zola serve`, and watches
+      `src/` for changes); Zola 0.23.3 and Julia 1.12 as prerequisites.
 - [ ] Update `CONTRIBUTING.md`: replace the Franklin documentation pointer with a short
       "executable code blocks" section documenting the (unchanged) fence syntax
       (```` ```>name ````, `?`, `]`, `;`, `!`, `# hideall`, `# hide`), the
