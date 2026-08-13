@@ -2,20 +2,16 @@
 title = "Optimizing your code"
 +++
 
-\activate{}
-
 # Optimizing your code
-
-\toc
 
 ## Principles
 
-\tldr{
+{% <tldr> %}
 The two fundamental principles for writing fast Julia code:
 
 1. Ensure that **the compiler can infer the type** of every variable.
 2. Avoid **unnecessary (heap) allocations**.
-}
+{% </tldr> %}
 
 The compiler's job is to optimize and translate Julia code it into runnable [machine code](https://en.wikipedia.org/wiki/Machine_code).
 If a variable's type cannot be deduced before the code is run, then the compiler won't generate efficient code to handle that variable.
@@ -36,7 +32,7 @@ With this in mind, after you're done with the current page, you should read the 
 
 ## Measurements
 
-\tldr{Use BenchmarkTools.jl or Chairmarks.jl with a setup phase to get the most accurate idea of your code's performance.}
+{% <tldr> %}Use BenchmarkTools.jl or Chairmarks.jl with a setup phase to get the most accurate idea of your code's performance.{% </tldr> %}
 
 The simplest way to measure how fast a piece of code runs is to use the `@time` macro, which returns the result of the code and prints the measured runtime and allocations.
 Because code needs to be compiled before it can be run, you should first run a function without timing it so it can be compiled, and then time it:
@@ -54,10 +50,10 @@ That measurement might have been influenced by other things going on in your com
 In general, running the same block of code multiple times is a safer measurement method, because it diminishes the probability of only observing an outlier.
 The BenchmarkTools.jl and Chairmarks.jl packages both provide convenient syntax to do just that.
 
-\advanced{
+{% <advanced> %}
 No matter the benchmarking tool used, certain computations may be [optimized away by the compiler]((https://juliaci.github.io/BenchmarkTools.jl/stable/manual/#Understanding-compiler-optimizations)) before the benchmark takes place.
 If you observe suspiciously fast performance, especially below the nanosecond scale, this is very likely to have happened.
-}
+{% </advanced> %}
 
 ### BenchmarkTools
 
@@ -114,7 +110,7 @@ For better visualization, [PrettyChairmarks.jl](https://github.com/astrozot/Pret
 
 ### Benchmark suites
 
-While we previously discussed the importance of documenting breaking changes in packages using [semantic versioning](/sharing/index.md#versions-and-registration), regressions in performance can also be vital to track.
+While we previously discussed the importance of documenting breaking changes in packages using [semantic versioning](/sharing/#versions-and-registration), regressions in performance can also be vital to track.
 Several packages exist for this purpose:
 
 - [PkgBenchmark.jl](https://github.com/JuliaCI/PkgBenchmark.jl) and its unmaintained but functional CI wrapper [BenchmarkCI.jl](https://github.com/tkf/BenchmarkCI.jl)
@@ -134,9 +130,9 @@ Finally, if you know a loop is slow and you'll need to wait for it to be done, y
 
 ## Profiling
 
-\tldr{
+{% <tldr> %}
     Profiling can identify performance bottlenecks at function level, and graphical tools such as ProfileView.jl are the best way to use it.
-}
+{% </tldr> %}
 
 ### Sampling
 
@@ -161,9 +157,9 @@ using ProfileView
 @profview do_work(some_input)
 ```
 
-\vscode{
+{% <vscode> %}
     Calling `@profview do_work(some_input)` in the integrated Julia REPL will open an interactive flame graph, similar to ProfileView.jl but without requiring a separate package.
-}
+{% </vscode> %}
 
 To integrate profile visualisations into environments like Jupyter and Pluto, use [ProfileSVG.jl](https://github.com/kimikage/ProfileSVG.jl) or [ProfileCanvas.jl](https://github.com/pfitzseb/ProfileCanvas.jl), whose outputs can be embedded into a notebook.
 
@@ -171,11 +167,11 @@ For sharing profiles with others (e.g., on Slack or Discourse), [StatProfilerHTM
 
 No matter which tool you use, if your code is too fast to collect samples, you may need to run it multiple times in a loop.
 
-\advanced{
+{% <advanced> %}
     To visualize memory allocation profiles, use PProf.jl or VSCode's `@profview_allocs`.
     A known issue with the allocation profiler is that it is not able to determine the type of every object allocated, instead `Profile.Allocs.UnknownType` is shown instead.
     Inspecting the call graph can help identify which types are responsible for the allocations.
-}
+{% </advanced> %}
 
 ### External profilers
 
@@ -183,7 +179,7 @@ Apart from the built-in `Profile` standard library, there are a few external pro
 
 ## Type stability
 
-\tldr{Use JET.jl to automatically detect type instabilities in your code, and `@code_warntype` or Cthulhu.jl to do so manually. DispatchDoctor.jl can help prevent them altogether.}
+{% <tldr> %}Use JET.jl to automatically detect type instabilities in your code, and `@code_warntype` or Cthulhu.jl to do so manually. DispatchDoctor.jl can help prevent them altogether.{% </tldr> %}
 
 For a section of code to be considered type stable, the type inferred by the compiler must be "concrete", which means that the size of memory that needs to be allocated to store its value is known at compile time.
 Types declared abstract with `abstract type` are not concrete and neither are [parametric types](https://docs.julialang.org/en/v1/manual/types/#Parametric-Types) whose parameters are not specified:
@@ -198,9 +194,9 @@ isconcretetype(Vector{Int64})
 isconcretetype(eltype(Vector{Int64}))
 ```
 
-\advanced{
+{% <advanced> %}
 `Vector{Real}` is concrete despite `Real` being abstract for [subtle typing reasons](https://docs.julialang.org/en/v1/manual/types/#man-parametric-composite-types) but it will still be slow in practice because the type of its elements is abstract.
-}
+{% </advanced> %}
 
 <!-- thanks Frames White: https://stackoverflow.com/a/58132532 -->
 While type-stable function calls compile down to fast `GOTO` statements, type-unstable function calls generate code that must read the list of all methods for a given operation and find the one that matches.
@@ -238,7 +234,7 @@ using JET
 @report_opt put_in_vec_and_sum(1)
 ```
 
-\vscode{The Julia extension features a [static linter](https://www.julia-vscode.org/docs/stable/userguide/linter/), and runtime diagnostics with JET can be automated to run periodically on your codebase and show any problems detected.}
+{% <vscode> %}The Julia extension features a [static linter](https://www.julia-vscode.org/docs/stable/userguide/linter/), and runtime diagnostics with JET can be automated to run periodically on your codebase and show any problems detected.{% </vscode> %}
 
 [Cthulhu.jl](https://github.com/JuliaDebug/Cthulhu.jl) exposes the `@descend` macro which can be used to interactively "step through" lines of the corresponding typed code, and "descend" into a particular line if needed.
 This is akin to repeatedly calling `@code_warntype` deeper and deeper into your functions, slowly succumbing to the madness...
@@ -252,7 +248,7 @@ A more direct approach is to error whenever a type instability occurs: the macro
 
 ## Memory management
 
-\tldr{You can reduce allocations with careful array management.}
+{% <tldr> %}You can reduce allocations with careful array management.{% </tldr> %}
 
 After ensuring type stability, one should try to reduce the number of heap allocations a program makes.
 Again, the Julia manual has a series of tricks related to [arrays and allocations](https://docs.julialang.org/en/v1.12-dev/manual/performance-tips/#Memory-management-and-arrays) which you should take a look at.
@@ -270,7 +266,7 @@ end
 
 ## Compilation
 
-\tldr{If you can anticipate which functions or packages you will need, loading time can be greatly reduced with PrecompileTools.jl or PackageCompiler.jl.}
+{% <tldr> %}If you can anticipate which functions or packages you will need, loading time can be greatly reduced with PrecompileTools.jl or PackageCompiler.jl.{% </tldr> %}
 
 A number of tools allow you to reduce Julia's latency, also referred to as TTFX (time to first X, where X was historically plotting a graph).
 
@@ -324,11 +320,11 @@ create_sysimage(packages_to_compile; sysimage_path="MySysimage.so")
 
 Once a sysimage is generated, it can be used with the command line flag: `julia --sysimage=path/to/sysimage`.
 
-\vscode{
+{% <vscode> %}
     The generation and loading of sysimages can be [streamlined with VSCode](https://www.julia-vscode.org/docs/stable/userguide/compilesysimage/).
     By default, the command sequence `Task: Run Build Task` followed by `Julia: Build custom sysimage for current environment` will compile a sysimage containing all packages in the current environment, but additional details can be specified in a `/.vscode/JuliaSysimage.toml` file.
     To automatically detect and use a custom sysimage, set `useCustomSysimage` to `true` in the application settings.
-}
+{% </vscode> %}
 
 ### Static compilation
 
@@ -342,7 +338,7 @@ In Julia, a library is just a sysimage with some extras that enable external pro
 Any functions in a module marked with `Base.@ccallable`, and whose type signature involves C-conforming types e.g. `Cint`, `Cstring`, and `Cvoid`, can be compiled into an externally callable library with `create_library`, similarly to `create_app`.
 Unfortunately, the process of compiling and sharing a standalone executable or callable library must take [relocability](https://julialang.github.io/PackageCompiler.jl/stable/apps.html#relocatability) into account, which is beyond the scope of this blog.
 
-\advanced{
+{% <advanced> %}
 
 An alternative way to compile a shareable app or library that doesn't need to compile a sysimage, and therefore results in smaller binaries, is to use [StaticCompiler.jl](https://github.com/tshort/StaticCompiler.jl) and its sister package [StaticTools.jl](https://github.com/brenhinkeller/StaticTools.jl).
 The biggest tradeoff of not compiling a sysimage, is that Julia's garbage collector is no longer included, so all heap allocations must be managed manually, and all code compiled _must_ be type-stable.
@@ -350,12 +346,11 @@ To get around this limitation, you can use static equivalents of dynamic types, 
 The README of StaticCompiler.jl contains a more [detailed guide](https://github.com/tshort/StaticCompiler.jl?tab=readme-ov-file#guide-for-package-authors) on how to prepare code to be compiled.
 
 For more advanced compilation workflows, [JuliaC.jl](https://github.com/JuliaLang/JuliaC.jl) provides tools for compiling and bundling Julia binaries with trimmed dependencies, particularly useful for creating minimal deployments.
-
-}
+{% </advanced> %}
 
 ## Parallelism
 
-\tldr{Use `Threads` or OhMyThreads.jl on a single machine, `Distributed` or MPI.jl on a computing cluster. GPU-compatible code is easy to write and run.}
+{% <tldr> %}Use `Threads` or OhMyThreads.jl on a single machine, `Distributed` or MPI.jl on a computing cluster. GPU-compatible code is easy to write and run.{% </tldr> %}
 
 Code can be made to run faster through parallel execution with [multithreading](https://docs.julialang.org/en/v1/manual/multi-threading/) (shared-memory parallelism) or [multiprocessing / distributed computing](https://docs.julialang.org/en/v1/manual/distributed-computing/).
 Many common operations such as maps and reductions can be trivially parallelised through either method by using their respective Julia packages (e.g `pmap` from Distributed.jl and `tmap` from OhMyThreads.jl).
@@ -372,16 +367,16 @@ julia -t auto
 
 Once Julia is running, you can check if this was successful by calling `Threads.nthreads()`.
 
-\vscode{
+{% <vscode> %}
     The default number of threads can be edited by adding `"julia.NumThreads": 4,` to your settings. This will be applied to the integrated terminal.
-}
+{% </vscode> %}
 
-\advanced{
+{% <advanced> %}
     Linear algebra code calls the low-level libraries [BLAS](https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms) and [LAPACK](https://en.wikipedia.org/wiki/LAPACK).
     These libraries manage their own pool of threads, so single-threaded Julia processes can still make use of multiple threads, and multi-threaded Julia processes that call these libraries may run into performance issues due to the limited number of threads available in a single core.
     In this case, once `LinearAlgebra` is loaded, BLAS can be set to use only one thread by calling `BLAS.set_num_threads(1)`.
     For more information see the docs on [multithreading and linear algebra](https://docs.julialang.org/en/v1/manual/performance-tips/#man-multithreading-linear-algebra).
-}
+{% </advanced> %}
 
 Regardless of the number of threads, you can parallelise a for loop with the macro `Threads.@threads`.
 The macros `@spawn` and `@async` function similarly, but require more manual management of tasks and their results. For this reason `@threads` is recommended for those who do not wish to use third-party packages.
@@ -404,9 +399,9 @@ If the latency of spinning up new threads becomes a bottleneck, check out [Polye
 
 If you're on Linux, you should consider using [ThreadPinning.jl](https://github.com/carstenbauer/ThreadPinning.jl) to pin your Julia threads to CPU cores to obtain stable and optimal performance. The package can also be used to visualize where the Julia threads are running on your system (see `threadinfo()`).
 
-\advanced{
+{% <advanced> %}
 Some widely used parallel programming packages like [LoopVectorization.jl](https://github.com/JuliaSIMD/LoopVectorization.jl) (which also powers [Octavian.jl](https://github.com/JuliaLinearAlgebra/Octavian.jl)) or [ThreadsX.jl](https://github.com/tkf/ThreadsX.jl) are no longer maintained.
-}
+{% </advanced> %}
 
 ### Distributed computing
 
@@ -456,13 +451,13 @@ results = pmap(f, 1:100; distributed=true, batch_size=25, on_error=ex->0)
 
 For more functionalities related to higher-order functions, [Transducers.jl](https://github.com/JuliaFolds2/Transducers.jl) and [Folds.jl](https://github.com/JuliaFolds2/Folds.jl) are the way to go.
 
-\advanced{
+{% <advanced> %}
 
 [MPI.jl](https://github.com/JuliaParallel/MPI.jl) implements the [Message Passing Interface standard](https://en.wikipedia.org/wiki/Message_Passing_Interface), which is heavily used in high-performance computing beyond Julia.
 The C library that MPI.jl wraps is _highly_ optimized, so Julia code that needs to be scaled up to a large number of cores, such as an HPC cluster, will typically run faster with MPI than with plain `Distributed`.
 
 [Elemental.jl](https://github.com/JuliaParallel/Elemental.jl) is a package for distributed dense and sparse linear algebra which wraps the [Elemental](https://github.com/LLNL/Elemental) library written in C++, itself using MPI under the hood.
-}
+{% </advanced> %}
 
 ### GPU programming
 
@@ -489,14 +484,14 @@ While this may seem straightforward, there are a number of important caveats whi
 If this isn't enough, [SIMD.jl](https://github.com/eschnett/SIMD.jl) allows users to force the use of SIMD instructions and bypass the check for whether this is possible.
 One particular use-case for this is for vectorising non-contiguous memory reads and writes through `SIMD.vgather` and `SIMD.vscatter` respectively.
 
-\advanced{
+{% <advanced> %}
 You can detect whether the optimizations have occurred by inspecting the output of `@code_llvm` or `@code_native` and looking for vectorised registers, types, instructions.
 Note that the exact things you're looking for will vary between code and CPU instruction set, an example of what to look for can be seen in this [blog post](https://kristofferc.github.io/post/intrinsics/) by Kristoffer Carlsson.
-}
+{% </advanced> %}
 
 ## Efficient types
 
-\tldr{Be aware that [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl) exist and learn how they work.}
+{% <tldr> %}Be aware that [StaticArrays.jl](https://github.com/JuliaArrays/StaticArrays.jl) exist and learn how they work.{% </tldr> %}
 
 Using an efficient data structure is a tried and true way of improving the performance.
 While users can write their own efficient implementations through officially documented [interfaces](https://docs.julialang.org/en/v1/manual/interfaces/), a number of packages containing common use cases are more tightly integrated into the Julia ecosystem.

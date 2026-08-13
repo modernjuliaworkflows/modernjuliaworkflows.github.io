@@ -1,6 +1,6 @@
 # Migration plan: Franklin/Xranklin → Zola
 
-Status: **Commits 1–2 done** · Branch: `ah/zola-experiment` · Target: Zola 0.23.3
+Status: **Commits 1–3 done** · Branch: `ah/zola-experiment` · Target: Zola 0.23.3
 (giallo-based highlighting, Tera 2 with components, content is Tera-templated)
 
 ## Goal
@@ -175,40 +175,51 @@ components are invoked straight from markdown.
 `content/` (five pages exercising components, fences, ANSI passthrough, math gating,
 404, feed); rendered structure matches Franklin's (`<div class="tldr"><p><strong>…`).
 
-## Commit 3 — Migrate content to `src/`
+## Commit 3 — Migrate content to `src/` — **done**
 
-Mechanical by design — the diff should contain no prose changes.
+Mechanical by design — the diff contains no prose changes.
 
-- [ ] `git mv writing sharing optimizing further src/…`; `git mv index.md src/_index.md`
+- [x] `git mv writing sharing optimizing further src/…`; `git mv index.md src/_index.md`
       (underscore: the homepage is Zola's root *section* — a plain `src/index.md` would
       land at `/index/`). Section `Project.toml`/`Manifest.toml` move along with their
-      pages. Zola URL mapping: `src/writing/index.md` → `content/writing/index.md` →
-      `/writing/` (URLs unchanged).
-- [ ] Convert the 60 `\tldr{…}` / `\advanced{…}` / `\vscode{…}` usages to Tera 2
-      component calls `{% <tldr> %}…{% </tldr> %}` (shortcodes no longer exist in
-      Zola 0.23). **Not sed-able**: `\advanced{}` bodies span paragraphs and contain
-      fences/braces — use a small brace-matching script, then read the full diff.
-- [ ] Content is Tera-templated in Zola 0.23: literal `{{`, `{%`, `{#` in generated
-      markdown would be parsed as Tera. The authored pages contain none (checked
-      2026-08-13), but executed REPL *output* could in principle print them — make the
-      preprocessor wrap its emitted `<pre>` blocks in `{% raw %}…{% endraw %}` (or
-      escape brace pairs) so fence output can never break the Zola build.
-- [ ] Front matter: keep `title` (already TOML `+++`), drop `ignore_cache`, add
-      `[extra] math = true` to `writing` (the only page with math).
-- [ ] Delete the `\activate{}` and `\toc` lines (activation is by convention now, the
-      TOC lives in the sidebar; the preprocessor warns about leftovers).
-- [ ] Rewrite the four fences using `sitepath(...)`/`Utils.path(:site)` to plain relative
-      paths (`Pkg.generate("MyPackage")`, `Pkg.develop(path="MyAwesomePackage")`, ...) —
-      they run in the page's scratch cwd now. The `# ignore sitepath` comments go away.
-      The `;`-fence `ls ./writing` needs a rethink (its cwd is the scratch dir now).
-- [ ] Internal links: `](#profiling)` in `optimizing/index.md` already matches the Zola
-      slug (no change); fix `](/sharing/index.md#versions-and-registration)` to
-      `](/sharing/#versions-and-registration)`. Sidebar anchors need no work — they are
-      generated from `page.toc` since Commit 2.
-- [ ] Delete `404.md` (ported to a template in Commit 2).
-- [ ] Run `make preprocess && zola build` locally; eyeball each page against the live
-      site. Optional: `tools/check_parity.jl` diffing visible text extracted from old
-      `__site/` vs new `public/`.
+      pages (`.gitignore` Manifest paths updated to `src/…`). Zola URL mapping:
+      `src/writing/index.md` → `content/writing/index.md` → `/writing/` (URLs unchanged).
+- [x] Converted the 60 `\tldr{…}` / `\advanced{…}` / `\vscode{…}` usages (29 writing,
+      20 optimizing, 11 sharing) to Tera 2 component calls with a brace-matching script
+      that asserted every opener/closer sat alone on its line (or was a whole
+      single-line usage) and aborted on anything else; full diff read. Single-line
+      usages stay single-line: `{% <tldr> %}…{% </tldr> %}` renders identically to the
+      block form (verified against a minimal Zola site).
+- [x] Preprocessor wraps every emitted raw-HTML block in `{% raw %}…{% endraw %}` so
+      fence output printing `{{`/`{%`/`{#` can never break Tera's content templating
+      (reference output regenerated; targeted tests assert wrapper pairing).
+- [x] Front matter: `ignore_cache` dropped, `[extra] math = true` added to `writing`.
+- [x] `\activate{}` and `\toc` lines deleted from all five pages.
+- [x] `sitepath(...)`/`Utils.path(:site)` fences rewritten to plain relative paths;
+      `Pkg.generate("MyPackage")` now renders relative output paths (nicer than before).
+      The `;`-fence `ls ./writing` became `echo "Hello from the shell"` — the scratch
+      cwd is empty at that point in the page, so `ls` had nothing to show.
+- [x] Internal links: `](/sharing/index.md#…)` → `](/sharing/#…)`; anchors verified
+      against the built pages (`#versions-and-registration`, `#profiling`).
+- [x] Delete `404.md` (ported to a template in Commit 2).
+- [x] `make preprocess && zola build && zola check` pass. Heading-structure and prose
+      diff vs the live `__site/` shows only expected deltas: content drift since the
+      last deploy (Chairmarks section, prose edits), help mode rendered as ANSI text,
+      `src/`-prefixed env paths, Julia 1.11 outputs, the new shell demo.
+      `zola check`'s broken-link findings are all pre-existing *external* URLs.
+- [x] `Makefile` runs the preprocessor with `--startup-file=no`: a `startup.jl` loading
+      Revise drags the default environment's JuliaInterpreter into the session, which
+      breaks live precompilation of the section envs' pinned JET (found the hard way).
+
+Known content-level wart (pre-existing, not a migration regression): the sharing page's
+`Aqua.test_all(MyAwesomePackage)` fence renders a failing `deps_compat` check (the
+PkgTemplates-generated package has `Test` in `[extras]` with no compat entry) — the live
+Franklin site renders an error for this fence too. Fixing it is a content change,
+deliberately out of scope here.
+
+Note for Commit 4: the section `Manifest.toml`s are gitignored (local-only). The local
+copies were stale 1.10 resolves and had to be regenerated for 1.11; CI instantiates
+fresh from each `Project.toml`, so it needs no extra step beyond `Pkg.instantiate()`.
 
 **Review focus:** confirm the diff is purely mechanical (`git diff --color-moved`,
 `--word-diff`); spot-check `\advanced{}` conversions for brace-matching mistakes.

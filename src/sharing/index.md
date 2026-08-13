@@ -1,24 +1,19 @@
 +++
 title = "Sharing your code"
-ignore_cache = true
 +++
 
 <!-- Setup -->
 
 ```!
 # hideall
-if isdir(sitepath("MyAwesomePackage"))
-    rm(sitepath("MyAwesomePackage"); recursive=true)
+if isdir("MyAwesomePackage")
+    rm("MyAwesomePackage"; recursive=true)
 end
 ```
-
-\activate{}
 
 # Sharing your code
 
 In this post, you will learn about tools to initialize, structure and distribute Julia packages.
-
-\toc
 
 ## Setup
 
@@ -40,7 +35,7 @@ t = Template(user="myuser", interactive=false);
 
 ```!pkgtemplates2
 #hideall
-t = Template(dir=Utils.path(:site), user="myuser", interactive=false);
+t = Template(dir=pwd(), user="myuser", interactive=false);
 ```
 
 ```>pkgtemplates3
@@ -72,7 +67,7 @@ julia> Pkg.develop(path="MyAwesomePackage")
 ```!using-awesome1
 #hideall
 using Pkg
-Pkg.develop(path=sitepath("MyAwesomePackage"))  # ignore sitepath
+Pkg.develop(path="MyAwesomePackage")
 ```
 
 ```>using-awesome2
@@ -111,25 +106,23 @@ Such tests belong in `test/runtests.jl`, and they are executed with the `]test` 
 Unit testing may seem rather naive, or even superfluous, but as your code grows more complex, it becomes easier to break something without noticing.
 Testing each part separately will increase the reliability of the software you write.
 
-\advanced{
+{% <advanced> %}
 
 To test the arguments provided to the functions within your code (for instance their sign or value), avoid `@assert` (which can be deactivated) and use [ArgCheck.jl](https://github.com/jw3126/ArgCheck.jl) instead.
-
-}
+{% </advanced> %}
 
 At some point, your package may require [test-specific dependencies](https://pkgdocs.julialang.org/v1/creating-packages/#Adding-tests-to-the-package).
 This often happens when you need to test compatibility with another package, on which you do not depend for the source code itself.
 Or it may simply be due to testing-specific packages like the ones we will encounter below.
 For interactive testing work, use [TestEnv.jl](https://github.com/JuliaTesting/TestEnv.jl) to activate the full test environment (faster than running `]test` repeatedly).
 
-\vscode{
+{% <vscode> %}
 
 The Julia extension also has its own testing framework, which relies on sprinkling "test items" throughout the code.
 See [TestItemRunner.jl](https://github.com/julia-vscode/TestItemRunner.jl) for indications on how to use them optimally.
+{% </vscode> %}
 
-}
-
-\advanced{
+{% <advanced> %}
 
 If you want to have more control over your tests, you can try
 
@@ -138,19 +131,17 @@ If you want to have more control over your tests, you can try
 * [TestSetExtensions.jl](https://github.com/ssfrr/TestSetExtensions.jl) to make test set outputs more readable.
 * [TestReadme.jl](https://github.com/thchr/TestReadme.jl) to test whatever code samples are in your README.
 * [ReTestItems.jl](https://github.com/JuliaTesting/ReTestItems.jl) for an alternative take on VSCode's test item framework.
-
-}
+{% </advanced> %}
 
 Code coverage refers to the fraction of lines in your source code that are covered by tests.
 It is a good indicator of the exhaustiveness of your test suite, albeit not sufficient.
 [Codecov](https://about.codecov.io/) is a website that provides easy visualization of this coverage, and many Julia packages use it.
 It is available as a PkgTemplates.jl plugin, but you have to perform an [additional configuration step](https://docs.codecov.com/docs/adding-the-codecov-token) on the repo for Codecov to communicate with it.
 
-\advanced{
+{% <advanced> %}
 
 For local coverage analysis, [LocalCoverage.jl](https://github.com/JuliaCI/LocalCoverage.jl) provides trivial functions for working with coverage locally without requiring external services.
-
-}
+{% </advanced> %}
 
 ## Style
 
@@ -171,17 +162,15 @@ using JuliaFormatter
 JuliaFormatter.format(MyAwesomePackage)
 ```
 
-\vscode{
+{% <vscode> %}
 
 The [default formatter](https://www.julia-vscode.org/docs/stable/userguide/formatter/) falls back on JuliaFormatter.jl.
+{% </vscode> %}
 
-}
-
-\advanced{
+{% <advanced> %}
 
 You can format code automatically in GitHub pull requests with the [`julia-format` action](https://github.com/julia-actions/julia-format), or add the formatting check directly to your test suite.
-
-}
+{% </advanced> %}
 
 ## Code quality
 
@@ -209,11 +198,10 @@ Note that both Aqua.jl and JET.jl might pick up false positives: refer to their 
 Finally, [ExplicitImports.jl](https://github.com/ericphanson/ExplicitImports.jl) can help you get rid of generic imports to specify where each of the names in your package comes from.
 This is a good practice and makes your code more robust to name conflicts between dependencies.
 
-\advanced{
+{% <advanced> %}
 
 For additional code quality tools, consider [ReLint.jl](https://github.com/RelationalAI-oss/ReLint.jl), which provides another linter for Julia code with different rules and checks compared to JET.jl.
-
-}
+{% </advanced> %}
 
 You can also use [pre-commit](https://github.com/pre-commit/pre-commit) to set up hooks that automatically run code quality checks before each commit, ensuring consistent code standards across your project.
 
@@ -263,7 +251,7 @@ To host the documentation online easily, just select the [`Documenter` plugin](h
 Not only will this fill the `docs` subfolder with the right contents: it will also initialize a [GitHub Actions workflow](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch) to build and deploy your website on [GitHub pages](https://pages.github.com/).
 The only thing left to do is to [select the `gh-pages` branch as source](https://documenter.juliadocs.org/stable/man/hosting/#gh-pages-Branch).
 
-\advanced{
+{% <advanced> %}
 
 You may find the following Documenter plugins useful:
 
@@ -272,8 +260,7 @@ You may find the following Documenter plugins useful:
  
 Assuming you are looking for an alternative to Documenter.jl, you can try out [Pollen.jl](https://github.com/lorenzoh/Pollen.jl).
 In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allows you to replay instructions entered into your terminal as an ASCII video, which is nice for tutorials.
-
-}
+{% </advanced> %}
 
 ## Literate programming
 
@@ -300,12 +287,11 @@ The [CompatHelper.jl](https://github.com/JuliaRegistries/CompatHelper.jl)  GitHu
 In addition, [Dependabot](https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuring-dependabot-version-updates#enabling-dependabot-version-updates) can monitor the dependencies... of your GitHub actions themselves.
 But don't worry: both are default plugins in the PkgTemplates.jl setup.
 
-\advanced{
+{% <advanced> %}
 
 It may also happen that you incorrectly promise compatibility with an old version of a package.
 To prevent that, the [julia-downgrade-compat](https://github.com/julia-actions/julia-downgrade-compat) GitHub action tests your package with the oldest possible version of every dependency, and verifies that everything still works.
-
-}
+{% </advanced> %}
 
 If your package is useful to others in the community, it may be a good idea to register it, that is, make it part of the pool of packages that can be installed with
 
@@ -324,11 +310,10 @@ The [Registrator.jl](https://github.com/JuliaRegistries/Registrator.jl) bot can 
 Another handy bot, provided by default with PkgTemplates.jl, is [TagBot](https://github.com/JuliaRegistries/TagBot): it automatically tags new versions of your package following each registry release.
 If you have performed the [necessary SSH configuration](https://documenter.juliadocs.org/stable/man/hosting/#travis-ssh), TagBot will also trigger documentation website builds following each release.
 
-\advanced{
+{% <advanced> %}
 
 If your package is only interesting to you and a small group of collaborators, or if you don't want to make it public, you can still register it by setting up a local registry: see [LocalRegistry.jl](https://github.com/GunnarFarneback/LocalRegistry.jl).
-
-}
+{% </advanced> %}
 
 ## Reproducibility
 
@@ -359,13 +344,13 @@ Other language compatibility packages can be found in the [JuliaInterop](https:/
 
 Part of interoperability is also flexibility and customization: the [Preferences.jl](https://github.com/JuliaPackaging/Preferences.jl) package gives a nice way to specify various options in TOML files.
 
-\advanced{
+{% <advanced> %}
 
 Some package developers may need to define what kind of behavior they expect from a certain type, or what a certain method should do.
 When writing it in the documentation is not enough, a formal testable specification becomes necessary.
 This problem of "interfaces" does not yet have a definitive solution in Julia, but several options have been proposed: [Interfaces.jl](https://github.com/rafaqz/Interfaces.jl), [RequiredInterfaces.jl](https://github.com/Seelengrab/RequiredInterfaces.jl) and [PropCheck.jl](https://github.com/Seelengrab/PropCheck.jl) are all worth checking out.
     
-}
+{% </advanced> %}
 
 ## Collaboration
 

@@ -7,6 +7,6 @@ public/
 node_modules/
 package-lock.json
 .vscode
-writing/Manifest.toml
-sharing/Manifest.toml
-optimizing/Manifest.toml
+src/writing/Manifest.toml
+src/sharing/Manifest.toml
+src/optimizing/Manifest.toml

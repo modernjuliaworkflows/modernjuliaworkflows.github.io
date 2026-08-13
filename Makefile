@@ -7,8 +7,11 @@ ZOLA ?= zola
 
 .PHONY: preprocess serve build check test clean
 
+# --startup-file=no: a startup.jl loading Revise would pull JuliaInterpreter
+# into the session at whatever version the default environment has, breaking
+# precompilation of the section environments' pinned JET.
 preprocess:
-	$(JULIA) --project=tools/ZolaPreprocessor tools/ZolaPreprocessor/main.jl src content
+	$(JULIA) --startup-file=no --project=tools/ZolaPreprocessor tools/ZolaPreprocessor/main.jl src content
 
 serve: preprocess
 	$(ZOLA) serve

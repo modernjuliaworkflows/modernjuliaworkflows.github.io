@@ -25,11 +25,15 @@ function fence_extent(lines::Vector{<:AbstractString}, i::Int)
 end
 
 # Raw-HTML blocks are preceded by a blank line so they stay standalone HTML
-# blocks even where a fence directly follows a paragraph.
+# blocks even where a fence directly follows a paragraph. Content markdown is
+# Tera-templated in Zola 0.23, and fence output can print `{{`/`{%`/`{#`, so
+# every emitted block is wrapped in `{% raw %}` to keep Tera out of it.
 function emit_html_block!(out::IOBuffer, html::AbstractString)
     isempty(html) && return nothing
     println(out)
+    println(out, "{% raw %}")
     println(out, html)
+    println(out, "{% endraw %}")
     return nothing
 end
 

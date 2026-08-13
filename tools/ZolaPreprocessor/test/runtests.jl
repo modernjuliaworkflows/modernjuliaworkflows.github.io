@@ -38,6 +38,10 @@ include("common.jl")
 
         # Targeted checks, readable without diffing the reference output.
         @test occursin("<span class=\"sgr32\"><span class=\"sgr1\">julia&gt;</span></span> x = 21", got)
+        # Emitted blocks are fenced off from Tera's content templating: fence
+        # output could print `{{`/`{%`/`{#`, which would otherwise be parsed.
+        @test occursin("{% raw %}\n<pre", got)
+        @test count("{% raw %}", got) == count("{% endraw %}", got) == count("<pre", got)
         @test occursin("ERROR: </span></span>DomainError with -1.0", got)
         @test occursin("(page) pkg&gt;", got)               # environment-aware pkg prompt
         @test occursin("hello from the shell", got)
