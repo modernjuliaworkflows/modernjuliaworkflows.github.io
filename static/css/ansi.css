@@ -3,7 +3,7 @@
 
     Zola emits highlighted fences as <pre class="language-*" data-lang="*">
     with inline colors from the theme in zola.toml. The executed REPL
-    fences arrive from tools/ZolaPreprocessor as <pre class="julia-repl ansi">
+    fences arrive from MoJuWoPreprocessor as <pre class="julia-repl ansi">
     (REPL modes) or <pre class="code-output ansi"> (`!` fence output) and are
     colored by the .sgrNN palette below.
 ================================================================== */

@@ -17,7 +17,7 @@ client-side highlight.js to Zola's build-time highlighter.
 ```
 src/**/*.md        authored pages, unchanged fence syntax (```>name, ```?name, ```]name, ```;name, ```!name)
    │
-   │  tools/ZolaPreprocessor/  (Julia: executes fences, ANSI→HTML)
+   │  MoJuWoPreprocessor/  (Julia: executes fences, ANSI→HTML)
    ▼
 content/**/*.md    generated, gitignored
    │
@@ -64,8 +64,8 @@ Key properties:
 ## Docs (rest of Commit 5) — done 2026-08-14
 
 - [x] Update `README.md`: now points to `CONTRIBUTING.md`, which carries the build
-      instructions (Adrian's call): `julia --project=tools/ZolaPreprocessor
-      -m ZolaPreprocessor serve` (preprocesses, runs `zola serve`, and watches
+      instructions (Adrian's call): `julia --project=MoJuWoPreprocessor
+      -m MoJuWoPreprocessor serve` (preprocesses, runs `zola serve`, and watches
       `src/` for changes); Zola 0.23.3 and Julia 1.12 as prerequisites.
 - [x] Update `CONTRIBUTING.md`: replace the Franklin documentation pointer with a short
       "executable code blocks" section documenting the (unchanged) fence syntax

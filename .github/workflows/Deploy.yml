@@ -21,15 +21,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
         with:
-          # The committed tools/ZolaPreprocessor Manifest is resolved for 1.12.
+          # The committed MoJuWoPreprocessor Manifest is resolved for 1.12.
           version: '1.12'
       - uses: julia-actions/cache@v2
       - name: Instantiate the preprocessor
-        run: julia --project=tools/ZolaPreprocessor -e 'using Pkg; Pkg.instantiate()'
+        run: julia --project=MoJuWoPreprocessor -e 'using Pkg; Pkg.instantiate()'
       - name: Execute src/ into content/
         # Section envs (src/*/Project.toml) are instantiated per page by the
         # preprocessor itself; their Manifests are not committed.
-        run: julia --project=tools/ZolaPreprocessor -m ZolaPreprocessor preprocess src content
+        run: julia --project=MoJuWoPreprocessor -m MoJuWoPreprocessor preprocess src content
       - name: Install Zola
         uses: taiki-e/install-action@v2
         with:

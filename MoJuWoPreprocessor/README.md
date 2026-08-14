@@ -1,4 +1,4 @@
-# ZolaPreprocessor
+# MoJuWoPreprocessor
 
 Replays Xranklin's executable code fences and emits Zola-ready markdown with ANSI-colored `<pre>` blocks. 
 Everything that is not an executable fence passes through untouched.
@@ -25,10 +25,10 @@ The package follows the [Julia app](https://pkgdocs.julialang.org/v1/apps/) conv
 run it from the repository root:
 
 ```bash
-julia --project=tools/ZolaPreprocessor -m ZolaPreprocessor <command>
+julia --project=MoJuWoPreprocessor -m MoJuWoPreprocessor <command>
 ```
 
-(On Julia 1.11, which lacks `-m`, substitute `tools/ZolaPreprocessor/main.jl` for `-m ZolaPreprocessor`.)
+(On Julia 1.11, which lacks `-m`, substitute `MoJuWoPreprocessor/main.jl` for `-m MoJuWoPreprocessor`.)
 
 Commands:
 
@@ -52,7 +52,7 @@ Options:
   source path ends with the given path — fast iteration on a single page:
 
   ```bash
-  julia --project=tools/ZolaPreprocessor -m ZolaPreprocessor preprocess src content --only src/writing/index.md
+  julia --project=MoJuWoPreprocessor -m MoJuWoPreprocessor preprocess src content --only src/writing/index.md
   ```
 
 - `--workdir <dir>` sets the scratch directory fences run in

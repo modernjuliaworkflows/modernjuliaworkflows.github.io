@@ -1,14 +1,14 @@
 using IOCapture: IOCapture
 using Test
-using ZolaPreprocessor
-using ZolaPreprocessor: EXEC_FENCE_RE
+using MoJuWoPreprocessor
+using MoJuWoPreprocessor: EXEC_FENCE_RE
 
 include("common.jl")
 
 # Run the CLI entry point with output captured, returning its exit code.
-cli(args...) = IOCapture.capture(() -> ZolaPreprocessor.main(collect(String, args))).value
+cli(args...) = IOCapture.capture(() -> MoJuWoPreprocessor.main(collect(String, args))).value
 
-@testset "ZolaPreprocessor" begin
+@testset "MoJuWoPreprocessor" begin
     include("linting.jl")
 
     @testset "executable fence regex" begin

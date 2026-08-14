@@ -114,8 +114,8 @@ function serve(srcdir::AbstractString, outdir::AbstractString;
 end
 
 const USAGE = """
-usage: julia --project=tools/ZolaPreprocessor -m ZolaPreprocessor <command> [options]
-       (on Julia 1.11, use `tools/ZolaPreprocessor/main.jl` instead of `-m ZolaPreprocessor`)
+usage: julia --project=MoJuWoPreprocessor -m MoJuWoPreprocessor <command> [options]
+       (on Julia 1.11, use `MoJuWoPreprocessor/main.jl` instead of `-m MoJuWoPreprocessor`)
 
 commands:
   preprocess <srcdir> <outdir>   execute every markdown page under <srcdir>
@@ -134,11 +134,11 @@ options:
                      e.g. `serve -- --port 1112 --open`
 
 The Zola-backed commands must run from the repository root (next to zola.toml).
-See tools/ZolaPreprocessor/README.md for details."""
+See MoJuWoPreprocessor/README.md for details."""
 
 # Entry point following the Julia app conventions
 # (https://pkgdocs.julialang.org/v1/apps/): on Julia 1.12+ this runs via
-# `julia -m ZolaPreprocessor`; on 1.11 use main.jl. Deliberately not exported —
+# `julia -m MoJuWoPreprocessor`; on 1.11 use main.jl. Deliberately not exported —
 # an exported `@main` would also run after `Pkg.test`, with an empty ARGS.
 function (@main)(args::Vector{String})
     positional = String[]

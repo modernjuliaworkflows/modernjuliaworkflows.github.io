@@ -1,4 +1,4 @@
-using ZolaPreprocessor
+using MoJuWoPreprocessor
 
 # Render the fixture tree into a temp directory and normalize machine-specific
 # paths so the result is comparable across machines.
