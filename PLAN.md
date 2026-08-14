@@ -1,6 +1,6 @@
 # Migration plan: Franklin/Xranklin → Zola
 
-Status: **Commits 1–5 done except the docs updates below** · Branch: `ah/zola-experiment` ·
+Status: **Commits 1–5 done — migration complete** · Branch: `ah/zola-experiment` ·
 Target: Zola 0.23.3 (giallo-based highlighting, Tera 2 with components, content is
 Tera-templated) · The first deploy via the GitHub Pages artifact flow is still
 unexercised — after merge, spot-check the live site, `/feed.xml`, and the custom domain.
@@ -61,19 +61,22 @@ Key properties:
 
 ---
 
-## Remaining work — update docs (rest of Commit 5)
+## Docs (rest of Commit 5) — done 2026-08-14
 
-- [ ] Update `README.md`: local dev is now `julia --project=tools/ZolaPreprocessor
+- [x] Update `README.md`: now points to `CONTRIBUTING.md`, which carries the build
+      instructions (Adrian's call): `julia --project=tools/ZolaPreprocessor
       -m ZolaPreprocessor serve` (preprocesses, runs `zola serve`, and watches
       `src/` for changes); Zola 0.23.3 and Julia 1.12 as prerequisites.
-- [ ] Update `CONTRIBUTING.md`: replace the Franklin documentation pointer with a short
+- [x] Update `CONTRIBUTING.md`: replace the Franklin documentation pointer with a short
       "executable code blocks" section documenting the (unchanged) fence syntax
       (```` ```>name ````, `?`, `]`, `;`, `!`, `# hideall`, `# hide`), the
       `{% <tldr> %}` components, the Project.toml-next-to-page and scratch-cwd
       conventions, and a link to Zola/Tera docs for templates.
 
-**Review focus:** `rg -i "franklin|xranklin|highlight\.js"` returns nothing;
-docs match reality.
+**Review focus:** `rg -i "franklin|xranklin|highlight\.js" README.md CONTRIBUTING.md`
+returns nothing (verified); the remaining repo-wide matches are intentional —
+Franklin-parity comments, the carried-over `.franklin-content` CSS class and
+`franklin.css` filename, and preprocessor test fixtures for legacy directives.
 
 ## Follow-ups (explicitly out of scope)
 

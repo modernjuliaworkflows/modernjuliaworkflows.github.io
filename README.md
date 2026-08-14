@@ -6,6 +6,7 @@
 
 To discuss contents, refer to this [discourse post](https://discourse.julialang.org/t/seeking-feedback-blog-post-about-modern-julia-workflows/100324) or our [GitHub discussions](https://github.com/modernjuliaworkflows/modernjuliaworkflows.github.io/discussions) page.
 
+To contribute, see the [Contributor's Guide][contributing-url], which also explains how to build the site locally.
 
 [website-url]: https://modernjuliaworkflows.org
 [website-badge]: https://img.shields.io/badge/Website-stable-blue.svg
