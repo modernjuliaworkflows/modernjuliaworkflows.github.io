@@ -54,7 +54,8 @@ printed, not returned
 </pre>
 {% endraw %}
 
-Errors render REPL-style instead of failing the build:
+Fences marked `allow-error` render their error REPL-style instead of
+failing the build:
 
 
 {% raw %}

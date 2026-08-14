@@ -31,9 +31,10 @@ println("printed, not returned")
 collect(1:8)
 ```
 
-Errors render REPL-style instead of failing the build:
+Fences marked `allow-error` render their error REPL-style instead of
+failing the build:
 
-```>error-example
+```>error-example allow-error
 sqrt(-1)
 ```
 

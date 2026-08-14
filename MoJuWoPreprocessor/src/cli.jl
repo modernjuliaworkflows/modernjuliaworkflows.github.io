@@ -9,8 +9,10 @@
 Process every `*.md` under `srcdir` (in sorted order, one sandbox module
 each) into the same relative path under `outdir`. `only` restricts the run
 to pages whose source path ends with one of the given paths. Returns a
-`Dict` mapping page paths to their fence errors; fence errors do not abort
-the build.
+`Dict` mapping page paths to their unsanctioned fence errors (errors in
+fences not marked `allow-error`); the CLI build commands fail on those,
+`serve` only reports them. A structurally broken fence throws a
+[`FenceSyntaxError`](@ref) immediately.
 """
 function process_tree(
         srcdir::AbstractString, outdir::AbstractString;
@@ -54,10 +56,33 @@ function process_tree(
     @info "preprocessed Julia code blocks in $(round(time() - start; digits = 1))s"
     for (rel, errors) in sort!(collect(failures); by = first)
         for e in errors
-            @warn "fence errored (rendered REPL-style)" page = rel fence = e.label e.message
+            @error "fence errored" page = rel fence = e.label e.message
         end
     end
     return failures
+end
+
+# Strict pass for the build commands: a `FenceSyntaxError` aborts with a
+# clean message and unsanctioned fence errors fail the run, both as exit
+# code 1.
+function preprocess_strict(
+        srcdir::AbstractString, outdir::AbstractString;
+        workdir::AbstractString, only::Vector{String}
+    )
+    failures = try
+        process_tree(srcdir, outdir; workdir, only)
+    catch err
+        err isa FenceSyntaxError || rethrow()
+        println(stderr, sprint(showerror, err))
+        return 1
+    end
+    isempty(failures) && return 0
+    n = sum(length, values(failures))
+    println(
+        stderr,
+        "$n fence error(s); fix them or mark intentional error demos with `allow-error`"
+    )
+    return 1
 end
 
 """
@@ -81,7 +106,9 @@ end
 Preprocess the tree, start `zola serve`, then poll the source pages and
 re-preprocess any page whose mtime changes. Zola's own watcher sees the
 updated output and live-reloads the browser. Runs until `zola serve` exits
-(propagating its exit code) or Ctrl-C stops both processes.
+(propagating its exit code) or Ctrl-C stops both processes. Unlike the
+build commands, fence errors only get reported here — a dev server should
+survive broken intermediate states.
 """
 function serve(
         srcdir::AbstractString, outdir::AbstractString;
@@ -193,8 +220,7 @@ function (@main)(args::Vector{String})
             println(stderr, "`preprocess` expects <srcdir> <outdir>\n\n$USAGE")
             return 2
         end
-        process_tree(positional[1], positional[2]; workdir, only)
-        return 0
+        return preprocess_strict(positional[1], positional[2]; workdir, only)
     end
     if !(command in ("serve", "build", "check", "clean"))
         println(stderr, "unknown command: $command\n\n$USAGE")
@@ -218,7 +244,18 @@ function (@main)(args::Vector{String})
         println(stderr, "`zola` not found on PATH; see https://www.getzola.org/documentation/getting-started/installation/")
         return 2
     end
-    command == "serve" && return serve("src", "content"; workdir, only, zola_args)
-    process_tree("src", "content"; workdir, only)
+    if command == "serve"
+        try
+            return serve("src", "content"; workdir, only, zola_args)
+        catch err
+            # Only the initial pass throws; while watching, syntax errors in
+            # intermediate saves are caught and reported without stopping.
+            err isa FenceSyntaxError || rethrow()
+            println(stderr, sprint(showerror, err))
+            return 1
+        end
+    end
+    code = preprocess_strict("src", "content"; workdir, only)
+    code == 0 || return code
     return success(run(ignorestatus(`zola $command $zola_args`))) ? 0 : 1
 end

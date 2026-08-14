@@ -4,7 +4,7 @@ Executes [Xranklin](https://github.com/tlienart/Xranklin.jl)-style code fences
 and emits Zola-ready markdown with ANSI-colored `<pre>` blocks.
 Everything that is not an executable fence passes through untouched.
 
-The authoring syntax is unchanged from Xranklin:
+The authoring syntax extends Xranklin's:
 
 - ` ```>name ` julia mode: expressions are echoed and evaluated one by one,
   like the REPL, with `ans` support and trailing-`;` result suppression;
@@ -14,6 +14,13 @@ The authoring syntax is unchanged from Xranklin:
 - ` ```!name ` plain mode: code is included silently and shown as a regular
   ` ```julia ` block; `# hideall` hides the whole block, a trailing `# hide`
   hides single lines.
+
+One extension over Xranklin: a fence whose code is *supposed* to error must
+say so with an ` allow-error` flag, e.g. ` ```>name allow-error `. The error
+then renders REPL-style like any other output (and the build warns if the
+fence stops erroring, so stale flags cannot linger). Without the flag, an
+erroring fence still renders REPL-style but fails the build — see
+"Strictness" below.
 
 Named fences share one sandbox module per page.
 If the page's directory contains a `Project.toml`, that environment is activated while the page runs.
@@ -66,5 +73,15 @@ PATH and must run from the repository root (next to `zola.toml`). CI runs
 `preprocess` and then calls `zola build`/`zola check` directly so the pages
 are only executed once.
 
-Fence errors render REPL-style in the output (some pages rely on this) and
-are summarized at the end of the run; they do not fail the build.
+## Strictness
+
+Two kinds of broken fence are distinguished:
+
+- **Broken markdown** — an unclosed fence, or an executable fence with
+  trailing junk (say, a misspelled flag) — always aborts with an error
+  naming the page and line. There is no legitimate page that contains one.
+- **Fence code that errors** renders the error REPL-style in the output and
+  is summarized at the end of the run. `preprocess`, `build` and `check`
+  then exit non-zero unless the fence is marked ` allow-error`; `serve` only
+  reports and keeps the dev server running, since broken intermediate saves
+  are normal while editing.

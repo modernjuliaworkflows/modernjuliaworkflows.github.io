@@ -64,6 +64,9 @@ x + 1
 - ` ```;name ` — shell mode;
 - ` ```!name ` — script mode: the code runs silently and is shown as a plain ` ```julia ` block, followed by its printed output. A `# hideall` comment hides the whole block, and a trailing `# hide` hides a single line.
 
+A code block whose error is part of the lesson must be marked with an ` allow-error` flag, e.g. ` ```>name allow-error `: the error message then renders like any other REPL output.
+Without the flag, an erroring code block fails the site build, as does any unclosed fence.
+
 All named fences on a page share one sandbox module, so later blocks can use variables defined in earlier ones.
 Two conventions replace explicit setup code:
 

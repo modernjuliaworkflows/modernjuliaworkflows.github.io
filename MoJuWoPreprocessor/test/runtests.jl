@@ -1,7 +1,7 @@
 using IOCapture: IOCapture
 using Test
 using MoJuWoPreprocessor
-using MoJuWoPreprocessor: EXEC_FENCE_RE
+using MoJuWoPreprocessor: EXEC_FENCE_RE, FenceSyntaxError
 
 include("common.jl")
 
@@ -15,15 +15,18 @@ cli(args...) = IOCapture.capture(() -> MoJuWoPreprocessor.main(collect(String, a
         for line in (
                 "```>repl-example", "```>\$-example", "```?help", "```]pkg-example",
                 "```;sh", "```!", "```>", "```!name_with_underscore",
+                "```>err allow-error", "```! allow-error",
             )
             @test match(EXEC_FENCE_RE, line) !== nothing
         end
         for line in (
                 "```julia", "```julia-repl", "````markdown", "``` >x", "```bash",
-                "```julia @distributed-sum", "text", "",
+                "```julia @distributed-sum", "text", "", "```>err allowerror",
             )
             @test match(EXEC_FENCE_RE, line) === nothing
         end
+        @test match(EXEC_FENCE_RE, "```>err allow-error")[3] == "allow-error"
+        @test match(EXEC_FENCE_RE, "```>err")[3] === nothing
     end
 
     @testset "CLI dispatch" begin
@@ -57,9 +60,9 @@ cli(args...) = IOCapture.capture(() -> MoJuWoPreprocessor.main(collect(String, a
         end
         @test got == want
 
-        # The intentional error fence is recorded but does not abort the run.
-        @test haskey(failures, "page/index.md")
-        @test any(e -> occursin("DomainError", e.message), failures["page/index.md"])
+        # The intentional error fence is marked `allow-error`: it renders
+        # REPL-style (checked below) without being reported as a failure.
+        @test isempty(failures)
 
         # Targeted checks, readable without diffing the reference output.
         @test occursin("<span class=\"sgr32\"><span class=\"sgr1\">julia&gt;</span></span> x = 21", got)
@@ -80,5 +83,51 @@ cli(args...) = IOCapture.capture(() -> MoJuWoPreprocessor.main(collect(String, a
         @test occursin("\\tldr{", got)                      # other content untouched
         @test occursin("```julia\nunexecuted() = \"not run\"\n```", got)
         @test occursin("inner() = 1", got)                  # nested fence left intact
+    end
+
+    @testset "strict fence handling" begin
+        tmp = mktempdir()
+        render(text, rel) = process_page(text, rel; pagedir = tmp, workdir = tmp)
+
+        # An unsanctioned error renders REPL-style and is reported...
+        out, errors = render("```>boom\nsqrt(-1)\n```\n", "unsanctioned.md")
+        @test occursin("DomainError", out)
+        @test length(errors) == 1
+        # ...and `allow-error` sanctions it.
+        out, errors = @test_logs render(
+            "```>boom allow-error\nsqrt(-1)\n```\n", "sanctioned.md"
+        )
+        @test occursin("DomainError", out)
+        @test isempty(errors)
+        # A stale `allow-error` mark warns so it cannot linger unnoticed.
+        _, errors = @test_logs (:warn, r"did not error") render(
+            "```>fine allow-error\n1 + 1\n```\n", "stale.md"
+        )
+        @test isempty(errors)
+
+        # Structurally broken fences abort the page: unclosed executable
+        # fences, unclosed plain fences, and executable fences with trailing
+        # junk (here a misspelled flag).
+        @test_throws FenceSyntaxError render("```>unclosed\n1 + 1\n", "u1.md")
+        @test_throws FenceSyntaxError render("```julia\nunclosed\n", "u2.md")
+        @test_throws FenceSyntaxError render("```>x allow-errors\n1\n```\n", "u3.md")
+        err = try
+            render("text\n\n```>oops\n1 + 1\n", "location.md")
+        catch e
+            e
+        end
+        @test err isa FenceSyntaxError
+        @test occursin("location.md:3", sprint(showerror, err))
+
+        # The CLI turns both kinds of brokenness into exit code 1.
+        cd(mktempdir()) do
+            mkpath("s")
+            write("s/page.md", "```>ok\n1 + 1\n```\n")
+            @test cli("preprocess", "s", "out") == 0
+            write("s/page.md", "```>bad\nsqrt(-1)\n```\n")
+            @test cli("preprocess", "s", "out") == 1
+            write("s/page.md", "```>bad\n1 + 1\n")
+            @test cli("preprocess", "s", "out") == 1
+        end
     end
 end

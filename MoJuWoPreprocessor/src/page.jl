@@ -1,9 +1,22 @@
 # Page processing: scan the authored markdown, execute fences, and pass
 # everything else through untouched.
 
+# A structurally broken fence: unclosed, or an executable fence with trailing
+# junk. These always abort the page (and thereby fail the build) — unlike
+# fence *code* that errors, which is reported via `PageContext.errors`.
+struct FenceSyntaxError <: Exception
+    page::String
+    line::Int
+    message::String
+end
+Base.showerror(io::IO, e::FenceSyntaxError) =
+    print(io, e.page, ":", e.line, ": ", e.message)
+
 # Executable fences: exactly three backticks, a mode character, and a name
 # that may contain any non-space characters (`$`, `-`, ...) or be empty.
-const EXEC_FENCE_RE = r"^```([!>?\];])(\S*)\s*$"
+# An ` allow-error` flag marks a fence whose code is expected to error: the
+# error renders REPL-style instead of failing the build.
+const EXEC_FENCE_RE = r"^```([!>?\];])(\S*)(?:\s+(allow-error))?\s*$"
 const FENCE_OPEN_RE = r"^(`{3,})(.*)$"
 const FENCE_CLOSE_RE = r"^(`{3,})\s*$"
 
@@ -39,9 +52,10 @@ end
 
 function emit_exec_fence!(
         out::IOBuffer, ctx::PageContext, mode::Char, name::String,
-        code::String
+        code::String, allow_error::Bool
     )
     label = isempty(name) ? string(mode) : name
+    nerrors = length(ctx.errors)
     if mode == '!'
         code_md, output = exec_plain(ctx, code, label)
         if !isempty(code_md)
@@ -56,6 +70,13 @@ function emit_exec_fence!(
             exec_shell(ctx, code, label)
         emit_html_block!(out, repl_block_html(ansi))
     end
+    if allow_error
+        if length(ctx.errors) > nerrors
+            resize!(ctx.errors, nerrors)
+        else
+            @warn "fence is marked `allow-error` but did not error" page = ctx.relpath fence = label
+        end
+    end
     return nothing
 end
 
@@ -63,8 +84,11 @@ end
     process_page(text, relpath; pagedir, workdir) -> (output, errors)
 
 Execute the fences of one authored page and return the markdown Zola should
-build, plus the list of fence errors (rendered REPL-style in the output, but
-reported so the build can summarize them).
+build, plus the list of fence errors (rendered REPL-style in the output, and
+reported so the build can fail on them). Errors in fences marked
+`allow-error` are sanctioned and not reported. Structurally broken fences —
+unclosed, or an executable fence with trailing junk — throw a
+[`FenceSyntaxError`](@ref) instead.
 
 If `pagedir` contains a `Project.toml`, that environment is active while the
 page runs (restored afterwards). Fences run with the working directory set to
@@ -93,17 +117,32 @@ function emit_page!(out::IOBuffer, ctx::PageContext, lines::Vector{SubString{Str
         mfence = match(FENCE_OPEN_RE, line)
         if mexec !== nothing
             j, closed = fence_extent(lines, i)
-            body = lines[(i + 1):(closed ? j - 1 : j)]
+            closed || throw(FenceSyntaxError(ctx.relpath, i, "unclosed fence `$line`"))
+            body = lines[(i + 1):(j - 1)]
             emit_exec_fence!(
                 out, ctx, (mexec.captures[1]::SubString)[1],
-                String(mexec.captures[2]::SubString), join(body, '\n')
+                String(mexec.captures[2]::SubString), join(body, '\n'),
+                mexec.captures[3] !== nothing
             )
             i = j + 1
         elseif mfence !== nothing
             j, closed = fence_extent(lines, i)
+            closed || throw(FenceSyntaxError(ctx.relpath, i, "unclosed fence `$line`"))
             info = strip(mfence.captures[2]::SubString)
-            if info == "julia-repl" && length(mfence.captures[1]::SubString) == 3
-                body = lines[(i + 1):(closed ? j - 1 : j)]
+            exact = length(mfence.captures[1]::SubString) == 3
+            # A three-backtick fence whose info string starts with a mode
+            # character but did not parse as an executable fence is a typo
+            # (bad flag, stray space), not content.
+            if exact && !isempty(info) && info[1] in "!>?];"
+                throw(
+                    FenceSyntaxError(
+                        ctx.relpath, i,
+                        "malformed executable fence `$line`; expected ```<mode><name> with an optional ` allow-error` flag"
+                    )
+                )
+            end
+            if exact && info == "julia-repl"
+                body = lines[(i + 1):(j - 1)]
                 emit_html_block!(out, render_static_repl(body))
             else
                 foreach(l -> println(out, l), lines[i:j])
