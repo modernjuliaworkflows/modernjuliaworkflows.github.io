@@ -23,7 +23,7 @@ title = "Going further"
 * [Introduction to Julia Course](https://github.com/csc-training/julia-introduction) by [CSC Training](https://github.com/csc-training)
 * [Julia for Economists](https://github.com/just-cameron/julia-bootcamp-2022) by [Cameron Pfiffer](https://github.com/just-cameron)
 * [Julia for High-Performance Computing](https://github.com/carstenbauer/JuliaUCL24) by [Carsten Bauer](https://github.com/carstenbauer)
-* [Julia programming for ML](https://adrhill.github.io/julia-ml-course/) by [Adrian Hill](https://github.com/adrhill/adrhill) 
+* [Julia programming for ML](https://adrhill.github.io/julia-ml-course/) by [Adrian Hill](https://github.com/adrhill/adrhill)
 * [JuliaNotes.jl](https://m3g.github.io/JuliaNotes.jl/stable/) by the [Martínez Molecular Modeling Group](https://github.com/m3g)
 * [Learn X in Y Minutes Where X=Julia](https://learnxinyminutes.com/docs/julia/) by [Leah Hanson et al.](https://github.com/adambard/learnxinyminutes-docs/blame/master/julia.md)
 

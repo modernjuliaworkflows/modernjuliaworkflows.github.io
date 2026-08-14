@@ -12,9 +12,11 @@ to pages whose source path ends with one of the given paths. Returns a
 `Dict` mapping page paths to their fence errors; fence errors do not abort
 the build.
 """
-function process_tree(srcdir::AbstractString, outdir::AbstractString;
-                      workdir::AbstractString = joinpath(pwd(), "_workdir"),
-                      only::Vector{String} = String[])
+function process_tree(
+        srcdir::AbstractString, outdir::AbstractString;
+        workdir::AbstractString = joinpath(pwd(), "_workdir"),
+        only::Vector{String} = String[]
+    )
     pages = String[]
     for (root, _dirs, files) in walkdir(srcdir), f in files
         endswith(f, ".md") && push!(pages, relpath(joinpath(root, f), srcdir))
@@ -22,12 +24,14 @@ function process_tree(srcdir::AbstractString, outdir::AbstractString;
     sort!(pages)
     if !isempty(only)
         wanted = normpath.(only)
-        pages = [p for p in pages if
-                 any(w -> endswith(normpath(joinpath(srcdir, p)), w), wanted)]
+        pages = [
+            p for p in pages if
+                any(w -> endswith(normpath(joinpath(srcdir, p)), w), wanted)
+        ]
         isempty(pages) && error("--only matched no pages: ", join(only, ", "))
     end
     mkpath(workdir)
-    failures = Dict{String,Vector{FenceError}}()
+    failures = Dict{String, Vector{FenceError}}()
     start = time()
     # Keep Pkg from precompiling mid-page; CI precompiles the environments up
     # front and locally it only causes noise in the captured fence output.
@@ -35,9 +39,11 @@ function process_tree(srcdir::AbstractString, outdir::AbstractString;
         for rel in pages
             src = joinpath(srcdir, rel)
             @info "preprocess: $rel"
-            output, errors = process_page(read(src, String), rel;
-                                          pagedir = dirname(abspath(src)),
-                                          workdir = workdir)
+            output, errors = process_page(
+                read(src, String), rel;
+                pagedir = dirname(abspath(src)),
+                workdir = workdir
+            )
             dst = joinpath(outdir, rel)
             mkpath(dirname(dst))
             write(dst, output)
@@ -60,7 +66,7 @@ end
 Map every `*.md` page under `srcdir` (as a path relative to it) to its mtime.
 """
 function page_mtimes(srcdir::AbstractString)
-    times = Dict{String,Float64}()
+    times = Dict{String, Float64}()
     for (root, _dirs, files) in walkdir(srcdir), f in files
         endswith(f, ".md") || continue
         path = joinpath(root, f)
@@ -77,9 +83,11 @@ re-preprocess any page whose mtime changes. Zola's own watcher sees the
 updated output and live-reloads the browser. Runs until `zola serve` exits
 (propagating its exit code) or Ctrl-C stops both processes.
 """
-function serve(srcdir::AbstractString, outdir::AbstractString;
-               workdir::AbstractString, only::Vector{String} = String[],
-               zola_args::Vector{String} = String[], interval::Real = 0.5)
+function serve(
+        srcdir::AbstractString, outdir::AbstractString;
+        workdir::AbstractString, only::Vector{String} = String[],
+        zola_args::Vector{String} = String[], interval::Real = 0.5
+    )
     # Snapshot before the initial pass so pages edited while it runs are
     # caught by the first poll rather than silently absorbed.
     mtimes = page_mtimes(srcdir)

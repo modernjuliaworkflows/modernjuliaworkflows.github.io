@@ -12,12 +12,16 @@ cli(args...) = IOCapture.capture(() -> MoJuWoPreprocessor.main(collect(String, a
     include("linting.jl")
 
     @testset "executable fence regex" begin
-        for line in ("```>repl-example", "```>\$-example", "```?help", "```]pkg-example",
-                     "```;sh", "```!", "```>", "```!name_with_underscore")
+        for line in (
+                "```>repl-example", "```>\$-example", "```?help", "```]pkg-example",
+                "```;sh", "```!", "```>", "```!name_with_underscore",
+            )
             @test match(EXEC_FENCE_RE, line) !== nothing
         end
-        for line in ("```julia", "```julia-repl", "````markdown", "``` >x", "```bash",
-                     "```julia @distributed-sum", "text", "")
+        for line in (
+                "```julia", "```julia-repl", "````markdown", "``` >x", "```bash",
+                "```julia @distributed-sum", "text", "",
+            )
             @test match(EXEC_FENCE_RE, line) === nothing
         end
     end

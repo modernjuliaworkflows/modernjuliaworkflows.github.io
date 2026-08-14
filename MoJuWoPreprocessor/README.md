@@ -1,6 +1,6 @@
 # MoJuWoPreprocessor
 
-Replays Xranklin's executable code fences and emits Zola-ready markdown with ANSI-colored `<pre>` blocks. 
+Replays Xranklin's executable code fences and emits Zola-ready markdown with ANSI-colored `<pre>` blocks.
 Everything that is not an executable fence passes through untouched.
 
 The authoring syntax is unchanged from Xranklin:
@@ -14,14 +14,14 @@ The authoring syntax is unchanged from Xranklin:
   ` ```julia ` block; `# hideall` hides the whole block, a trailing `# hide`
   hides single lines.
 
-Named fences share one sandbox module per page. 
+Named fences share one sandbox module per page.
 If the page's directory contains a `Project.toml`, that environment is activated while the page runs.
-Fences execute with the working directory set to a per-page scratch directory under the (gitignored) `_workdir/`, 
+Fences execute with the working directory set to a per-page scratch directory under the (gitignored) `_workdir/`,
 so relative paths in fences never touch the repository.
 
 ## Usage
 
-The package follows the [Julia app](https://pkgdocs.julialang.org/v1/apps/) conventions; 
+The package follows the [Julia app](https://pkgdocs.julialang.org/v1/apps/) conventions;
 run it from the repository root:
 
 ```bash
@@ -33,15 +33,15 @@ julia --project=MoJuWoPreprocessor -m MoJuWoPreprocessor <command>
 Commands:
 
 - `preprocess <srcdir> <outdir>` executes every `*.md` page under `<srcdir>`
-  and writes it to the same relative path under `<outdir>`. 
-  For this site that is `src` (the authored pages) and `content` 
+  and writes it to the same relative path under `<outdir>`.
+  For this site that is `src` (the authored pages) and `content`
   (the generated, gitignored directory that Zola builds).
-- `serve` preprocesses `src/` into `content/`, starts `zola serve`, 
-  and then watches the pages under `src/`: 
-  saving one re-preprocesses just that page, which Zola's own watcher picks up for live reload. 
-  Because pages execute in-process, packages loaded on the first pass stay loaded, 
-  so re-processing a page takes seconds instead of a cold start. 
-  Note that warm re-runs share package-level global state with earlier runs; 
+- `serve` preprocesses `src/` into `content/`, starts `zola serve`,
+  and then watches the pages under `src/`:
+  saving one re-preprocesses just that page, which Zola's own watcher picks up for live reload.
+  Because pages execute in-process, packages loaded on the first pass stay loaded,
+  so re-processing a page takes seconds instead of a cold start.
+  Note that warm re-runs share package-level global state with earlier runs;
   the cold build remains the source of truth.
 - `build` / `check` preprocess `src/` into `content/`, then run the corresponding Zola command.
 - `clean` removes `content/`, `public/` and the workdir.

@@ -176,7 +176,7 @@ If you don't want to use VSCode at all, other options include [Emacs](https://ww
 Check out [JuliaEditorSupport](https://github.com/JuliaEditorSupport) to see if your favorite IDE has a Julia plugin.
 The available functionalities should be roughly similar to those of VSCode, at least for the basic aspects like running code.
 
-You may also want to download the [JuliaMono](https://juliamono.netlify.app/) font for esthetically pleasant unicode handling. 
+You may also want to download the [JuliaMono](https://juliamono.netlify.app/) font for esthetically pleasant unicode handling.
 {% </advanced> %}
 
 ## Running code
@@ -357,7 +357,7 @@ Once in an environment, the packages you `]add` will be listed in two files `som
 
 If you haven't activated any local project, packages will be installed in the default environment, called `@v1.X` after the active version of Julia (note the `@` before the name).
 Packages installed that way are available no matter which local environment is active, because of "environment [stacking](https://docs.julialang.org/en/v1/manual/code-loading/#Environment-stacks)".
-It is recommended to keep the default environment very light to avoid dependency conflicts. It should contain only essential development tools. 
+It is recommended to keep the default environment very light to avoid dependency conflicts. It should contain only essential development tools.
 Create a separate local environment for each of your projects to contain the dependencies specific to that project.
 
 {% <vscode> %}

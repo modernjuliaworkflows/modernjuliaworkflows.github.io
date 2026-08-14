@@ -20,8 +20,12 @@ function make_sandbox(relpath::AbstractString)
     name = Symbol("MJW_", replace(first(splitext(relpath)), r"[^A-Za-z0-9]+" => "_"))
     # Evaluating a `module` expression (as SafeTestsets does) gives the sandbox
     # the standard `eval`/`include` definitions, which a raw `Module()` lacks.
-    return Core.eval(Main, Expr(:module, true, name,
-                                Expr(:block, :(ans = nothing))))::Module
+    return Core.eval(
+        Main, Expr(
+            :module, true, name,
+            Expr(:block, :(ans = nothing))
+        )
+    )::Module
 end
 
 # Pkg warns when its REPL mode is driven programmatically; drop that noise
@@ -32,19 +36,25 @@ end
 Logging.min_enabled_level(l::PkgWarningFilter) = Logging.min_enabled_level(l.parent)
 Logging.shouldlog(l::PkgWarningFilter, args...) = Logging.shouldlog(l.parent, args...)
 Logging.catch_exceptions(l::PkgWarningFilter) = Logging.catch_exceptions(l.parent)
-function Logging.handle_message(l::PkgWarningFilter, level, message, _module, group, id,
-                                file, line; kwargs...)
+function Logging.handle_message(
+        l::PkgWarningFilter, level, message, _module, group, id,
+        file, line; kwargs...
+    )
     occursin("intended for interactive use", string(message)) && return nothing
-    return Logging.handle_message(l.parent, level, message, _module, group, id,
-                                  file, line; kwargs...)
+    return Logging.handle_message(
+        l.parent, level, message, _module, group, id,
+        file, line; kwargs...
+    )
 end
 
 # IOCapture merges stdout/stderr and installs a ConsoleLogger on the captured
 # stream; io_context forces :color so the output carries ANSI codes even in
 # non-interactive builds.
 function capture(f)
-    return IOCapture.capture(; rethrow = InterruptException, color = true,
-                             io_context = [:color => true]) do
+    return IOCapture.capture(;
+        rethrow = InterruptException, color = true,
+        io_context = [:color => true]
+    ) do
         with_logger(PkgWarningFilter(current_logger())) do
             f()
         end
@@ -157,7 +167,7 @@ function exec_help(ctx::PageContext, code::AbstractString, label::AbstractString
         k > 1 && println(io)
         print(io, help_prompt(), query, '\n')
         c = capture() do
-            expr = if hasmethod(REPL.helpmode, Tuple{IO,String,Module})
+            expr = if hasmethod(REPL.helpmode, Tuple{IO, String, Module})
                 REPL.helpmode(devnull, String(query), mod)
             else
                 REPL.helpmode(devnull, String(query))

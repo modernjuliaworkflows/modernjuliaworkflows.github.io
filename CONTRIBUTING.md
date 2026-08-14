@@ -27,7 +27,7 @@ The site is built in two steps:
 2. [Zola](https://www.getzola.org) renders `content/` into the static site.
 
 This executes every page (the first pass will take some time),
-serves the site, and watches `src/`: 
+serves the site, and watches `src/`:
 saving a page re-runs just that page and live-reloads the browser.
 See [MoJuWoPreprocessor/README.md](MoJuWoPreprocessor/README.md) for the remaining commands (e.g., `preprocess`, `build`, `check`, `clean`).
 
@@ -81,8 +81,8 @@ A quick summary of the section.
 {% </tldr> %}
 ```
 
-Everything else is standard [Zola](https://www.getzola.org/documentation/): 
-the layout lives in `templates/`, 
+Everything else is standard [Zola](https://www.getzola.org/documentation/):
+the layout lives in `templates/`,
 written as [Tera templates](https://www.getzola.org/documentation/templates/overview/),
 styles live in `static/css/`,
 and the site configuration in `zola.toml`.

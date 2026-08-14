@@ -11,7 +11,7 @@
     border-radius: 10px;
     margin-bottom: 1em;
   }
-  
+
   .repl-help h1,h2,h3 {
     font-size: 1em;
     font-weight: 500;
@@ -106,7 +106,7 @@ img[alt=badge] {
 .language-toml::before       {content: "TOML";}
 .language-ini::before       {content: "TOML";}
 .language-julia::before      {content: "Julia";}
-/* Special Franklin tags for Julia REPL modes */ 
+/* Special Franklin tags for Julia REPL modes */
 .language-julia-repl::before {content: "Julia REPL";}
 .julia-repl::before          {content: "Julia REPL";}
 .julia-repl-pkg::before      {content: "Julia REPL: Pkg mode";}
@@ -118,9 +118,8 @@ img[alt=badge] {
 .julia-repl-pkg      .language-julia::before {content: "";}
 .julia-repl-help     .language-julia::before {content: "";}
 .julia-repl-shell    .language-julia::before {content: "";}
-/* Julia code in doc strings printed via REPL Help mode is sometimes incorrectly 
-recognized as Ruby code. Since we don't have any Ruby code in MJW, this is a quick fix. 
+/* Julia code in doc strings printed via REPL Help mode is sometimes incorrectly
+recognized as Ruby code. Since we don't have any Ruby code in MJW, this is a quick fix.
 TODO: remove when not required in Xranklin.
 */
 .language-ruby::before {content: "Julia";}
-

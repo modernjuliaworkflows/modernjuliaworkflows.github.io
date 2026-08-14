@@ -37,8 +37,10 @@ function emit_html_block!(out::IOBuffer, html::AbstractString)
     return nothing
 end
 
-function emit_exec_fence!(out::IOBuffer, ctx::PageContext, mode::Char, name::String,
-                          code::String)
+function emit_exec_fence!(
+        out::IOBuffer, ctx::PageContext, mode::Char, name::String,
+        code::String
+    )
     label = isempty(name) ? string(mode) : name
     if mode == '!'
         code_md, output = exec_plain(ctx, code, label)
@@ -49,9 +51,9 @@ function emit_exec_fence!(out::IOBuffer, ctx::PageContext, mode::Char, name::Str
         emit_html_block!(out, repl_block_html(output; class = "code-output ansi"))
     else
         ansi = mode == '>' ? exec_julia(ctx, code, label) :
-               mode == '?' ? exec_help(ctx, code, label) :
-               mode == ']' ? exec_pkg(ctx, code, label) :
-               exec_shell(ctx, code, label)
+            mode == '?' ? exec_help(ctx, code, label) :
+            mode == ']' ? exec_pkg(ctx, code, label) :
+            exec_shell(ctx, code, label)
         emit_html_block!(out, repl_block_html(ansi))
     end
     return nothing
@@ -92,8 +94,10 @@ function emit_page!(out::IOBuffer, ctx::PageContext, lines::Vector{SubString{Str
         if mexec !== nothing
             j, closed = fence_extent(lines, i)
             body = lines[(i + 1):(closed ? j - 1 : j)]
-            emit_exec_fence!(out, ctx, (mexec.captures[1]::SubString)[1],
-                             String(mexec.captures[2]::SubString), join(body, '\n'))
+            emit_exec_fence!(
+                out, ctx, (mexec.captures[1]::SubString)[1],
+                String(mexec.captures[2]::SubString), join(body, '\n')
+            )
             i = j + 1
         elseif mfence !== nothing
             j, closed = fence_extent(lines, i)
@@ -116,11 +120,15 @@ function emit_page!(out::IOBuffer, ctx::PageContext, lines::Vector{SubString{Str
     return nothing
 end
 
-function process_page(text::AbstractString, relpath::AbstractString;
-                      pagedir::AbstractString, workdir::AbstractString)
+function process_page(
+        text::AbstractString, relpath::AbstractString;
+        pagedir::AbstractString, workdir::AbstractString
+    )
     lines = split(String(text), '\n')
-    ctx = PageContext(make_sandbox(relpath), String(relpath), abspath(pagedir),
-                      FenceError[])
+    ctx = PageContext(
+        make_sandbox(relpath), String(relpath), abspath(pagedir),
+        FenceError[]
+    )
     out = IOBuffer()
     pagework = normpath(joinpath(abspath(workdir), dirname(relpath)))
     mkpath(pagework)

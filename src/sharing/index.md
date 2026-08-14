@@ -32,7 +32,7 @@ The following code gives you a basic file structure to start with:
 
 ```>pkgtemplates1
 using PkgTemplates
-t = Template(user="myuser", interactive=false);  
+t = Template(user="myuser", interactive=false);
 ```
 
 ```!pkgtemplates2
@@ -55,10 +55,10 @@ To work on the package further, we switch to it's environment or "develop" it in
 ```julia-repl
 julia> using Pkg # remember, you can equivalently do all that from the pkg REPL after pressing ]
 
-julia> Pkg.activate(path="MyAwesomePackage") 
+julia> Pkg.activate(path="MyAwesomePackage")
 ```
 
-or 
+or
 
 ```julia-repl
 julia> using Pkg
@@ -259,7 +259,7 @@ You may find the following Documenter plugins useful:
 
 1. [DocumenterCitations.jl](https://github.com/JuliaDocs/DocumenterCitations.jl) allows you to insert citations inside the documentation website from a BibTex file.
 2. [DocumenterInterLinks.jl](https://github.com/JuliaDocs/DocumenterInterLinks.jl) allow you to cross-reference external documentations (Documenter and Sphinx).
- 
+
 Assuming you are looking for an alternative to Documenter.jl, you can try out [Pollen.jl](https://github.com/lorenzoh/Pollen.jl).
 In another category, [Replay.jl](https://github.com/AtelierArith/Replay.jl) allows you to replay instructions entered into your terminal as an ASCII video, which is nice for tutorials.
 {% </advanced> %}
@@ -351,7 +351,7 @@ Part of interoperability is also flexibility and customization: the [Preferences
 Some package developers may need to define what kind of behavior they expect from a certain type, or what a certain method should do.
 When writing it in the documentation is not enough, a formal testable specification becomes necessary.
 This problem of "interfaces" does not yet have a definitive solution in Julia, but several options have been proposed: [Interfaces.jl](https://github.com/rafaqz/Interfaces.jl), [RequiredInterfaces.jl](https://github.com/Seelengrab/RequiredInterfaces.jl) and [PropCheck.jl](https://github.com/Seelengrab/PropCheck.jl) are all worth checking out.
-    
+
 {% </advanced> %}
 
 ## Collaboration
