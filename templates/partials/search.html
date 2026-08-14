@@ -1,0 +1,32 @@
+{#- Site search dialog, opened from the sidebar button ("/" or Ctrl/Cmd+K).
+    js/search.js shows two result tiers:
+    1. section headings, collected below from each page's table of contents so
+       results link straight to the anchor (Zola's search index is page-level
+       only, and every page here is long);
+    2. full-text page matches from the elasticlunr index, fetched lazily. -#}
+<dialog id="search-dialog" aria-label="Site search">
+  <input id="search-input" type="search" placeholder="Search…" autocomplete="off" spellcheck="false">
+  <div id="search-results"></div>
+</dialog>
+{%- set home = get_section(path="_index.md") %}
+{%- set writing = get_page(path="writing/index.md") %}
+{%- set sharing = get_page(path="sharing/index.md") %}
+{%- set optimizing = get_page(path="optimizing/index.md") %}
+{%- set further = get_page(path="further/index.md") %}
+<script>
+  window.searchHeadings = [
+  {%- for e in [home, writing, sharing, optimizing, further] %}
+  {%- for a in e.toc %}
+  {%- for b in a.children %}
+    { "page": {{ e.title | json_encode | safe }}, "title": {{ b.title | json_encode | safe }}, "url": {{ b.permalink | json_encode | safe }} },
+  {%- for c in b.children %}
+  {%- set label = b.title ~ " · " ~ c.title %}
+    { "page": {{ e.title | json_encode | safe }}, "title": {{ label | json_encode | safe }}, "url": {{ c.permalink | json_encode | safe }} },
+  {%- endfor %}
+  {%- endfor %}
+  {%- endfor %}
+  {%- endfor %}
+  ];
+</script>
+<script src="/elasticlunr.min.js"></script>
+<script src="/js/search.js"></script>

@@ -10,7 +10,13 @@ generate_feeds = true
 feed_filenames = ["feed.xml"]
 
 compile_sass = false
-build_search_index = false
+build_search_index = true
+
+[search]
+# The JSON index is fetched lazily by js/search.js on first search,
+# instead of a script loaded on every page.
+# Zola emits it (and elasticlunr.min.js) at the site root.
+index_format = "elasticlunr_json"
 
 [markdown]
 # Fences are highlighted at build time:
