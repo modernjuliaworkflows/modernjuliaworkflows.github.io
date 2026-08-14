@@ -1,6 +1,7 @@
 # MoJuWoPreprocessor
 
-Replays Xranklin's executable code fences and emits Zola-ready markdown with ANSI-colored `<pre>` blocks.
+Executes [Xranklin](https://github.com/tlienart/Xranklin.jl)-style code fences
+and emits Zola-ready markdown with ANSI-colored `<pre>` blocks.
 Everything that is not an executable fence passes through untouched.
 
 The authoring syntax is unchanged from Xranklin:
