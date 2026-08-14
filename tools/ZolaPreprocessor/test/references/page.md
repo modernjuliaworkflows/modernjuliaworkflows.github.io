@@ -165,6 +165,12 @@ visible_line = hidden_setup + 1;
 2
 
 <span class="sgr34"><span class="sgr1">(demo) pkg&gt;</span></span> st
+
+<span class="sgr38_2" style="color:#ffa657"><span class="sgr1">infil&gt;</span></span> @locals
+
+<span class="sgr38_2" style="color:#ffa657"><span class="sgr1">1|debug&gt;</span></span> n
+
+<span class="sgr38_2" style="color:#ffa657"><span class="sgr1">1|julia&gt;</span></span> k
 </pre>
 {% endraw %}
 

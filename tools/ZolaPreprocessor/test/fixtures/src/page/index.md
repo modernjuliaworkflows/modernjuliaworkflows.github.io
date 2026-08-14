@@ -116,6 +116,12 @@ julia> 1 + 1
 2
 
 (demo) pkg> st
+
+infil> @locals
+
+1|debug> n
+
+1|julia> k
 ```
 
 ## Passthrough

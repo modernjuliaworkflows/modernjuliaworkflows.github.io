@@ -40,6 +40,12 @@ pre.julia-repl.ansi::before {
   text-transform: uppercase;
 }
 
+/* Reserve room for the chip so it doesn't overlap the first code line. */
+pre[data-lang]:not([data-lang="plain"]),
+pre.julia-repl.ansi {
+  padding-top: 2.4em;
+}
+
 pre[data-lang]::before { content: attr(data-lang); }
 /* Giallo reports canonical grammar names; keep the labels the site used. */
 pre[data-lang="shellscript"]::before { content: "Shell"; }

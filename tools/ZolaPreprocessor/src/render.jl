@@ -3,7 +3,8 @@
 
 # Prompt text is wrapped in color + bold, closed by a full reset, which
 # ANSIColoredPrinters turns into `<span class="sgrNN"><span class="sgr1">`.
-ansi_prompt(text::AbstractString, color::Int) = string("\e[", color, "m\e[1m", text, "\e[0m ")
+ansi_prompt(text::AbstractString, color::Union{Int, String}) =
+    string("\e[", color, "m\e[1m", text, "\e[0m ")
 
 julia_prompt() = ansi_prompt("julia>", 32)
 help_prompt() = ansi_prompt("help?>", 33)
@@ -36,11 +37,19 @@ end
 
 # Hand-written ```julia-repl fences get their prompts colorized so they look
 # identical to executed fences (and need no `julia-repl` grammar in Zola).
+# Debugging prompts (Infiltrator, Debugger) have no slot in the 16-color
+# terminal palette; a truecolor escape renders them in the orange the
+# highlight.js setup used (#ffa657).
+const DEBUG_ORANGE = "38;2;255;166;87"
+
 const STATIC_PROMPTS = [
     (r"^julia> ", 32),
     (r"^help\?> ", 33),
     (r"^shell> ", 31),
     (r"^(?:\([^)]+\) )?pkg> ", 34),
+    (r"^infil> ", DEBUG_ORANGE),
+    (r"^\d+\|debug> ", DEBUG_ORANGE),
+    (r"^\d+\|julia> ", DEBUG_ORANGE),
 ]
 
 function colorize_repl_line(line::AbstractString)
