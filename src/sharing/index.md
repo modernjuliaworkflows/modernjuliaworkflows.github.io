@@ -180,7 +180,10 @@ Of course, there is more to code quality than just formatting.
 [Aqua.jl](https://github.com/JuliaTesting/Aqua.jl) provides a set of routines that examine other aspects of your package, from unused dependencies to ambiguous methods.
 It is usually a good idea to include the following in your tests:
 
-```>aqua
+<!-- TODO: temporary `allow-error`: Aqua's deps_compat check requires a
+compat entry for the Test stdlib, which PkgTemplates does not generate. -->
+
+```>aqua allow-error
 using Aqua, MyAwesomePackage
 Aqua.test_all(MyAwesomePackage)
 ```
