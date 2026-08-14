@@ -152,7 +152,7 @@ The packages [ProfileView.jl](https://github.com/timholy/ProfileView.jl) and [PP
 ProfileView.jl is simpler to use, but PProf is more featureful and is based on [pprof](https://github.com/google/pprof), an external tool maintained by Google which applies to more than just Julia code.
 Here we only demonstrate the former:
 
-```julia profileview-example
+```julia
 using ProfileView
 @profview do_work(some_input)
 ```
@@ -258,7 +258,7 @@ And again, you can also choose to error whenever an allocation occurs, with the 
 By annotating a function with `@check_allocs`, if the function is run and the compiler detects that it might allocate, it will throw an error.
 Alternatively, to ensure that non-allocating functions never regress in future versions of your code, you can write a test set to check allocations by providing the function and a concrete type-signature.
 
-```julia AllocCheck
+```julia
 @testset "non-allocating" begin
     @test isempty(AllocCheck.check_allocs(my_func, (Float64, Float64)))
 end
@@ -313,7 +313,7 @@ As packages in the standard library are already compiled, any `using` or `import
 Once PackageCompiler.jl is added to your global environment, activate a local environment for which you want to generate a sysimage, ensure all of the packages you want to compile are in its `Project.toml`, and run `create_sysimage` as in the example below.
 The filetype of `sysimage_path` differs by operating system: Linux has `.so`, MacOS has `.dylib`, and Windows has `.dll`.
 
-```julia packagecompiler-example
+```julia
 packages_to_compile = ["Makie", "DifferentialEquations"]
 create_sysimage(packages_to_compile; sysimage_path="MySysimage.so")
 ```
@@ -354,7 +354,7 @@ Multithreading is available on almost all modern hardware, whereas distributed c
 
 To enable multithreading with the built-in `Threads` library, use one of the following equivalent command line flags, and give either an integer or `auto`:
 
-```bash threads-flag
+```bash
 julia --threads 4
 julia -t auto
 ```
@@ -378,12 +378,13 @@ The macros `@spawn` and `@async` function similarly, but require more manual man
 When designing multithreaded code, you should generally try to write to shared memory as rarely as possible. Where it cannot be avoided, you need to be careful to avoid "race conditions", i.e. situations when competing threads try to write different things to the same memory location.
 It is usually a good idea to separate memory accesses with loop indices, as in the example below:
 
-```julia @threads-forloop
+```!threads-forloop
 results = zeros(Int, 4)
 Threads.@threads for i in 1:4
     results[i] = i^2
 end
 ```
+
 Almost always, it is [**not** a good idea to use `threadid()`](https://julialang.org/blog/2023/07/PSA-dont-use-threadid/).
 
 Even if you manage to avoid any race conditions in your multithreaded code, it is very easy to run into subtle performance issues (like [false sharing](https://en.wikipedia.org/wiki/False_sharing)). For these reasons, you might want to consider using a high-level package like [OhMyThreads.jl](https://github.com/JuliaFolds2/OhMyThreads.jl), which provides a user-friendly alternative to `Threads` and makes managing threads and their memory use much easier.
@@ -408,7 +409,7 @@ Hence, we can use `@distributed` to parallelise a for loop as before, but we hav
 We can delegate this responsibility to the standard library `SharedArrays`.
 However, in order for all workers to know about a function or module, we have to load it `@everywhere`:
 
-``` @distributed-forloop
+```julia
 using Distributed
 
 # Add additional workers then load code on the workers
@@ -431,7 +432,7 @@ In this case `@sync` is implied, as the reduction cannot happen unless all of th
 using Distributed  # hide
 ```
 
-```julia @distributed-sum
+```julia
 @distributed (+) for i in 1:4
     i^2
 end
@@ -500,7 +501,7 @@ With `MArray`, `MMatrix`, and `MVector`, data remains mutable as in normal array
 
 To handle mutable and immutable data structures with the same syntax, you can use [Accessors.jl](https://github.com/JuliaObjects/Accessors.jl):
 
-```julia accessors-example
+```!accessors-example
 using StaticArrays, Accessors
 
 sx = SA[1, 2, 3] # SA constructs an SArray
