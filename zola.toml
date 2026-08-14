@@ -13,25 +13,23 @@ compile_sass = false
 build_search_index = false
 
 [markdown]
-# Fences are highlighted at build time; executed REPL fences arrive from
-# tools/ZolaPreprocessor as pre-rendered HTML and are styled by css/ansi.css.
+# Fences are highlighted at build time:
+# executed REPL fences arrive from `tools/ZolaPreprocessor` as pre-rendered HTML and are styled by css/ansi.css.
 [markdown.highlighting]
 theme = "github-dark"
-# Put data-lang on the <pre> so CSS can render language label chips.
+# Put data-lang on the <pre> so CSS can render language label chips on code blocks.
 data_attr_position = "pre"
 
 [link_checker]
-# Known-broken external links, whitelisted individually (verified 2026-08-14)
-# so `zola check` still fails on any *new* breakage, external or internal.
+# Whitelist for known broken external links.
 skip_prefixes = [
     # Intentionally fake example URL in the prose.
     "https://github.com/myuser/",
-    # Real page; intel.com returns 403 to non-browser clients.
+    # Real page, but intel.com returns 403 to non-browser clients.
     "https://www.intel.com/",
 ]
 skip_anchor_prefixes = [
-    # GitHub prefixes heading ids with `user-content-`, so README anchors can
-    # never be verified by the checker (the linked targets do exist).
+    # GitHub prefixes heading ids with `user-content-`, so README anchors cannot be verified by the checker.
     "https://github.com/",
 ]
 

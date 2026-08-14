@@ -28,6 +28,7 @@ function process_tree(srcdir::AbstractString, outdir::AbstractString;
     end
     mkpath(workdir)
     failures = Dict{String,Vector{FenceError}}()
+    start = time()
     # Keep Pkg from precompiling mid-page; CI precompiles the environments up
     # front and locally it only causes noise in the captured fence output.
     withenv("JULIA_PKG_PRECOMPILE_AUTO" => "0") do
@@ -43,6 +44,8 @@ function process_tree(srcdir::AbstractString, outdir::AbstractString;
             isempty(errors) || (failures[rel] = errors)
         end
     end
+    n = length(pages)
+    @info "preprocessed Julia code blocks in $(round(time() - start; digits = 1))s"
     for (rel, errors) in sort!(collect(failures); by = first)
         for e in errors
             @warn "fence errored (rendered REPL-style)" page = rel fence = e.label e.message
@@ -81,7 +84,7 @@ function serve(srcdir::AbstractString, outdir::AbstractString;
     # caught by the first poll rather than silently absorbed.
     mtimes = page_mtimes(srcdir)
     process_tree(srcdir, outdir; workdir, only)
-    zola = run(`zola serve $zola_args`; wait = false)
+    zola = run(pipeline(`zola serve $zola_args`; stdout, stderr); wait = false)
     @info "watching $srcdir; saving a page re-preprocesses it (Ctrl-C stops)"
     # Without this, SIGINT kills Julia before the finally can reap Zola.
     Base.exit_on_sigint(false)
