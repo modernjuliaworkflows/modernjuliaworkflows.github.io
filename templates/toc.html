@@ -1,0 +1,25 @@
+{# In-content table of contents, restoring Franklin's `\toc`. The authored   #}
+{# markdown marks the spot with `<!-- toc -->`; the comment survives the     #}
+{# markdown pass, so the rendered content still carries it and the list      #}
+{# built from `headings` replaces it here. Markup matches what Xranklin      #}
+{# emitted: a flat list of the level-2 headings.                             #}
+
+{% component with_toc(content, headings) %}
+{%- set toc_html %}
+<div class="toc">
+  <ol>
+    {%- for h in headings %}
+    {%- if h.level == 2 %}
+    <li><a href="#{{ h.id }}">{{ h.title }}</a></li>
+    {%- endif %}
+    {%- for c in h.children %}
+    {%- if c.level == 2 %}
+    <li><a href="#{{ c.id }}">{{ c.title }}</a></li>
+    {%- endif %}
+    {%- endfor %}
+    {%- endfor %}
+  </ol>
+</div>
+{%- endset %}
+{{- content | replace(from="<!-- toc -->", to=toc_html) | safe }}
+{% endcomponent with_toc %}

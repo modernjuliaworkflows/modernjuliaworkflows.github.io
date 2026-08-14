@@ -74,11 +74,6 @@ html {
     TEXT GEOMETRY
 ================================================================== */
 
-.franklin-toc li {
-  /* Avoid clickable elements being too close together. */
-  margin: 0.6rem 0;
-}
-
 .franklin-content {
   position: relative;
   padding-left: 12.5%;
@@ -154,7 +149,7 @@ h6 {
   text-align: center;
 }
 
-.franklin-toc ol ol {
+.toc ol ol {
   list-style-type: lower-alpha;
 }
 

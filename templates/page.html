@@ -8,7 +8,7 @@
 {%- endif %}
 {% endblock %}
 
-{% block content %}{{ page.content | safe }}{% endblock %}
+{% block content %}{{<with_toc content={page.content} headings={page.toc} />}}{% endblock %}
 
 {% block foot_extra %}
 {%- if page.extra?.math %}

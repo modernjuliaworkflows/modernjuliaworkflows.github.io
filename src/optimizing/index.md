@@ -4,6 +4,8 @@ title = "Optimizing your code"
 
 # Optimizing your code
 
+<!-- toc -->
+
 ## Principles
 
 {% <tldr> %}

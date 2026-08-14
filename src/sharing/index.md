@@ -15,6 +15,8 @@ end
 
 In this post, you will learn about tools to initialize, structure and distribute Julia packages.
 
+<!-- toc -->
+
 ## Setup
 
 A vast majority of Julia packages are hosted on [GitHub](https://github.com/) (although less common, other options like [GitLab](https://gitlab.com/) are also possible).

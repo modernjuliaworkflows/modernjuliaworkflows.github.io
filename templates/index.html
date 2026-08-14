@@ -1,3 +1,3 @@
 {% extends "base.html" %}
 
-{% block content %}{{ section.content | safe }}{% endblock %}
+{% block content %}{{<with_toc content={section.content} headings={section.toc} />}}{% endblock %}

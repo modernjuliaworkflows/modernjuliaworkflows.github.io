@@ -39,9 +39,10 @@ Key properties:
 - Fences run with the working directory set to a per-page scratch directory under the
   gitignored `_workdir/`, so plain relative paths (`Pkg.generate("MyPackage")`) replace
   the `sitepath(...)` shim, and rendered code is exactly what a reader would type.
-- `\toc` disappears: the TOC is rendered in the sidebar from `page.toc`
-  (Zola cannot render an in-content TOC — shortcodes have no access to `page.toc`,
-  getzola/zola#584).
+- `\toc` becomes a `<!-- toc -->` marker in the authored markdown: shortcodes have no
+  access to `page.toc` (getzola/zola#584), so the `with_toc` component
+  (`templates/toc.html`) splices the list into the rendered content at the marker
+  instead. The sidebar TOC is likewise rendered from `page.toc`.
 
 ## Accepted tradeoffs (decided)
 
