@@ -44,6 +44,19 @@ t = Template(dir=pwd(), user="myuser", interactive=false);
 t("MyAwesomePackage")
 ```
 
+```!test-compat
+#hideall
+# Aqua's `deps_compat` check (below) demands a compat entry for the Test
+# stdlib, which PkgTemplates does not generate; a real package author
+# should add one just like this.
+using TOML
+project = TOML.parsefile("MyAwesomePackage/Project.toml")
+get!(project, "compat", Dict{String,Any}())["Test"] = "1"
+open("MyAwesomePackage/Project.toml", "w") do io
+    TOML.print(io, project)
+end
+```
+
 Then, you simply need to push this new folder to the remote repository <https://github.com/myuser/MyAwesomePackage.jl>, and you're ready to go.
 
 The steps described above, including creation of a GitHub repo and pushing your project to it, can also be comfortably done with the help of [PackageMaker.jl](https://github.com/Eben60/PackageMaker.jl), which is a graphical wrapper around [PkgTemplates.jl](https://github.com/JuliaCI/PkgTemplates.jl) with a couple features of its own.
@@ -180,10 +193,7 @@ Of course, there is more to code quality than just formatting.
 [Aqua.jl](https://github.com/JuliaTesting/Aqua.jl) provides a set of routines that examine other aspects of your package, from unused dependencies to ambiguous methods.
 It is usually a good idea to include the following in your tests:
 
-<!-- TODO: temporary `allow-error`: Aqua's deps_compat check requires a
-compat entry for the Test stdlib, which PkgTemplates does not generate. -->
-
-```>aqua allow-error
+```>aqua
 using Aqua, MyAwesomePackage
 Aqua.test_all(MyAwesomePackage)
 ```
