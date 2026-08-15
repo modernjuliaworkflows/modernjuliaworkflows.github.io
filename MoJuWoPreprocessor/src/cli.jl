@@ -35,13 +35,14 @@ function process_tree(
     end
     mkpath(workdir)
     failures = Dict{String, Vector{FenceError}}()
+    @info "⏱️ Preprocessing Julia code blocks. \nThis may take a minute (subsequent evaluations will be faster)."
     start = time()
     # Keep Pkg from precompiling mid-page; CI precompiles the environments up
     # front and locally it only causes noise in the captured fence output.
     withenv("JULIA_PKG_PRECOMPILE_AUTO" => "0") do
         for rel in pages
             src = joinpath(srcdir, rel)
-            @info "preprocess: $rel"
+            @info "...preprocessing $rel"
             output, errors = process_page(
                 read(src, String), rel;
                 pagedir = dirname(abspath(src)),
@@ -54,7 +55,7 @@ function process_tree(
         end
     end
     n = length(pages)
-    @info "preprocessed Julia code blocks in $(round(time() - start; digits = 1))s"
+    @info "✅ Preprocessed Julia code blocks in $(round(time() - start; digits = 1))s"
     for (rel, errors) in sort!(collect(failures); by = first)
         for e in errors
             @error "fence errored" page = rel fence = e.label e.message
