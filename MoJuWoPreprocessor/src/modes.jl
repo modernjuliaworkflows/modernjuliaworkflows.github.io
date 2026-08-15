@@ -97,13 +97,15 @@ unwrap_load_error(err) = err isa LoadError ? err.error : err
 function print_repl_error(io::IO, err, mod::Module)
     ctx = displayctx(io, mod)
     printstyled(ctx, "ERROR: "; color = Base.error_color(), bold = true)
-    showerror(ctx, err)
+    # `invokelatest` for the same reason as in `exec_julia`: the failing fence
+    # may have just loaded the package that defines `showerror` for this error.
+    Base.invokelatest(showerror, ctx, err)
     println(io)
     return nothing
 end
 
 function record_error!(ctx::PageContext, label::AbstractString, err)
-    message = first(split(sprint(showerror, err), '\n'))
+    message = first(split(sprint((io, e) -> Base.invokelatest(showerror, io, e), err), '\n'))
     push!(ctx.errors, FenceError(String(label), message))
     return nothing
 end
@@ -185,7 +187,12 @@ function exec_julia(ctx::PageContext, code::AbstractString, label::AbstractStrin
             end
             Core.eval(ctx.mod, Expr(:(=), :ans, QuoteNode(c.value)))
             if j == lastindex(group.exprs) && !suppress && c.value !== nothing
-                show(displayctx(io, ctx.mod), MIME"text/plain"(), c.value)
+                # `invokelatest`: a fence that loads a package and displays one
+                # of its values in the same fence (`using JET; @report_opt ...`)
+                # defines the `show` method *after* this function's world age
+                # was fixed, so a direct call would miss it and fall back to
+                # the raw struct dump.
+                Base.invokelatest(show, displayctx(io, ctx.mod), MIME"text/plain"(), c.value)
                 println(io)
             end
         end
@@ -209,7 +216,7 @@ function exec_help(ctx::PageContext, code::AbstractString, label::AbstractString
                 REPL.helpmode(devnull, String(query))
             end
             doc = Core.eval(mod, expr)
-            show(displayctx(stdout, mod), MIME"text/plain"(), doc)
+            Base.invokelatest(show, displayctx(stdout, mod), MIME"text/plain"(), doc)
             println()
         end
         print_captured(io, c.output)
