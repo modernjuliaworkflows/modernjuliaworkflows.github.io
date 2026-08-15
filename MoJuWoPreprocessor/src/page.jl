@@ -83,17 +83,18 @@ end
 """
     process_page(text, relpath; pagedir, workdir) -> (output, errors)
 
-Execute the fences of one authored page and return the markdown Zola should
-build, plus the list of fence errors (rendered REPL-style in the output, and
-reported so the build can fail on them). Errors in fences marked
-`allow-error` are sanctioned and not reported. Structurally broken fences —
-unclosed, or an executable fence with trailing junk — throw a
-[`FenceSyntaxError`](@ref) instead.
+Execute the fences of one authored page in the current process and return
+the markdown Zola should build, plus the list of fence errors (rendered
+REPL-style in the output, and reported so the build can fail on them).
+Errors in fences marked `allow-error` are sanctioned and not reported.
+Structurally broken fences — unclosed, or an executable fence with trailing
+junk — throw a [`FenceSyntaxError`](@ref) instead.
 
-If `pagedir` contains a `Project.toml`, that environment is active while the
-page runs (restored afterwards). Fences run with the working directory set to
-the page's subdirectory of `workdir`, so anything they create — generated
-demo packages, files written by shell commands — lands in scratch space.
+Fences run with the working directory set to the page's subdirectory of
+`workdir`, so anything they create — generated demo packages, files written
+by shell commands — lands in scratch space. The page's environment is not
+managed here: [`process_tree`](@ref) runs each page on a worker process
+whose load path is fixed to the page's environment at spawn.
 """
 # The scan loop lives in its own function rather than a closure inside `cd`:
 # the loop counter would be boxed by the closure, hiding every type from
@@ -171,23 +172,7 @@ function process_page(
     out = IOBuffer()
     pagework = normpath(joinpath(abspath(workdir), dirname(relpath)))
     mkpath(pagework)
-    prev_project = Base.active_project()
-    activated = isfile(joinpath(ctx.pagedir, "Project.toml"))
-    if activated
-        Pkg.activate(ctx.pagedir; io = devnull)
-        Pkg.instantiate(; io = devnull)
-    end
-    try
-        cd(() -> emit_page!(out, ctx, lines), pagework)
-    finally
-        if activated
-            if prev_project === nothing
-                Pkg.activate(; io = devnull)
-            else
-                Pkg.activate(dirname(prev_project); io = devnull)
-            end
-        end
-    end
+    cd(() -> emit_page!(out, ctx, lines), pagework)
     output = string(rstrip(String(take!(out)), '\n'), '\n')
     return (output, ctx.errors)
 end

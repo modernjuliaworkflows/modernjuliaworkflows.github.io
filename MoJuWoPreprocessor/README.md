@@ -23,7 +23,12 @@ erroring fence still renders REPL-style but fails the build — see
 "Strictness" below.
 
 Named fences share one sandbox module per page.
-If the page's directory contains a `Project.toml`, that environment is activated while the page runs.
+Every page executes on its own persistent [Malt.jl](https://github.com/JuliaPluto/Malt.jl) worker process,
+so pages cannot leak loaded packages, package-extension triggers, or global state into each other.
+The worker's load path is fixed at spawn:
+the page's own environment first (if the page's directory contains a `Project.toml`),
+then the preprocessor's environment, then the standard library —
+each page sees exactly the environment its `Project.toml` declares.
 Fences execute with the working directory set to a per-page scratch directory under the (gitignored) `_workdir/`,
 so relative paths in fences never touch the repository.
 
@@ -47,9 +52,10 @@ Commands:
 - `serve` preprocesses `src/` into `content/`, starts `zola serve`,
   and then watches the pages under `src/`:
   saving one re-preprocesses just that page, which Zola's own watcher picks up for live reload.
-  Because pages execute in-process, packages loaded on the first pass stay loaded,
+  Because each page's worker process stays warm across re-preprocesses,
+  packages loaded on the first pass stay loaded,
   so re-processing a page takes seconds instead of a cold start.
-  Note that warm re-runs share package-level global state with earlier runs;
+  Note that warm re-runs share the worker's global state with earlier runs of the same page;
   the cold build remains the source of truth.
 - `build` / `check` preprocess `src/` into `content/`, then run the corresponding Zola command.
   `build` additionally indexes the rendered site for full-text search with

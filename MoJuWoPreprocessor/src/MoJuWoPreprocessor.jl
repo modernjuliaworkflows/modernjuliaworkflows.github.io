@@ -11,6 +11,7 @@ module MoJuWoPreprocessor
 using ANSIColoredPrinters: HTMLPrinter
 using IOCapture: IOCapture
 using Logging: Logging, current_logger, with_logger
+using Malt: Malt
 using Pkg: Pkg
 using REPL: REPL
 

@@ -4,11 +4,91 @@
 # `serve` additionally watches the source pages and re-preprocesses on change,
 # and `build` finishes by indexing the rendered site for search.
 
+# Each page executes on its own persistent worker process, so nothing —
+# loaded packages, extension triggers, redefined methods, global state —
+# leaks between pages. Keyed by the page's absolute source path (not its
+# relative path, which distinct trees like the site and the test fixtures
+# could collide on).
+const PAGE_WORKERS = Dict{String, Malt.Worker}()
+
+# The worker's load path is a static environment stack, fixed at spawn:
+# the page environment first (only if the page directory declares one),
+# then the preprocessor's own environment so the worker can load
+# MoJuWoPreprocessor, then the standard library. The page environment being
+# the primary project also makes the `pkg>` prompt carry the page's name.
+function spawn_page_worker(pagedir::AbstractString)
+    # The leading `@` expands to nothing in the worker itself (no project is
+    # ever explicitly activated there), but julia subprocesses spawned by
+    # fence code inherit `JULIA_LOAD_PATH`, and without `@` their
+    # `--project` would not be on their own load path (Aqua's
+    # persistent_tasks check precompiles a wrapper package that way).
+    stack = String["@"]
+    isfile(joinpath(pagedir, "Project.toml")) && push!(stack, abspath(pagedir))
+    host_project = Base.active_project()
+    host_project === nothing || push!(stack, dirname(host_project))
+    push!(stack, "@stdlib")
+    w = Malt.Worker(;
+        env = [
+            "JULIA_LOAD_PATH=" * join(stack, Sys.iswindows() ? ";" : ":"),
+            # Keep Pkg from precompiling mid-page; CI precompiles the
+            # environments up front and locally it only causes noise in the
+            # captured fence output.
+            "JULIA_PKG_PRECOMPILE_AUTO=0",
+        ]
+    )
+    Malt.remote_eval_wait(
+        Main, w, quote
+            import Pkg
+            Pkg.instantiate(; io = devnull)
+            import MoJuWoPreprocessor
+        end
+    )
+    return w
+end
+
+function page_worker(src::AbstractString)
+    w = get(PAGE_WORKERS, src, nothing)
+    w !== nothing && Malt.isrunning(w) && return w
+    return PAGE_WORKERS[src] = spawn_page_worker(dirname(src))
+end
+
+"""
+    stop_page_workers()
+
+Stop every page worker and empty the registry. Workers also die with the
+host process; the explicit stop keeps command exits tidy.
+"""
+function stop_page_workers()
+    for w in values(PAGE_WORKERS)
+        Malt.isrunning(w) && Malt.stop(w)
+    end
+    empty!(PAGE_WORKERS)
+    return nothing
+end
+
+# Worker-side entry point: Malt transports exceptions as printed messages,
+# so a `FenceSyntaxError` must travel as a value for `process_tree` to
+# rethrow it typed on the host side.
+function worker_process_page(
+        text::AbstractString, relpath::AbstractString,
+        pagedir::AbstractString, workdir::AbstractString
+    )
+    try
+        output, errors = process_page(text, relpath; pagedir, workdir)
+        return (:ok, output, errors)
+    catch err
+        err isa FenceSyntaxError || rethrow()
+        return (:fence_syntax_error, err.page, err.line, err.message)
+    end
+end
+
 """
     process_tree(srcdir, outdir; workdir, only = String[]) -> failures
 
-Process every `*.md` under `srcdir` (in sorted order, one sandbox module
-each) into the same relative path under `outdir`. `only` restricts the run
+Process every `*.md` under `srcdir` (in sorted order) into the same
+relative path under `outdir`, each page on its own persistent worker
+process (spawned lazily, reused while it lives) so pages cannot leak
+loaded packages or global state into each other. `only` restricts the run
 to pages whose source path ends with one of the given paths. Returns a
 `Dict` mapping page paths to their unsanctioned fence errors (errors in
 fences not marked `allow-error`); the CLI build commands fail on those,
@@ -37,22 +117,29 @@ function process_tree(
     failures = Dict{String, Vector{FenceError}}()
     @info "⏱️ Preprocessing Julia code blocks. \nThis may take a minute (subsequent evaluations will be faster)."
     start = time()
-    # Keep Pkg from precompiling mid-page; CI precompiles the environments up
-    # front and locally it only causes noise in the captured fence output.
-    withenv("JULIA_PKG_PRECOMPILE_AUTO" => "0") do
-        for rel in pages
-            src = joinpath(srcdir, rel)
-            @info "...preprocessing $rel"
-            output, errors = process_page(
-                read(src, String), rel;
-                pagedir = dirname(abspath(src)),
-                workdir = workdir
+    for rel in pages
+        src = abspath(joinpath(srcdir, rel))
+        @info "...preprocessing $rel"
+        # `remote_eval_fetch` rather than `remote_call_fetch`: evaluation
+        # runs in the worker's latest world age, which the entry point —
+        # imported after the worker's serve loop started — requires.
+        result = Malt.remote_eval_fetch(
+            Main, page_worker(src),
+            :(
+                $worker_process_page(
+                    $(read(src, String)), $rel, $(dirname(src)), $(abspath(workdir))
+                )
             )
-            dst = joinpath(outdir, rel)
-            mkpath(dirname(dst))
-            write(dst, output)
-            isempty(errors) || (failures[rel] = errors)
+        )
+        if first(result) === :fence_syntax_error
+            _, page, line, message = result
+            throw(FenceSyntaxError(page, line, message))
         end
+        _, output, errors = result
+        dst = joinpath(outdir, rel)
+        mkpath(dirname(dst))
+        write(dst, output)
+        isempty(errors) || (failures[rel] = errors)
     end
     n = length(pages)
     @info "✅ Preprocessed Julia code blocks in $(round(time() - start; digits = 1))s"
@@ -107,10 +194,11 @@ end
 
 Preprocess the tree, start `zola serve`, then poll the source pages and
 re-preprocess any page whose mtime changes. Zola's own watcher sees the
-updated output and live-reloads the browser. Runs until `zola serve` exits
-(propagating its exit code) or Ctrl-C stops both processes. Unlike the
-build commands, fence errors only get reported here — a dev server should
-survive broken intermediate states.
+updated output and live-reloads the browser. Page workers stay warm across
+re-preprocesses, so saving a page re-runs it in seconds instead of a cold
+start. Runs until `zola serve` exits (propagating its exit code) or Ctrl-C
+stops both processes. Unlike the build commands, fence errors only get
+reported here — a dev server should survive broken intermediate states.
 """
 function serve(
         srcdir::AbstractString, outdir::AbstractString;
@@ -146,6 +234,7 @@ function serve(
     finally
         Base.exit_on_sigint(true)
         process_running(zola) && kill(zola)
+        stop_page_workers()
     end
     return interrupted ? 0 : zola.exitcode
 end
@@ -239,7 +328,9 @@ function (@main)(args::Vector{String})
             println(stderr, "`preprocess` expects <srcdir> <outdir>\n\n$USAGE")
             return 2
         end
-        return preprocess_strict(positional[1], positional[2]; workdir, only)
+        code = preprocess_strict(positional[1], positional[2]; workdir, only)
+        stop_page_workers()
+        return code
     end
     if !(command in ("serve", "build", "check", "clean"))
         println(stderr, "unknown command: $command\n\n$USAGE")
@@ -275,6 +366,7 @@ function (@main)(args::Vector{String})
         end
     end
     code = preprocess_strict("src", "content"; workdir, only)
+    stop_page_workers()
     code == 0 || return code
     success(run(ignorestatus(`zola $command $zola_args`))) || return 1
     return command == "build" ? index_search() : 0

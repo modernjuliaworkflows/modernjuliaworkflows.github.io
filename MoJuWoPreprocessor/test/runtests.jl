@@ -85,6 +85,30 @@ cli(args...) = IOCapture.capture(() -> MoJuWoPreprocessor.main(collect(String, a
         @test occursin("inner() = 1", got)                  # nested fence left intact
     end
 
+    # Each page runs on its own worker process: two synthetic pages must
+    # report pids that differ from each other and from the test process.
+    @testset "pages are isolated in worker processes" begin
+        tmp = mktempdir()
+        srcdir = joinpath(tmp, "src")
+        for page in ("a", "b")
+            mkpath(joinpath(srcdir, page))
+            write(joinpath(srcdir, page, "index.md"), "```>pid\nprintln(getpid())\n```\n")
+        end
+        outdir = joinpath(tmp, "content")
+        failures = process_tree(srcdir, outdir; workdir = joinpath(tmp, "_workdir"))
+        @test isempty(failures)
+        pid(page) = parse(
+            Int,
+            match(
+                r"println\(getpid\(\)\)\n(\d+)",
+                read(joinpath(outdir, page, "index.md"), String)
+            )[1]
+        )
+        @test allunique([getpid(), pid("a"), pid("b")])
+        MoJuWoPreprocessor.stop_page_workers()
+        @test isempty(MoJuWoPreprocessor.PAGE_WORKERS)
+    end
+
     @testset "strict fence handling" begin
         tmp = mktempdir()
         render(text, rel) = process_page(text, rel; pagedir = tmp, workdir = tmp)
@@ -149,4 +173,7 @@ cli(args...) = IOCapture.capture(() -> MoJuWoPreprocessor.main(collect(String, a
             @test cli("preprocess", "s", "out") == 1
         end
     end
+
+    # Reap the workers the fixture and CLI testsets spawned.
+    MoJuWoPreprocessor.stop_page_workers()
 end
