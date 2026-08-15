@@ -1,31 +1,36 @@
 {# Admonition components, invoked from markdown as e.g.                      #}
 {#   {% <tldr> %} ... {% </tldr> %}                                          #}
 {# Content is Tera-templated before the markdown pass (Zola 0.23), so the    #}
-{# component output lands in the markdown source: the body stays markdown    #}
-{# and the surrounding blank lines make the <div> a proper HTML block. The   #}
-{# bold prefix merges into the body's first paragraph, like Franklin's       #}
-{# \tldr{...} commands did.                                                  #}
+{# component output lands in the markdown source: the wrappers are HTML      #}
+{# blocks, and the blank lines around the body keep it regular markdown.     #}
+{# The title is a span glued to the front of the body so that markdown folds #}
+{# both into one paragraph, reading "Title: body ...". Styles live in        #}
+{# css/site.css (.admonition); each type maps to one of the four Julia brand #}
+{# colors. The title is marked data-pagefind-ignore so searching for e.g.    #}
+{# "advanced" doesn't return every box.                                      #}
 
-{% component tldr() %}
-<div class="tldr">
+{% component admonition(class, title, content) %}
+<div class="admonition {{ class }}">
+<div class="admonition-body">
 
-**TLDR**: {{ body | trim | safe }}
+<span class="admonition-title" data-pagefind-ignore>{{ title }}:</span> {{ content | trim | safe }}
 
 </div>
+</div>
+{% endcomponent admonition %}
+
+{% component tldr() %}
+{{<admonition class="tldr" title="TL;DR" content={body}/>}}
 {% endcomponent tldr %}
 
 {% component advanced() %}
-<div class="advanced">
-
-**Advanced**: {{ body | trim | safe }}
-
-</div>
+{{<admonition class="advanced" title="Advanced" content={body}/>}}
 {% endcomponent advanced %}
 
 {% component vscode() %}
-<div class="vscode">
-
-**VSCode**: {{ body | trim | safe }}
-
-</div>
+{{<admonition class="vscode" title="VS Code" content={body}/>}}
 {% endcomponent vscode %}
+
+{% component note() %}
+{{<admonition class="note" title="Note" content={body}/>}}
+{% endcomponent note %}

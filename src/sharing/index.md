@@ -145,7 +145,7 @@ If you want to have more control over your tests, you can try
 * [ReTest.jl](https://github.com/JuliaTesting/ReTest.jl) to define tests next to the source code and control their execution.
 * [TestSetExtensions.jl](https://github.com/ssfrr/TestSetExtensions.jl) to make test set outputs more readable.
 * [TestReadme.jl](https://github.com/thchr/TestReadme.jl) to test whatever code samples are in your README.
-* [ReTestItems.jl](https://github.com/JuliaTesting/ReTestItems.jl) for an alternative take on VSCode's test item framework.
+* [ReTestItems.jl](https://github.com/JuliaTesting/ReTestItems.jl) for an alternative take on VS Code's test item framework.
 {% </advanced> %}
 
 Code coverage refers to the fraction of lines in your source code that are covered by tests.
@@ -200,7 +200,7 @@ Aqua.test_all(MyAwesomePackage)
 
 Meanwhile, [JET.jl](https://github.com/aviatesk/JET.jl) is a complementary tool, similar to a static linter.
 Here we focus on its [error analysis](https://aviatesk.github.io/JET.jl/stable/jetanalysis/), which can detect errors or typos without even running the code by leveraging type inference.
-You can either use it in report mode (with a nice [VSCode display](https://www.julia-vscode.org/docs/stable/userguide/linter/#Runtime-diagnostics)) or in test mode as follows:
+You can either use it in report mode (with a nice [VS Code display](https://www.julia-vscode.org/docs/stable/userguide/linter/#Runtime-diagnostics)) or in test mode as follows:
 
 ```>jet
 using JET, MyAwesomePackage

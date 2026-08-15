@@ -170,7 +170,7 @@ For sharing profiles with others (e.g., on Slack or Discourse), [StatProfilerHTM
 No matter which tool you use, if your code is too fast to collect samples, you may need to run it multiple times in a loop.
 
 {% <advanced> %}
-    To visualize memory allocation profiles, use PProf.jl or VSCode's `@profview_allocs`.
+    To visualize memory allocation profiles, use PProf.jl or VS Code's `@profview_allocs`.
     A known issue with the allocation profiler is that it is not able to determine the type of every object allocated, instead `Profile.Allocs.UnknownType` is shown instead.
     Inspecting the call graph can help identify which types are responsible for the allocations.
 {% </advanced> %}

@@ -1,0 +1,200 @@
+/* ==================================================================
+    Code styling: block chrome, language chips, ANSI colors.
+
+    Zola emits highlighted fences as <pre class="giallo z-l-code
+    z-d-code" data-lang="*"> with `z-*` classes; the token colors come
+    from the generated giallo-light.css / giallo-dark.css, which
+    base.html loads through theme-controlled media attributes. The
+    executed REPL fences arrive from MoJuWoPreprocessor as
+    <pre class="julia-repl ansi"> (REPL modes) or
+    <pre class="code-output ansi"> (`!` fence output) and are colored
+    by the .sgrNN palettes below (GitHub Primer's ANSI palettes, one
+    per theme, matching the giallo token themes).
+================================================================== */
+
+:root {
+  --code-text: #24292e;   /* match giallo's github-light */
+  --chip-bg: #e6e9ed;
+  --chip-text: #57606a;
+  --chip-julia: #82489e;   /* Julia purple, darkened for light chips */
+  --chip-repl: #2f7d1f;    /* Julia green, darkened, like the julia> prompt */
+
+  --sgr30: #24292f;
+  --sgr31: #cf222e;
+  --sgr32: #1a7f37;
+  --sgr33: #4d2d00;
+  --sgr34: #0969da;
+  --sgr35: #8250df;
+  --sgr36: #1b7c83;
+  --sgr37: #6e7781;
+  --sgr90: #57606a;
+  --sgr91: #a40e26;
+  --sgr92: #1a7f37;
+  --sgr93: #633c01;
+  --sgr94: #218bff;
+  --sgr95: #a475f9;
+  --sgr96: #3192aa;
+  --sgr97: #8c959f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --code-text: #e1e4e8;   /* match giallo's github-dark */
+    --chip-bg: #2f3742;
+    --chip-text: #adbac7;
+    --chip-julia: #c79fe0;
+    --chip-repl: #7ecb6f;
+
+    --sgr30: #484f58;
+    --sgr31: #ff7b72;
+    --sgr32: #3fb950;
+    --sgr33: #d29922;
+    --sgr34: #58a6ff;
+    --sgr35: #bc8cff;
+    --sgr36: #39c5cf;
+    --sgr37: #b1bac4;
+    --sgr90: #6e7681;
+    --sgr91: #ffa198;
+    --sgr92: #56d364;
+    --sgr93: #e3b341;
+    --sgr94: #79c0ff;
+    --sgr95: #d2a8ff;
+    --sgr96: #56d4dd;
+    --sgr97: #ffffff;
+  }
+}
+
+:root[data-theme="dark"] {
+  --code-text: #e1e4e8;
+  --chip-bg: #2f3742;
+  --chip-text: #adbac7;
+  --chip-julia: #c79fe0;
+  --chip-repl: #7ecb6f;
+
+  --sgr30: #484f58;
+  --sgr31: #ff7b72;
+  --sgr32: #3fb950;
+  --sgr33: #d29922;
+  --sgr34: #58a6ff;
+  --sgr35: #bc8cff;
+  --sgr36: #39c5cf;
+  --sgr37: #b1bac4;
+  --sgr90: #6e7681;
+  --sgr91: #ffa198;
+  --sgr92: #56d364;
+  --sgr93: #e3b341;
+  --sgr94: #79c0ff;
+  --sgr95: #d2a8ff;
+  --sgr96: #56d4dd;
+  --sgr97: #ffffff;
+}
+
+/* ------------------------------------------------------------------
+    Inline code
+------------------------------------------------------------------ */
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background-color: var(--bg-hover);
+  padding: 0.1em 0.25em;
+  border-radius: 3px;
+}
+
+/* ------------------------------------------------------------------
+    Block chrome
+------------------------------------------------------------------ */
+
+pre {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1em;
+  overflow-x: auto;
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* giallo-light paints blocks white; use the inset gray so they read as
+   blocks on the white page. In dark mode the token matches github-dark. */
+pre.giallo,
+pre.julia-repl.ansi {
+  background-color: var(--bg-inset);
+  color: var(--code-text);
+}
+
+/* `!` fence output: page background and a dashed border, so results
+   read as distinct from the code that produced them. */
+pre.code-output.ansi {
+  color: var(--code-text);
+}
+
+/* ------------------------------------------------------------------
+    Language label chips
+------------------------------------------------------------------ */
+
+pre[data-lang]::before,
+pre.julia-repl.ansi::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.2rem 0.5rem 0.1rem;
+  background-color: var(--chip-bg);
+  color: var(--chip-text);
+  border-bottom-right-radius: 10px;
+  border-top-left-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Reserve room for the chip so it doesn't overlap the first code line. */
+pre[data-lang]:not([data-lang="plain"]),
+pre.julia-repl.ansi {
+  padding-top: 2.4em;
+}
+
+pre[data-lang]::before { content: attr(data-lang); }
+/* Giallo reports canonical grammar names; keep the labels the site used. */
+pre[data-lang="shellscript"]::before { content: "Shell"; }
+/* Fences without a recognized language get no chip. */
+pre[data-lang="plain"]::before { content: none; }
+pre.julia-repl.ansi::before { content: "Julia REPL"; }
+
+/* The rationed Julia-color accents: tinted label text, neutral chip. */
+pre[data-lang="julia"]::before { color: var(--chip-julia); }
+pre.julia-repl.ansi::before { color: var(--chip-repl); }
+
+/* ------------------------------------------------------------------
+    ANSI colors (ANSIColoredPrinters.jl .sgrNN spans)
+------------------------------------------------------------------ */
+
+.ansi .sgr1 { font-weight: bold; }
+.ansi .sgr2 { opacity: 0.8; }
+.ansi .sgr3 { font-style: italic; }
+.ansi .sgr4 { text-decoration: underline; }
+.ansi .sgr9 { text-decoration: line-through; }
+
+.ansi .sgr30 { color: var(--sgr30); }
+.ansi .sgr31 { color: var(--sgr31); }
+.ansi .sgr32 { color: var(--sgr32); }
+.ansi .sgr33 { color: var(--sgr33); }
+.ansi .sgr34 { color: var(--sgr34); }
+.ansi .sgr35 { color: var(--sgr35); }
+.ansi .sgr36 { color: var(--sgr36); }
+.ansi .sgr37 { color: var(--sgr37); }
+.ansi .sgr90 { color: var(--sgr90); }
+.ansi .sgr91 { color: var(--sgr91); }
+.ansi .sgr92 { color: var(--sgr92); }
+.ansi .sgr93 { color: var(--sgr93); }
+.ansi .sgr94 { color: var(--sgr94); }
+.ansi .sgr95 { color: var(--sgr95); }
+.ansi .sgr96 { color: var(--sgr96); }
+.ansi .sgr97 { color: var(--sgr97); }
