@@ -514,6 +514,13 @@ kbd {
     In-content table of contents
 ------------------------------------------------------------------ */
 
+/* The sidebar lists the current page's headings whenever it is on screen,
+   so the in-content copy only earns its place in the mobile layout, where
+   the sidebar is hidden behind the hamburger drawer. */
+.toc {
+  display: none;
+}
+
 .toc ol {
   margin: 1rem 0;
 }
@@ -702,6 +709,10 @@ a.search-result.selected {
   .content {
     margin-left: 0;
     padding-top: 3.25rem;
+  }
+
+  .toc {
+    display: block;
   }
 
   .page {
