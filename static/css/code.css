@@ -8,8 +8,8 @@
     executed REPL fences arrive from MoJuWoPreprocessor as
     <pre class="julia-repl ansi"> (REPL modes) or
     <pre class="code-output ansi"> (`!` fence output) and are colored
-    by the .sgrNN palettes below (the VS Code terminal palettes, one
-    per theme).
+    by the .sgrNN palettes below (GitHub Primer's ANSI palettes, one
+    per theme, matching the giallo token themes).
 ================================================================== */
 
 :root {
@@ -19,22 +19,22 @@
   --chip-julia: #82489e;   /* Julia purple, darkened for light chips */
   --chip-repl: #2f7d1f;    /* Julia green, darkened, like the julia> prompt */
 
-  --sgr30: #000000;
-  --sgr31: #cd3131;
-  --sgr32: #00bc00;
-  --sgr33: #949800;
-  --sgr34: #0451a5;
-  --sgr35: #bc05bc;
-  --sgr36: #0598bc;
-  --sgr37: #555555;
-  --sgr90: #666666;
-  --sgr91: #cd3131;
-  --sgr92: #14ce14;
-  --sgr93: #b5ba00;
-  --sgr94: #0451a5;
-  --sgr95: #bc05bc;
-  --sgr96: #0598bc;
-  --sgr97: #a5a5a5;
+  --sgr30: #24292f;
+  --sgr31: #cf222e;
+  --sgr32: #1a7f37;
+  --sgr33: #4d2d00;
+  --sgr34: #0969da;
+  --sgr35: #8250df;
+  --sgr36: #1b7c83;
+  --sgr37: #6e7781;
+  --sgr90: #57606a;
+  --sgr91: #a40e26;
+  --sgr92: #1a7f37;
+  --sgr93: #633c01;
+  --sgr94: #218bff;
+  --sgr95: #a475f9;
+  --sgr96: #3192aa;
+  --sgr97: #8c959f;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -45,21 +45,21 @@
     --chip-julia: #c79fe0;
     --chip-repl: #7ecb6f;
 
-    --sgr30: #666666;
-    --sgr31: #cd3131;
-    --sgr32: #0dbc79;
-    --sgr33: #e5c516;
-    --sgr34: #4886d0;
-    --sgr35: #bc3fbc;
-    --sgr36: #11a8cd;
-    --sgr37: #e5e5e5;
-    --sgr90: #8b949e;
-    --sgr91: #f14c4c;
-    --sgr92: #23d18b;
-    --sgr93: #d7ba21;
-    --sgr94: #3b8eea;
-    --sgr95: #d670d6;
-    --sgr96: #29b8db;
+    --sgr30: #484f58;
+    --sgr31: #ff7b72;
+    --sgr32: #3fb950;
+    --sgr33: #d29922;
+    --sgr34: #58a6ff;
+    --sgr35: #bc8cff;
+    --sgr36: #39c5cf;
+    --sgr37: #b1bac4;
+    --sgr90: #6e7681;
+    --sgr91: #ffa198;
+    --sgr92: #56d364;
+    --sgr93: #e3b341;
+    --sgr94: #79c0ff;
+    --sgr95: #d2a8ff;
+    --sgr96: #56d4dd;
     --sgr97: #ffffff;
   }
 }
@@ -71,21 +71,21 @@
   --chip-julia: #c79fe0;
   --chip-repl: #7ecb6f;
 
-  --sgr30: #666666;
-  --sgr31: #cd3131;
-  --sgr32: #0dbc79;
-  --sgr33: #e5c516;
-  --sgr34: #4886d0;
-  --sgr35: #bc3fbc;
-  --sgr36: #11a8cd;
-  --sgr37: #e5e5e5;
-  --sgr90: #8b949e;
-  --sgr91: #f14c4c;
-  --sgr92: #23d18b;
-  --sgr93: #d7ba21;
-  --sgr94: #3b8eea;
-  --sgr95: #d670d6;
-  --sgr96: #29b8db;
+  --sgr30: #484f58;
+  --sgr31: #ff7b72;
+  --sgr32: #3fb950;
+  --sgr33: #d29922;
+  --sgr34: #58a6ff;
+  --sgr35: #bc8cff;
+  --sgr36: #39c5cf;
+  --sgr37: #b1bac4;
+  --sgr90: #6e7681;
+  --sgr91: #ffa198;
+  --sgr92: #56d364;
+  --sgr93: #e3b341;
+  --sgr94: #79c0ff;
+  --sgr95: #d2a8ff;
+  --sgr96: #56d4dd;
   --sgr97: #ffffff;
 }
 
