@@ -23,17 +23,10 @@ theme = "github-dark"
 data_attr_position = "pre"
 
 [link_checker]
-# Whitelist for known broken external links.
-skip_prefixes = [
-    # Intentionally fake example URL in the prose.
-    "https://github.com/myuser/",
-    # Real page, but intel.com returns 403 to non-browser clients.
-    "https://www.intel.com/",
-]
-skip_anchor_prefixes = [
-    # GitHub prefixes heading ids with `user-content-`, so README anchors cannot be verified by the checker.
-    "https://github.com/",
-]
+# CI cannot reliably reach every site (bot blocking, rate limits, transient outages),
+# so broken external links only warn.
+# Zola hides these warnings at its default log level: CI sets RUST_LOG=info to see them.
+external_level = "warn"
 
 [extra]
 author = "G. Dalle, J. Smit, A. Hill"
