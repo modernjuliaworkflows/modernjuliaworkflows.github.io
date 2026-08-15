@@ -386,6 +386,11 @@ kbd {
   text-decoration: none;
 }
 
+/* Section currently on screen, tracked by the scrollspy in js/ui.js */
+.menu-list-link.current {
+  color: var(--link);
+}
+
 /* Footer: theme toggle, GitHub, license */
 
 .sidebar-foot {

@@ -42,4 +42,50 @@
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && body.classList.contains("sidebar-open")) closeDrawer();
   });
+
+  // Scrollspy: mark the section currently being read in the sidebar list.
+  // Current is the last heading above the reading line — the heading's own
+  // scroll-margin-top plus some slack, so following a section link also
+  // highlights the section it jumps to.
+  var spyLinks = [];
+  var spyHeadings = [];
+  document.querySelectorAll(".menu-list-child-list.active .menu-list-link")
+    .forEach(function (link) {
+      var heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+      if (heading) {
+        spyLinks.push(link);
+        spyHeadings.push(heading);
+      }
+    });
+  if (spyHeadings.length) {
+    var currentLink = null;
+    var updateSpy = function () {
+      var line = parseFloat(getComputedStyle(spyHeadings[0]).scrollMarginTop) + 8;
+      var current = null;
+      for (var i = 0; i < spyHeadings.length; i++) {
+        if (spyHeadings[i].getBoundingClientRect().top <= line) current = spyLinks[i];
+      }
+      // A short final section may never reach the reading line; count it
+      // once the page is scrolled to the bottom.
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+        current = spyLinks[spyLinks.length - 1];
+      }
+      if (current !== currentLink) {
+        if (currentLink) currentLink.classList.remove("current");
+        if (current) current.classList.add("current");
+        currentLink = current;
+      }
+    };
+    var spyPending = false;
+    window.addEventListener("scroll", function () {
+      if (spyPending) return;
+      spyPending = true;
+      requestAnimationFrame(function () {
+        spyPending = false;
+        updateSpy();
+      });
+    }, { passive: true });
+    window.addEventListener("resize", updateSpy);
+    updateSpy();
+  }
 })();
