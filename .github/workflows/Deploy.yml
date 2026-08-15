@@ -26,6 +26,12 @@ jobs:
       - uses: julia-actions/cache@v2
       - name: Instantiate the preprocessor
         run: julia --project=MoJuWoPreprocessor -e 'using Pkg; Pkg.instantiate()'
+      - name: Set git user config
+        # PkgTemplates reads user.name/user.email from the global git config
+        # when the sharing page generates its demo package.
+        run: |
+          git config --global user.name "myusername"
+          git config --global user.email "myusername@modernjuliaworkflows.github"
       - name: Execute src/ into content/
         # Section envs (src/*/Project.toml) are instantiated per page by the
         # preprocessor itself; their Manifests are not committed.
