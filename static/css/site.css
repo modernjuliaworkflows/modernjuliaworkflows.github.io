@@ -83,7 +83,7 @@
 html {
   margin: 0;
   font-family: var(--font-body);
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.5;
 }
 
@@ -120,7 +120,7 @@ h6 {
 h1 {
   font-size: 1.6rem;
   padding-bottom: 0.4em;
-  border-bottom: 3px double var(--border-strong);
+  border-bottom: 1.5px solid var(--border-strong);
 }
 
 h2 {
@@ -254,7 +254,6 @@ kbd {
   overflow-y: auto;
   background-color: var(--bg-sidebar);
   border-right: 1px solid var(--border);
-  font-size: 0.95rem;
 }
 
 .content {
@@ -304,7 +303,7 @@ kbd {
 .sidebar-tagline {
   display: block;
   margin-top: 0.2rem;
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: var(--text-muted);
 }
 
@@ -421,7 +420,7 @@ kbd {
 .copyright-notice {
   margin: 0;
   text-align: center;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
 }
 
 .copyright-notice a {
@@ -466,8 +465,10 @@ kbd {
 ------------------------------------------------------------------ */
 
 .admonition {
-  margin: 1.5rem 0;
+  margin: 1.5rem 0 1rem;
+  font-size: 1rem;
   border: 1px solid color-mix(in srgb, var(--adm) 45%, transparent);
+  background-color: color-mix(in srgb, var(--adm) var(--adm-tint), transparent);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -476,16 +477,13 @@ kbd {
    rather than a solid color strip. --adm-* knobs are set per theme. */
 .admonition-title {
   margin: 0;
-  padding: 0.3rem 1rem;
-  background-color: color-mix(in srgb, var(--adm) var(--adm-tint), transparent);
-  border-bottom: 1px solid color-mix(in srgb, var(--adm) 45%, transparent);
+  padding: 0.75rem 1rem 0.3rem;
   color: color-mix(in srgb, var(--adm) var(--adm-ink-mix), var(--adm-ink));
-  font-size: 0.9rem;
   font-weight: bold;
 }
 
 .admonition-body {
-  padding: 0.75rem 1rem 0;
+  padding: 0 1rem;
 }
 
 .tldr {
@@ -520,7 +518,7 @@ kbd {
   margin-top: 5rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--border);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   text-align: center;
 }
@@ -553,7 +551,6 @@ kbd {
   width: 100%;
   padding: 0.8rem 1rem;
   font: inherit;
-  font-size: 1.1rem;
   color: inherit;
   background: none;
   border: none;
@@ -656,7 +653,6 @@ a.search-result.selected {
 
   .topbar-title {
     font-weight: bold;
-    font-size: 1.1rem;
     color: var(--text-strong);
   }
 
