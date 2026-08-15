@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/franklin.css">
+  <link rel="stylesheet" href="/css/poole_hyde.css">
+  <link rel="stylesheet" href="/css/custom.css">
+  <link rel="stylesheet" href="/css/ansi.css">
+  <link rel="stylesheet" href="/css/search.css">
+  <!-- style adjustments carried over from the Franklin layout -->
+  <style>
+    html {font-size: 17px;}
+    .franklin-content {position: relative; padding-left: 8%; padding-right: 5%; line-height: 1.35em;}
+    @media (min-width: 940px) {
+      .franklin-content {width: 100%; margin-left: auto; margin-right: auto;}
+    }
+    @media (max-width: 768px) {
+      .franklin-content {padding-left: 6%; padding-right: 6%;}
+    }
+  </style>
+  <link rel="icon" href="/assets/favicon.png">
+  {%- block head_extra %}{% endblock %}
+  <title>{% block title %}{{ config.title }}{% endblock %}</title>
+</head>
+
+<body>
+  {% include "partials/sidebar.html" %}
+  <div class="content container">
+    <div class="franklin-content">
+      {% block content %}{% endblock %}
+      <div class="page-foot">
+        <a href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> {{ config.extra.author }}.
+        Last built: {{ now() | date(format="%B %d, %Y") }}. <br>
+        Website built with <a href="https://www.getzola.org">Zola</a> and the <a href="https://julialang.org">Julia programming language</a>.
+      </div>
+    </div>
+  </div>
+  {% include "partials/search.html" %}
+  {%- block foot_extra %}{% endblock %}
+</body>
+
+</html>

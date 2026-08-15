@@ -1,0 +1,32 @@
+# Zola configuration (https://www.getzola.org/documentation/getting-started/configuration/).
+# Requires Zola 0.23 (giallo-based highlighting keys, Tera 2 templates/components).
+base_url = "https://modernjuliaworkflows.org"
+title = "Modern Julia Workflows"
+description = "Blog posts on best practices for Julia development"
+default_language = "en"
+
+# Keep the feed at /feed.xml, the URL the Franklin site used.
+generate_feeds = true
+feed_filenames = ["feed.xml"]
+
+compile_sass = false
+# Search does not use Zola's page-level index: the site is indexed per section
+# by Pagefind after `zola build` (see static/js/search.js).
+build_search_index = false
+
+[markdown]
+# Fences are highlighted at build time:
+# executed REPL fences arrive from `MoJuWoPreprocessor` as pre-rendered HTML and are styled by css/ansi.css.
+[markdown.highlighting]
+theme = "github-dark"
+# Put data-lang on the <pre> so CSS can render language label chips on code blocks.
+data_attr_position = "pre"
+
+[link_checker]
+# CI cannot reliably reach every site (bot blocking, rate limits, transient outages),
+# so broken external links only warn.
+# Zola hides these warnings at its default log level: CI sets RUST_LOG=info to see them.
+external_level = "warn"
+
+[extra]
+author = "G. Dalle, J. Smit, A. Hill"

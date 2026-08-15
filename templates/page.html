@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page.title }}{% endblock %}
+
+{% block head_extra %}
+{%- if page.extra?.math %}
+  <link rel="stylesheet" href="/libs/katex/katex.min.css">
+{%- endif %}
+{% endblock %}
+
+{# data-pagefind-body scopes the Pagefind crawl to the article (pages without
+   it, like the 404, are skipped entirely); the explicit title meta is needed
+   because pages carry their title in front matter, not in an <h1>. #}
+{% block content %}
+<div data-pagefind-body data-pagefind-meta="title:{{ page.title }}">{{<with_toc content={page.content} headings={page.toc} />}}</div>
+{% endblock %}
+
+{% block foot_extra %}
+{%- if page.extra?.math %}
+  <script src="/libs/katex/katex.min.js"></script>
+  <script src="/libs/katex/contrib/auto-render.min.js"></script>
+  {# Franklin turned $...$ into \(...\) at build time; Zola passes it through, #}
+  {# so tell auto-render about the $ delimiters. Code and pre tags are ignored #}
+  {# by default, which keeps interpolation like `$v` in fences untouched.      #}
+  <script>
+    renderMathInElement(document.body, {
+      delimiters: [
+        {left: "$$", right: "$$", display: true},
+        {left: "$", right: "$", display: false},
+      ]
+    })
+  </script>
+{%- endif %}
+{% endblock %}

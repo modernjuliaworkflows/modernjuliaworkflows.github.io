@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+
+{# Same Pagefind scoping as page.html. #}
+{% block content %}
+<div data-pagefind-body data-pagefind-meta="title:{{ section.title }}">{{<with_toc content={section.content} headings={section.toc} />}}</div>
+{% endblock %}

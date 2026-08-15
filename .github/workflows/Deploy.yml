@@ -4,19 +4,84 @@ on:
     branches:
       - main
   pull_request:
+
+# One run per branch: superseded PR runs are cancelled, while pushes to main
+# queue behind the run in progress, so close-together commits can never cancel
+# or interleave with a deploy mid-run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
-  docs:
+  build:
     runs-on: ubuntu-latest
-    permissions: write-all
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
+      - uses: julia-actions/setup-julia@v2
+        with:
+          # The committed MoJuWoPreprocessor Manifest is resolved for 1.12.
+          version: '1.12'
+      - uses: julia-actions/cache@v2
+      - name: Instantiate the preprocessor
+        run: julia --project=MoJuWoPreprocessor -e 'using Pkg; Pkg.instantiate()'
       - name: Set git user config
+        # PkgTemplates reads user.name/user.email from the global git config
+        # when the sharing page generates its demo package.
         run: |
           git config --global user.name "myusername"
           git config --global user.email "myusername@modernjuliaworkflows.github"
-      - name: 🚀 Build and Deploy
-        uses: tlienart/xranklin-build-action@main
+      - name: Execute src/ into content/
+        # Section envs (src/*/Project.toml) are instantiated per page by the
+        # preprocessor itself; their Manifests are not committed.
+        run: julia --project=MoJuWoPreprocessor -m MoJuWoPreprocessor preprocess src content
+      - name: Install Zola
+        uses: taiki-e/install-action@v2
         with:
-          DEPLOY: ${{ github.event_name == 'push' }}
-          DEPLOY_BRANCH: 'gh-pages'
-          JULIA_VERSION: '1.11'
+          tool: zola@0.23.3
+      - name: Build the site
+        run: zola build
+      - name: Index the site for search
+        # Builds the Pagefind bundle (public/pagefind/) that js/search.js
+        # loads for the full-text result tier. Runners ship Node for npx.
+        run: npx -y pagefind@1.5.2 --site public
+      - name: Check links
+        # Broken internal links fail the build.
+        # Broken external links only warn (external_level = "warn" in zola.toml's [link_checker]),
+        # since CI cannot reliably reach every site.
+        env:
+          # Zola swallows link-checker warnings at its default log level.
+          RUST_LOG: info
+        run: |
+          set -o pipefail
+          zola check 2>&1 | tee zola-check.log
+          if grep -q "broken external link" zola-check.log; then
+            {
+              echo '### :warning: Broken external links'
+              echo '```'
+              grep -E 'broken external link|^ *[0-9]+\. Broken link' zola-check.log
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning title=Broken external links::zola check found broken external links — see the job summary for the list."
+          fi
+      - name: Upload Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

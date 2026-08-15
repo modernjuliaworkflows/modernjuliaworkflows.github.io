@@ -1,0 +1,129 @@
+/* ==================================================================
+    Site search: sidebar launcher button and results dialog
+    (templates/partials/search.html, js/search.js)
+================================================================== */
+
+/* Launcher, styled like an input to match the dark sidebar */
+
+.search-open {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 20rem;
+  margin: 0 auto 1rem;
+  padding: 0.35rem 0.6rem;
+  font: inherit;
+  color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.search-open:hover,
+.search-open:focus {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.search-open kbd {
+  margin-left: auto;
+  padding: 0 0.35em;
+  font-size: 0.8em;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
+
+/* No keyboard on most narrow viewports, so hide the shortcut hint */
+@media (max-width: 767px) {
+  .search-open kbd {
+    display: none;
+  }
+}
+
+/* Dialog */
+
+#search-dialog {
+  width: min(34rem, 92vw);
+  margin: 10vh auto auto;
+  padding: 0;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+#search-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+#search-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  font: inherit;
+  font-size: 1.1rem;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  border-radius: 10px 10px 0 0;
+  outline: none;
+}
+
+/* Results */
+
+#search-results {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+#search-results:not(:empty) {
+  padding-bottom: 0.4rem;
+}
+
+.search-group-label {
+  padding: 0.6rem 1rem 0.2rem;
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #999;
+}
+
+.search-empty {
+  padding: 0.8rem 1rem;
+  color: #7a7a7a;
+}
+
+a.search-result {
+  display: block;
+  padding: 0.4rem 1rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+a.search-result:hover,
+a.search-result.selected {
+  background-color: #eaf3fa;
+}
+
+.search-crumb {
+  color: #999;
+}
+
+.search-result-title b {
+  color: #268bd2;
+}
+
+.search-teaser {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: #7a7a7a;
+  overflow-wrap: anywhere;
+}
+
+/* Pagefind wraps matched terms in <mark>; render them like the <b> in titles
+   instead of the browser's yellow highlight */
+.search-teaser mark {
+  background: none;
+  color: #268bd2;
+  font-weight: bold;
+}

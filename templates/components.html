@@ -1,0 +1,31 @@
+{# Admonition components, invoked from markdown as e.g.                      #}
+{#   {% <tldr> %} ... {% </tldr> %}                                          #}
+{# Content is Tera-templated before the markdown pass (Zola 0.23), so the    #}
+{# component output lands in the markdown source: the body stays markdown    #}
+{# and the surrounding blank lines make the <div> a proper HTML block. The   #}
+{# bold prefix merges into the body's first paragraph, like Franklin's       #}
+{# \tldr{...} commands did.                                                  #}
+
+{% component tldr() %}
+<div class="tldr">
+
+**TLDR**: {{ body | trim | safe }}
+
+</div>
+{% endcomponent tldr %}
+
+{% component advanced() %}
+<div class="advanced">
+
+**Advanced**: {{ body | trim | safe }}
+
+</div>
+{% endcomponent advanced %}
+
+{% component vscode() %}
+<div class="vscode">
+
+**VSCode**: {{ body | trim | safe }}
+
+</div>
+{% endcomponent vscode %}
