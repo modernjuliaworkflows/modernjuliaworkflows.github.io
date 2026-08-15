@@ -16,9 +16,13 @@ build_search_index = false
 
 [markdown]
 # Fences are highlighted at build time:
-# executed REPL fences arrive from `MoJuWoPreprocessor` as pre-rendered HTML and are styled by css/ansi.css.
+# executed REPL fences arrive from `MoJuWoPreprocessor` as pre-rendered HTML and are styled by css/code.css.
 [markdown.highlighting]
-theme = "github-dark"
+# Class-based output so the light/dark toggle can restyle code: Zola emits
+# `z-*` classes and writes giallo-light.css / giallo-dark.css into the output.
+style = "class"
+light_theme = "github-light"
+dark_theme = "github-dark"
 # Put data-lang on the <pre> so CSS can render language label chips on code blocks.
 data_attr_position = "pre"
 

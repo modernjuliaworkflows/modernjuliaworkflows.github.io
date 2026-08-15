@@ -32,7 +32,10 @@
     loadPagefind();
   }
 
-  document.getElementById("search-open").addEventListener("click", openDialog);
+  // Launchers: the sidebar button and the mobile top-bar button.
+  document.querySelectorAll("[data-search-open]").forEach(function (b) {
+    b.addEventListener("click", openDialog);
+  });
   document.addEventListener("keydown", function (e) {
     if (dialog.open) return;
     var typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName);

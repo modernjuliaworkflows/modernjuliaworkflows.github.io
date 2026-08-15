@@ -75,7 +75,8 @@ Two conventions replace explicit setup code:
 
 ## Admonitions
 
-Callout boxes use the components defined in [`templates/components.html`](templates/components.html): `tldr`, `advanced`, and `vscode`.
+Callout boxes use the components defined in [`templates/components.html`](templates/components.html): `tldr`, `advanced`, `vscode`, and `note`.
+Each maps to one of the four Julia brand colors.
 The body is regular Markdown:
 
 ```markdown
