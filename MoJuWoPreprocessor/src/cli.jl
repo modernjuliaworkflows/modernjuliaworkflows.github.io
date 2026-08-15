@@ -126,19 +126,22 @@ function process_tree(
     @sync for (i, rel) in enumerate(pages)
         @async begin
             src = abspath(joinpath(srcdir, rel))
+            w = page_worker(src)
             # `remote_eval_fetch` rather than `remote_call_fetch`:
             # evaluation runs in the worker's latest world age, which the
             # entry point — imported after the worker's serve loop
             # started — requires.
             results[i] = Malt.remote_eval_fetch(
-                Main, page_worker(src),
+                Main, w,
                 :(
                     $worker_process_page(
                         $(read(src, String)), $rel, $(dirname(src)), $(abspath(workdir))
                     )
                 )
             )
-            @info "...preprocessed $rel"
+            # The pid matches the `[Worker <pid>]:` prefix Malt puts on
+            # forwarded worker output.
+            @info "...completed $rel [Worker $(w.proc_pid)]"
         end
     end
     for (i, rel) in enumerate(pages)
@@ -154,7 +157,7 @@ function process_tree(
         isempty(errors) || (failures[rel] = errors)
     end
     n = length(pages)
-    @info "✅ Preprocessed Julia code blocks in $(round(time() - start; digits = 1))s"
+    @info "✅ Preprocessing completed in $(round(time() - start; digits = 1))s"
     for (rel, errors) in sort!(collect(failures); by = first)
         for e in errors
             @error "fence errored" page = rel fence = e.label e.message
