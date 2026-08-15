@@ -152,29 +152,29 @@ echo "Hello from the shell"
 
 ## Editor
 
-{% <tldr> %}VSCode is the IDE with the best Julia support.{% </tldr> %}
+{% <tldr> %}VS Code is the IDE with the best Julia support.{% </tldr> %}
 
 Most computer programs are just plain text files with a specific extension (in our case `.jl`).
 So in theory, any text editor suffices to write and modify Julia code.
 In practice, an Integrated Development Environment (or IDE) makes the experience much more pleasant, thanks to code-related utilities and language-specific plugins.
 
-The best IDE for Julia is [Visual Studio Code](https://code.visualstudio.com/), or VSCode, developed by Microsoft.
-Indeed, the [Julia VSCode extension](https://www.julia-vscode.org/) is the most feature-rich of all Julia IDE plugins.
-You can download it from the VSCode Marketplace and read its [documentation](https://www.julia-vscode.org/docs/stable/).
+The best IDE for Julia is [Visual Studio Code](https://code.visualstudio.com/), or VS Code, developed by Microsoft.
+Indeed, the [Julia VS Code extension](https://www.julia-vscode.org/) is the most feature-rich of all Julia IDE plugins.
+You can download it from the VS Code Marketplace and read its [documentation](https://www.julia-vscode.org/docs/stable/).
 
 {% <vscode> %}
 
 In what follows, we will sometimes mention commands and [keyboard shortcuts](https://www.julia-vscode.org/docs/stable/userguide/keybindings/) provided by this extension.
-But the only shortcut you need to remember is `Ctrl + Shift + P` (or `Cmd + Shift + P` on Mac): this opens the VSCode command palette, in which you can search for any command.
+But the only shortcut you need to remember is `Ctrl + Shift + P` (or `Cmd + Shift + P` on Mac): this opens the VS Code command palette, in which you can search for any command.
 Type "julia" in the command palette to see what you can do.
 {% </vscode> %}
 
 {% <advanced> %}
 
-Assuming you want to avoid the Microsoft ecosystem, [VSCodium](https://vscodium.com/) is a nearly bit-for-bit replacement for VSCode, but with an open source license and without telemetry.
-If you don't want to use VSCode at all, other options include [Emacs](https://www.gnu.org/software/emacs/) and [Vim](https://www.vim.org/).
+Assuming you want to avoid the Microsoft ecosystem, [VSCodium](https://vscodium.com/) is a nearly bit-for-bit replacement for VS Code, but with an open source license and without telemetry.
+If you don't want to use VS Code at all, other options include [Emacs](https://www.gnu.org/software/emacs/) and [Vim](https://www.vim.org/).
 Check out [JuliaEditorSupport](https://github.com/JuliaEditorSupport) to see if your favorite IDE has a Julia plugin.
-The available functionalities should be roughly similar to those of VSCode, at least for the basic aspects like running code.
+The available functionalities should be roughly similar to those of VS Code, at least for the basic aspects like running code.
 
 You may also want to download the [JuliaMono](https://juliamono.netlify.app/) font for esthetically pleasant unicode handling.
 {% </advanced> %}
@@ -205,7 +205,7 @@ This will automatically update changes to function definitions in the file in th
 
 [Running code](https://www.julia-vscode.org/docs/stable/userguide/runningcode/) is made much easier by the following commands:
 
-* `Julia: Restart REPL` (shortcut `Alt + J` then `Alt + R`) - this will open or restart the integrated Julia REPL. It is different from opening a plain VSCode terminal and launching Julia manually from there.
+* `Julia: Restart REPL` (shortcut `Alt + J` then `Alt + R`) - this will open or restart the integrated Julia REPL. It is different from opening a plain VS Code terminal and launching Julia manually from there.
 * `Julia: Execute Code in REPL and Move` (shortcut `Shift + Enter`) - this will execute the selected code in the integrated Julia REPL, like a notebook.
 {% </vscode> %}
 
@@ -289,7 +289,7 @@ println("hello world")
 [Quarto](https://quarto.org/) "is an open-source scientific and technical publishing system."
 Quarto makes a plain text markdown file (`.md`) alternative called Quarto markdown file (`.qmd`).
 
-Quarto markdown files like plain text markdown files also integrate with editors, such as VSCode.
+Quarto markdown files like plain text markdown files also integrate with editors, such as VS Code.
 
 {% <vscode> %}
 
@@ -331,7 +331,7 @@ engine: julia
 
 Below is an executable code chunk.
 
-If this file were opened in an editor such as VSCode one could execute the `println("hello world")` Julia code and view the output, like in a notebook.
+If this file were opened in an editor such as VS Code one could execute the `println("hello world")` Julia code and view the output, like in a notebook.
 
 ```{julia}
 println("hello world")
@@ -362,7 +362,7 @@ Create a separate local environment for each of your projects to contain the dep
 
 {% <vscode> %}
 
-You can configure the [environment](https://www.julia-vscode.org/docs/stable/userguide/env/) in which a VSCode Julia REPL opens.
+You can configure the [environment](https://www.julia-vscode.org/docs/stable/userguide/env/) in which a VS Code Julia REPL opens.
 Just click the `Julia env: ...` button at the bottom.
 Note however that the Julia version itself will always be the default one from `juliaup`.
 {% </vscode> %}
@@ -492,7 +492,7 @@ More generally, the startup file allows you to define your own favorite helper f
 
 Here are a few more startup packages that can make your life easier once you know the language better:
 
-* [AbbreviatedStackTraces.jl](https://github.com/BioTurboNick/AbbreviatedStackTraces.jl) allows you to shorten error stacktraces, which can sometimes get pretty long (beware of its [interactions with VSCode](https://github.com/BioTurboNick/AbbreviatedStackTraces.jl/issues/38))
+* [AbbreviatedStackTraces.jl](https://github.com/BioTurboNick/AbbreviatedStackTraces.jl) allows you to shorten error stacktraces, which can sometimes get pretty long (beware of its [interactions with VS Code](https://github.com/BioTurboNick/AbbreviatedStackTraces.jl/issues/38))
 * [Term.jl](https://github.com/FedeClaudi/Term.jl) offers a completely new way to display things like types and errors (see the [advanced configuration](https://fedeclaudi.github.io/Term.jl/stable/adv/adv/) to enable it by default).
 {% </advanced> %}
 
@@ -593,7 +593,7 @@ In particular, note that `@debug` messages are suppressed by default.
 You can enable them through the `JULIA_DEBUG` environment variable if you specify the source module name, typically `Main` or your package module.
 {% </advanced> %}
 
-Beyond the built-in logging utilities, [ProgressLogging.jl](https://github.com/JuliaLogging/ProgressLogging.jl) has a macro `@progress`, which interfaces nicely with VSCode and Pluto to display progress bars.
+Beyond the built-in logging utilities, [ProgressLogging.jl](https://github.com/JuliaLogging/ProgressLogging.jl) has a macro `@progress`, which interfaces nicely with VS Code and Pluto to display progress bars.
 And [Suppressor.jl](https://github.com/JuliaIO/Suppressor.jl) can sometimes be handy when you need to suppress warnings or other bothersome messages (use at your own risk).
 
 ## Debugging
@@ -728,7 +728,7 @@ About to run: (^)(2, 64)
 
 {% <vscode> %}
 
-VSCode offers a nice [graphical interface for debugging](https://www.julia-vscode.org/docs/stable/userguide/debugging/).
+VS Code offers a nice [graphical interface for debugging](https://www.julia-vscode.org/docs/stable/userguide/debugging/).
 Click left of a line number in an editor pane to add a _breakpoint_, which is represented by a red circle.
 In the debugging pane of the Julia extension, click `Run and Debug` to start the debugger.
 The program will automatically halt when it hits a breakpoint.
