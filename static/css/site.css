@@ -466,29 +466,32 @@ kbd {
 }
 
 /* ------------------------------------------------------------------
-    Admonitions: colored title strip, plain bordered body
+    Admonitions: light wash of the accent, title inline with the body
 ------------------------------------------------------------------ */
 
 .admonition {
   margin: 1.5rem 0 1rem;
+  padding: 0.75rem 1rem;
   font-size: 1rem;
   border: 1px solid color-mix(in srgb, var(--adm) 45%, transparent);
   background-color: color-mix(in srgb, var(--adm) var(--adm-tint), transparent);
   border-radius: 8px;
-  overflow: hidden;
 }
 
-/* A quiet header: a light wash of the accent with tinted title text,
-   rather than a solid color strip. --adm-* knobs are set per theme. */
+/* A quiet lead-in: the accent tinted toward the ink, run into the first
+   sentence after a colon. --adm-* knobs are set per theme. */
 .admonition-title {
-  margin: 0;
-  padding: 0.75rem 1rem 0.3rem;
   color: color-mix(in srgb, var(--adm) var(--adm-ink-mix), var(--adm-ink));
   font-weight: bold;
 }
 
-.admonition-body {
-  padding: 0 1rem;
+/* The box's own padding provides the spacing the outer margins would. */
+.admonition-body > :first-child {
+  margin-top: 0;
+}
+
+.admonition-body > :last-child {
+  margin-bottom: 0;
 }
 
 .tldr {
