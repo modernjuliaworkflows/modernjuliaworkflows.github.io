@@ -88,3 +88,7 @@ Two kinds of broken fence are distinguished:
   then exit non-zero unless the fence is marked ` allow-error`; `serve` only
   reports and keeps the dev server running, since broken intermediate saves
   are normal while editing.
+  This covers thrown exceptions and error-level log messages alike:
+  fence code that emits an `@error` without throwing —
+  as Base does when a package extension fails to load —
+  fails the build just the same.

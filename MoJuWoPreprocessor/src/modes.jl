@@ -47,18 +47,43 @@ function Logging.handle_message(
     )
 end
 
+# Fence code can log an error without throwing one —
+# Base does exactly that when a package extension fails to load —
+# and IOCapture reports no error for those.
+# Recording error-level log messages lets such fences fail the build
+# like thrown errors do (and `allow-error` sanction them alike).
+struct ErrorLogRecorder <: Logging.AbstractLogger
+    parent::Logging.AbstractLogger
+    messages::Vector{String}
+end
+Logging.min_enabled_level(l::ErrorLogRecorder) = Logging.min_enabled_level(l.parent)
+Logging.shouldlog(l::ErrorLogRecorder, args...) = Logging.shouldlog(l.parent, args...)
+Logging.catch_exceptions(l::ErrorLogRecorder) = Logging.catch_exceptions(l.parent)
+function Logging.handle_message(
+        l::ErrorLogRecorder, level, message, _module, group, id,
+        file, line; kwargs...
+    )
+    level >= Logging.Error && push!(l.messages, string(message))
+    return Logging.handle_message(
+        l.parent, level, message, _module, group, id,
+        file, line; kwargs...
+    )
+end
+
 # IOCapture merges stdout/stderr and installs a ConsoleLogger on the captured
 # stream; io_context forces :color so the output carries ANSI codes even in
 # non-interactive builds.
 function capture(f)
-    return IOCapture.capture(;
+    logged = String[]
+    c = IOCapture.capture(;
         rethrow = InterruptException, color = true,
         io_context = [:color => true]
     ) do
-        with_logger(PkgWarningFilter(current_logger())) do
+        with_logger(ErrorLogRecorder(PkgWarningFilter(current_logger()), logged)) do
             f()
         end
     end
+    return (; c.value, c.output, c.error, c.backtrace, logged_errors = logged)
 end
 
 # The context the REPL displays results with: truncated arrays, unqualified
@@ -80,6 +105,16 @@ end
 function record_error!(ctx::PageContext, label::AbstractString, err)
     message = first(split(sprint(showerror, err), '\n'))
     push!(ctx.errors, FenceError(String(label), message))
+    return nothing
+end
+
+function record_logged_errors!(
+        ctx::PageContext, label::AbstractString, messages::Vector{String}
+    )
+    for msg in messages
+        message = string("error-level log: ", first(split(msg, '\n')))
+        push!(ctx.errors, FenceError(String(label), message))
+    end
     return nothing
 end
 
@@ -141,6 +176,7 @@ function exec_julia(ctx::PageContext, code::AbstractString, label::AbstractStrin
         for (j, ex) in enumerate(group.exprs)
             c = capture(() -> Core.eval(ctx.mod, ex))
             print_captured(io, c.output)
+            record_logged_errors!(ctx, label, c.logged_errors)
             if c.error
                 err = unwrap_load_error(c.value)
                 print_repl_error(io, err, ctx.mod)
@@ -177,6 +213,7 @@ function exec_help(ctx::PageContext, code::AbstractString, label::AbstractString
             println()
         end
         print_captured(io, c.output)
+        record_logged_errors!(ctx, label, c.logged_errors)
         if c.error
             err = unwrap_load_error(c.value)
             print_repl_error(io, err, mod)
@@ -194,6 +231,7 @@ function exec_pkg(ctx::PageContext, code::AbstractString, label::AbstractString)
         print(io, pkg_prompt(), cmd, '\n')
         c = capture(() -> Pkg.REPLMode.pkgstr(String(cmd)))
         print_captured(io, c.output)
+        record_logged_errors!(ctx, label, c.logged_errors)
         if c.error
             err = unwrap_load_error(c.value)
             print_repl_error(io, err, ctx.mod)
@@ -229,6 +267,7 @@ function exec_plain(ctx::PageContext, code::AbstractString, label::AbstractStrin
     lines = split(code, '\n')
     hideall = any(l -> occursin(HIDEALL_RE, l), lines)
     c = capture(() -> include_string(ctx.mod, code, String(label)))
+    record_logged_errors!(ctx, label, c.logged_errors)
     err = c.error ? unwrap_load_error(c.value) : nothing
     err === nothing || record_error!(ctx, label, err)
     hideall && return ("", "")

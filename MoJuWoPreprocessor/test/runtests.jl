@@ -105,6 +105,25 @@ cli(args...) = IOCapture.capture(() -> MoJuWoPreprocessor.main(collect(String, a
         )
         @test isempty(errors)
 
+        # An error-level log message without a throw
+        # (Base logs one when a package extension fails to load)
+        # is reported like a thrown error...
+        out, errors = render("```>logs\n@error \"boom\"\n```\n", "logged.md")
+        @test occursin("boom", out)
+        @test length(errors) == 1
+        @test occursin("error-level log: boom", errors[1].message)
+        # ...in plain mode too...
+        _, errors = render("```!logs\n@error \"boom\"\n```\n", "logged-plain.md")
+        @test length(errors) == 1
+        # ...and `allow-error` sanctions it like a thrown error.
+        _, errors = @test_logs render(
+            "```>logs allow-error\n@error \"boom\"\n```\n", "logged-ok.md"
+        )
+        @test isempty(errors)
+        # Warnings stay below the bar.
+        _, errors = render("```>warns\n@warn \"just noise\"\n```\n", "warned.md")
+        @test isempty(errors)
+
         # Structurally broken fences abort the page: unclosed executable
         # fences, unclosed plain fences, and executable fences with trailing
         # junk (here a misspelled flag).
