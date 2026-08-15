@@ -8,7 +8,12 @@
 {%- endif %}
 {% endblock %}
 
-{% block content %}{{<with_toc content={page.content} headings={page.toc} />}}{% endblock %}
+{# data-pagefind-body scopes the Pagefind crawl to the article (pages without
+   it, like the 404, are skipped entirely); the explicit title meta is needed
+   because pages carry their title in front matter, not in an <h1>. #}
+{% block content %}
+<div data-pagefind-body data-pagefind-meta="title:{{ page.title }}">{{<with_toc content={page.content} headings={page.toc} />}}</div>
+{% endblock %}
 
 {% block foot_extra %}
 {%- if page.extra?.math %}

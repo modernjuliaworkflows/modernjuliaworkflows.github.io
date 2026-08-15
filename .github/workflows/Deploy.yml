@@ -36,6 +36,10 @@ jobs:
           tool: zola@0.23.3
       - name: Build the site
         run: zola build
+      - name: Index the site for search
+        # Builds the Pagefind bundle (public/pagefind/) that js/search.js
+        # loads for the full-text result tier. Runners ship Node for npx.
+        run: npx -y pagefind@1.5.2 --site public
       - name: Check links
         # Fails on any broken link not explicitly whitelisted in zola.toml's
         # [link_checker] (known-dead pages, uncheckable GitHub README anchors).

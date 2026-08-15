@@ -6,7 +6,8 @@
 
 {% component with_toc(content, headings) %}
 {%- set toc_html %}
-<div class="toc">
+{# data-pagefind-ignore: heading titles would otherwise be indexed twice. #}
+<div class="toc" data-pagefind-ignore>
   <ol>
     {%- for h in headings %}
     {%- if h.level == 2 %}

@@ -52,6 +52,9 @@ Commands:
   Note that warm re-runs share package-level global state with earlier runs;
   the cold build remains the source of truth.
 - `build` / `check` preprocess `src/` into `content/`, then run the corresponding Zola command.
+  `build` additionally indexes the rendered site for full-text search with
+  [Pagefind](https://pagefind.app) when `pagefind` is on the PATH, and only
+  warns when it is not.
 - `clean` removes `content/`, `public/` and the workdir.
 
 Options:
@@ -70,8 +73,8 @@ Options:
 
 The Zola-backed commands (`serve`, `build`, `check`) expect `zola` on the
 PATH and must run from the repository root (next to `zola.toml`). CI runs
-`preprocess` and then calls `zola build`/`zola check` directly so the pages
-are only executed once.
+`preprocess` and then calls `zola build`/`zola check`/`pagefind` directly so
+the pages are only executed once.
 
 ## Strictness
 

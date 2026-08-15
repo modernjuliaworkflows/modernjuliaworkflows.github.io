@@ -1,7 +1,8 @@
 # CLI: `preprocess` walks the source tree, processes every markdown page,
 # mirrors the result into the output directory, and summarizes fence errors
 # at the end. `serve`/`build`/`check` preprocess and then drive Zola;
-# `serve` additionally watches the source pages and re-preprocesses on change.
+# `serve` additionally watches the source pages and re-preprocesses on change,
+# and `build` finishes by indexing the rendered site for search.
 
 """
     process_tree(srcdir, outdir; workdir, only = String[]) -> failures
@@ -148,6 +149,22 @@ function serve(
     return interrupted ? 0 : zola.exitcode
 end
 
+"""
+    index_search() -> exit code
+
+Build the Pagefind search bundle into `public/pagefind/` by crawling the
+rendered site; `js/search.js` loads it for the full-text result tier.
+`pagefind` is optional locally (CI installs a pinned version), so a missing
+binary only warns: the site works without it, minus full-text search.
+"""
+function index_search()
+    if isnothing(Sys.which("pagefind"))
+        @warn "`pagefind` not found on PATH; skipping the search index (https://pagefind.app)"
+        return 0
+    end
+    return success(run(ignorestatus(`pagefind --site public`))) ? 0 : 1
+end
+
 const USAGE = """
 usage: julia --project=MoJuWoPreprocessor -m MoJuWoPreprocessor <command> [options]
        (on Julia 1.11, use `MoJuWoPreprocessor/main.jl` instead of `-m MoJuWoPreprocessor`)
@@ -158,6 +175,7 @@ commands:
   serve                          preprocess src/ into content/, run `zola serve`,
                                  and re-preprocess pages as they change
   build                          preprocess src/ into content/, then `zola build`
+                                 and index the site for search with `pagefind`
   check                          preprocess src/ into content/, then `zola check`
   clean                          remove content/, public/ and the workdir
 
@@ -257,5 +275,6 @@ function (@main)(args::Vector{String})
     end
     code = preprocess_strict("src", "content"; workdir, only)
     code == 0 || return code
-    return success(run(ignorestatus(`zola $command $zola_args`))) ? 0 : 1
+    success(run(ignorestatus(`zola $command $zola_args`))) || return 1
+    return command == "build" ? index_search() : 0
 end

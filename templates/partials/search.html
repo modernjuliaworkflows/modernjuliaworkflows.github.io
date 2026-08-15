@@ -1,9 +1,9 @@
 {#- Site search dialog, opened from the sidebar button ("/" or Ctrl/Cmd+K).
     js/search.js shows two result tiers:
-    1. section headings, collected below from each page's table of contents so
-       results link straight to the anchor (Zola's search index is page-level
-       only, and every page here is long);
-    2. full-text page matches from the elasticlunr index, fetched lazily. -#}
+    1. section headings, collected below from each page's table of contents,
+       matched by substring while typing without loading any index;
+    2. full-text matches from the Pagefind bundle (built into public/pagefind/
+       after `zola build`), loaded lazily; absent under `zola serve`. -#}
 <dialog id="search-dialog" aria-label="Site search">
   <input id="search-input" type="search" placeholder="Search…" autocomplete="off" spellcheck="false">
   <div id="search-results"></div>
@@ -28,5 +28,4 @@
   {%- endfor %}
   ];
 </script>
-<script src="/elasticlunr.min.js"></script>
 <script src="/js/search.js"></script>

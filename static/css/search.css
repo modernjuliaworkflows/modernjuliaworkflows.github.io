@@ -119,3 +119,11 @@ a.search-result.selected {
   color: #7a7a7a;
   overflow-wrap: anywhere;
 }
+
+/* Pagefind wraps matched terms in <mark>; render them like the <b> in titles
+   instead of the browser's yellow highlight */
+.search-teaser mark {
+  background: none;
+  color: #268bd2;
+  font-weight: bold;
+}
