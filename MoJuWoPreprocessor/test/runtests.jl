@@ -109,6 +109,23 @@ cli(args...) = IOCapture.capture(() -> MoJuWoPreprocessor.main(collect(String, a
         @test isempty(MoJuWoPreprocessor.PAGE_WORKERS)
     end
 
+    # Pages run concurrently, but a structurally broken page still fails
+    # the tree run typed, and pages sorted before it are still written.
+    @testset "syntax error in a concurrent tree run" begin
+        tmp = mktempdir()
+        srcdir = joinpath(tmp, "src")
+        mkpath(joinpath(srcdir, "a"))
+        mkpath(joinpath(srcdir, "b"))
+        write(joinpath(srcdir, "a", "index.md"), "```>ok\n1 + 1\n```\n")
+        write(joinpath(srcdir, "b", "index.md"), "```>broken\n1 + 1\n")
+        outdir = joinpath(tmp, "content")
+        @test_throws FenceSyntaxError process_tree(
+            srcdir, outdir; workdir = joinpath(tmp, "_workdir")
+        )
+        @test isfile(joinpath(outdir, "a", "index.md"))
+        MoJuWoPreprocessor.stop_page_workers()
+    end
+
     @testset "strict fence handling" begin
         tmp = mktempdir()
         render(text, rel) = process_page(text, rel; pagedir = tmp, workdir = tmp)

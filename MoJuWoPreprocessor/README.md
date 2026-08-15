@@ -25,6 +25,8 @@ erroring fence still renders REPL-style but fails the build — see
 Named fences share one sandbox module per page.
 Every page executes on its own persistent [Malt.jl](https://github.com/JuliaPluto/Malt.jl) worker process,
 so pages cannot leak loaded packages, package-extension triggers, or global state into each other.
+Because pages are isolated, they are also preprocessed concurrently,
+so a full build takes about as long as its slowest page.
 The worker's load path is fixed at spawn:
 the page's own environment first (if the page's directory contains a `Project.toml`),
 then the preprocessor's environment, then the standard library —

@@ -85,15 +85,17 @@ end
 """
     process_tree(srcdir, outdir; workdir, only = String[]) -> failures
 
-Process every `*.md` under `srcdir` (in sorted order) into the same
-relative path under `outdir`, each page on its own persistent worker
-process (spawned lazily, reused while it lives) so pages cannot leak
-loaded packages or global state into each other. `only` restricts the run
-to pages whose source path ends with one of the given paths. Returns a
-`Dict` mapping page paths to their unsanctioned fence errors (errors in
-fences not marked `allow-error`); the CLI build commands fail on those,
-`serve` only reports them. A structurally broken fence throws a
-[`FenceSyntaxError`](@ref) immediately.
+Process every `*.md` under `srcdir` into the same relative path under
+`outdir`, each page on its own persistent worker process (spawned lazily,
+reused while it lives) so pages cannot leak loaded packages or global
+state into each other. That isolation also lets all pages run
+concurrently; outputs are written in sorted page order once every page
+has finished. `only` restricts the run to pages whose source path ends
+with one of the given paths. Returns a `Dict` mapping page paths to
+their unsanctioned fence errors (errors in fences not marked
+`allow-error`); the CLI build commands fail on those, `serve` only
+reports them. A structurally broken fence throws a
+[`FenceSyntaxError`](@ref) for the first broken page in sorted order.
 """
 function process_tree(
         srcdir::AbstractString, outdir::AbstractString;
@@ -117,20 +119,30 @@ function process_tree(
     failures = Dict{String, Vector{FenceError}}()
     @info "⏱️ Preprocessing Julia code blocks. \nThis may take a minute (subsequent evaluations will be faster)."
     start = time()
-    for rel in pages
-        src = abspath(joinpath(srcdir, rel))
-        @info "...preprocessing $rel"
-        # `remote_eval_fetch` rather than `remote_call_fetch`: evaluation
-        # runs in the worker's latest world age, which the entry point —
-        # imported after the worker's serve loop started — requires.
-        result = Malt.remote_eval_fetch(
-            Main, page_worker(src),
-            :(
-                $worker_process_page(
-                    $(read(src, String)), $rel, $(dirname(src)), $(abspath(workdir))
+    # Worker isolation makes the pages independent, so they run
+    # concurrently: each task only blocks on its worker's IO, the workers
+    # do the actual work in parallel.
+    results = Vector{Any}(undef, length(pages))
+    @sync for (i, rel) in enumerate(pages)
+        @async begin
+            src = abspath(joinpath(srcdir, rel))
+            # `remote_eval_fetch` rather than `remote_call_fetch`:
+            # evaluation runs in the worker's latest world age, which the
+            # entry point — imported after the worker's serve loop
+            # started — requires.
+            results[i] = Malt.remote_eval_fetch(
+                Main, page_worker(src),
+                :(
+                    $worker_process_page(
+                        $(read(src, String)), $rel, $(dirname(src)), $(abspath(workdir))
+                    )
                 )
             )
-        )
+            @info "...preprocessed $rel"
+        end
+    end
+    for (i, rel) in enumerate(pages)
+        result = results[i]
         if first(result) === :fence_syntax_error
             _, page, line, message = result
             throw(FenceSyntaxError(page, line, message))
