@@ -376,5 +376,6 @@ Of course, collaboration goes both ways: if you find a Julia package you really 
 <!-- Clean up -->
 
 ```!cleanup
-Pkg.rm("MyAwesomePackage")  # hide
+#hideall
+Pkg.rm("MyAwesomePackage")
 ```
